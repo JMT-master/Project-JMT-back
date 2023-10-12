@@ -1,4 +1,4 @@
-package com.jmt.entity;
+package com.jmt.chat.entity;
 
 import lombok.*;
 
