@@ -30,7 +30,4 @@ public class KnowledgeEntity extends BaseTimeEntity{
     @ColumnDefault("0")
     private int view;
 
-    @Column(name = "kn_qna_Yn")
-    @ColumnDefault("N")
-    private String qnaYn;
 }
