@@ -1,4 +1,4 @@
-package com.jmt.controller;
+package com.jmt.chat.controller;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Controller;
