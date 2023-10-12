@@ -1,4 +1,4 @@
-package com.jmt.controller;
+package com.jmt.qna.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
