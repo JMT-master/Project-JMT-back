@@ -1,0 +1,38 @@
+package com.jmt.entity;
+
+import com.sun.istack.NotNull;
+import lombok.*;
+
+import javax.persistence.*;
+
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Getter
+@Setter
+@ToString
+@Table(name = "notice")
+public class Notice {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer noticeId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumns({
+            @JoinColumn(name = "notice_file_id", referencedColumnName = "file_id"),
+            @JoinColumn(name = "notice_file_userid", referencedColumnName = "file_userid")
+    })
+    private MemberFile memberFile;
+
+    private String noticeCategory;
+
+    @NotNull
+    private String noticeTitle;
+
+    @Column(length = 6500)
+    @NotNull
+    private String noticeContent;
+
+}
