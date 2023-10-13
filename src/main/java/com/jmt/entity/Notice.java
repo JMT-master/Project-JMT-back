@@ -21,8 +21,8 @@ public class Notice {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
-            @JoinColumn(name = "notice_file_id", referencedColumnName = "file_id"),
-            @JoinColumn(name = "notice_file_userid", referencedColumnName = "file_userid")
+            @JoinColumn(name = "notice_file_id", referencedColumnName = "file_id",nullable = true),
+            @JoinColumn(name = "notice_file_userid", referencedColumnName = "file_userid",nullable = true)
     })
     private MemberFile memberFile;
 
@@ -31,8 +31,7 @@ public class Notice {
     @NotNull
     private String noticeTitle;
 
-    @Column(length = 6500)
-    @NotNull
+    @Column(length = 6500, nullable = false)
     private String noticeContent;
 
 }
