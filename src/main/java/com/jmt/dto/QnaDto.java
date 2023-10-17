@@ -11,7 +11,7 @@ import javax.validation.constraints.NotBlank;
 @ToString
 public class QnaDto {
 
-    private String qnaId;
+    private Long qnaId;
 
     @NotBlank(message = "제목은 필수입니다.") // 빈 문자열 또는 null일 경우 에러 메시지를 설정한 어노테이션
     private String qnaTitle; // Q&A 제목을 나타내는 필드

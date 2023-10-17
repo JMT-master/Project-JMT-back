@@ -18,7 +18,7 @@ public class QnaEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "qna_id")
-    private String id;
+    private Long id;
 
     @Column(nullable = false)
     private String qnaTitle;
