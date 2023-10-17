@@ -1,5 +1,6 @@
 package com.jmt.service;
 
+import com.jmt.dto.QnaDto;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -44,5 +45,9 @@ public class PrincipalDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return false;
+    }
+
+    public QnaDto getUser(){
+        return null;
     }
 }
