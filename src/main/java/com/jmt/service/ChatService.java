@@ -1,4 +1,4 @@
-package com.jmt.chat.service;
+package com.jmt.service;
 
 public class ChatService {
     

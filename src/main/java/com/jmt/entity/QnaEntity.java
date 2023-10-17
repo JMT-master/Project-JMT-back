@@ -1,6 +1,6 @@
-package com.jmt.qna.entity;
+package com.jmt.entity;
 
-import com.jmt.common.BaseTimeEntity;
+import com.jmt.entity.BaseTimeEntity;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -31,4 +31,13 @@ public class QnaEntity extends BaseTimeEntity {
 
     @Column(nullable = false)
     private String qnaCategory;
+
+    @Column
+    private String qnaFileKey;
+
+    @Column
+    private String qnaUserId;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "userId")
+//    private Member member;
 }

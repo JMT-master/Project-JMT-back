@@ -1,4 +1,4 @@
-package com.jmt.common;
+package com.jmt.entity;
 
 import lombok.Data;
 import org.springframework.data.annotation.CreatedBy;
@@ -17,7 +17,7 @@ public abstract class BaseTimeEntity {
 
     @CreatedBy
     @Column(updatable = false)
-    private LocalDateTime regTime;
+    private LocalDateTime regDate;
 
     @LastModifiedDate
     private LocalDateTime modDate;

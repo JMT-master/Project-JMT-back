@@ -1,20 +1,23 @@
-package com.jmt.chat.entity;
+package com.jmt.entity;
 
 import lombok.*;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Getter
 @Setter
-@Table(name = "chat")
+@Table
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class ChatUser {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
 
     private String nickName;
