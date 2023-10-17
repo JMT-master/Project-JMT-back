@@ -1,10 +1,11 @@
 package com.jmt.knowledge;
 
-import com.jmt.qna.entity.BaseTimeEntity;
+import com.jmt.common.BaseTimeEntity;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Getter
@@ -17,18 +18,30 @@ public class KnowledgeEntity extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "kn_id")
-    private String id;
+    @Column
+    private String knId;
 
-    @Column(nullable = false,
-    name = "kn_title")
-    private String title;
+    // MemberEntity 연동
+    @Column
+    private String knUserid;
 
-    @Column(nullable = false, name = "kn_content")
-    private String content;
+    @Column(nullable = false)
+    private String knTitle;
 
-    @Column(name = "kn_view")
+    @Column(nullable = false)
+    private String knContent;
+
+    @Column(name = "kn_regDate")
+    private Date knRegDate;
+
+    @Column(name = "kn_modDate")
+    private Date knmodDate;
+
+    @Column
     @ColumnDefault("0")
-    private int view;
+    private int knView;
+
+    @Column
+    private String knFileKey;
 
 }
