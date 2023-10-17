@@ -1,4 +1,4 @@
-package com.jmt.qna.entity;
+package com.jmt.entity;
 
 import lombok.Data;
 import org.springframework.data.annotation.CreatedBy;

@@ -1,6 +1,6 @@
-package com.jmt.qna.dto;
+package com.jmt.dto;
 
-import com.jmt.qna.entity.QnaEntity;
+import com.jmt.entity.QnaEntity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

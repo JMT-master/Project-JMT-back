@@ -1,6 +1,6 @@
-package com.jmt.knowledge;
+package com.jmt.entity;
 
-import com.jmt.qna.entity.BaseTimeEntity;
+import com.jmt.entity.BaseTimeEntity;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 

@@ -1,6 +1,6 @@
-package com.jmt.qna.repository;
+package com.jmt.repository;
 
-import com.jmt.qna.entity.QnaEntity;
+import com.jmt.entity.QnaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
