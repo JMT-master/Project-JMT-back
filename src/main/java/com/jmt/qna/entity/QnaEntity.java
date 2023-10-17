@@ -30,4 +30,13 @@ public class QnaEntity extends BaseTimeEntity{
 
     @Column(nullable = false)
     private String qnaCategory;
+
+    @Column
+    private String qnaFileKey;
+
+    @Column
+    private String qnaUserId;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "userId")
+//    private Member member;
 }
