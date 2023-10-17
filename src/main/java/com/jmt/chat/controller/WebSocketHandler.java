@@ -7,6 +7,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 @Controller
 public class WebSocketHandler extends TextWebSocketHandler implements InitializingBean {
 
+    //websocket 연결 성공 했을 때
 
     @Override
     public void afterPropertiesSet() throws Exception {
