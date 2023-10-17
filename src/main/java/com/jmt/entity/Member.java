@@ -4,6 +4,8 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Builder
 @NoArgsConstructor
@@ -44,5 +46,6 @@ public class Member {
 
     @Column(length = 1 , nullable = false)
     private String adminYn;
+
 
 }

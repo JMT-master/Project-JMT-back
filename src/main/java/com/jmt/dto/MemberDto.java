@@ -1,20 +1,17 @@
 package com.jmt.dto;
 
 import com.jmt.entity.Member;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class MemberDto {
 
     private String username;
 
-    private String nickname;
 
     private String password;
 
@@ -25,10 +22,6 @@ public class MemberDto {
     private String address;
 
     private String addressDetail;
-
-    private String imgUrl;
-
-    private String info;
 
     private String adminYn;
 
@@ -42,7 +35,7 @@ public class MemberDto {
         this.adminYn = member.getAdminYn();
     }
 
-    public Member toEntity(final MemberDto dto) {
+    public static Member toEntity(final MemberDto dto) {
         try {
             return Member.builder()
                     .username(dto.getUsername())
@@ -53,6 +46,20 @@ public class MemberDto {
                     .address(dto.getAddress())
                     .addressDetail(dto.getAddressDetail())
                     .adminYn(dto.getAdminYn())
+                    .build();
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    public static MemberDto toDto(final Member entity) {
+        try {
+            return MemberDto.builder()
+                    .username(entity.getUsername())
+                    .phone(entity.getPhone())
+                    .zipcode(entity.getZipcode())
+                    .address(entity.getAddress())
+                    .addressDetail(entity.getAddressDetail())
                     .build();
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());

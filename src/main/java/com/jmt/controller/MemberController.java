@@ -22,19 +22,21 @@ public class MemberController {
     MemberService service;
 
     @PostMapping("/reg")
-    public ResponseEntity<Member> createMember(@RequestBody MemberDto dto){
+    public ResponseEntity<MemberDto> createMember(@RequestBody MemberDto dto){
+        service.validationUser(dto.getUsername());
         Member entity = dto.toEntity(dto);
         entity.setUserid(null);
         if(entity == null){
             throw new RuntimeException("엔티티 이즈 널");
         }
+        MemberDto memberDto = MemberDto.toDto(entity);
         log.info("member = " + entity);
         try{
             service.regMember(entity);
-            return ResponseEntity.ok().body(entity);
+            return ResponseEntity.ok().body(memberDto);
         }catch (Exception e){
             log.error(e.getMessage());
-            return ResponseEntity.badRequest().body(entity);
+            return ResponseEntity.badRequest().body(memberDto);
         }
 
     }
