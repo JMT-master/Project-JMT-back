@@ -7,20 +7,19 @@ import lombok.Setter;
 @Getter
 @Setter
 public class NoticeDto {
-    private String noticeCategory;
-    private String noticeContent;
-    private String noticeTitle;
+    private String category;
+    private String content;
+    private String title;
 
     public static Notice toEntity(final NoticeDto dto) {
         try {
             return Notice.builder()
-                    .noticeTitle(dto.getNoticeTitle())
-                    .noticeCategory(dto.getNoticeCategory())
-                    .noticeContent(dto.getNoticeContent())
+                    .noticeTitle(dto.getTitle())
+                    .noticeCategory(dto.getCategory())
+                    .noticeContent(dto.getContent())
                     .build();
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
-
     }
 }

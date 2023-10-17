@@ -1,7 +1,7 @@
 package com.jmt.entity;
 
-import com.sun.istack.NotNull;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
@@ -16,22 +16,24 @@ import javax.persistence.*;
 public class Notice {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "system-uuid")
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private Integer noticeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumns({
-            @JoinColumn(name = "notice_file_id", referencedColumnName = "file_id",nullable = true),
-            @JoinColumn(name = "notice_file_userid", referencedColumnName = "file_userid",nullable = true)
-    })
-    private MemberFile memberFile;
+    @JoinColumn(name = "notice_userid", referencedColumnName = "userid", nullable = false)
+    private Member member;
 
+    @Column(length = 50, nullable = false)
     private String noticeCategory;
 
-    @NotNull
+    @Column(nullable = false)
     private String noticeTitle;
 
     @Column(length = 6500, nullable = false)
     private String noticeContent;
+
+    @Column(nullable = false)
+    private String noticeFileKey;
 
 }

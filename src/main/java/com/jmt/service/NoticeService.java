@@ -1,6 +1,5 @@
 package com.jmt.service;
 
-import com.jmt.dto.NoticeDto;
 import com.jmt.entity.Notice;
 import com.jmt.repository.NoticeRepository;
 import lombok.extern.slf4j.Slf4j;
