@@ -46,6 +46,67 @@ public class QnaController {
     }
 
     @GetMapping
+    public ResponseEntity<?> readQna(@AuthenticationPrincipal String userId){
+        try {
+//            List<QnaEntity> qnaEntities = qnaService.readByUserId(userId);
+            List<QnaEntity> qnaEntities = qnaService.read();
+            List<QnaDto> qnaDtos = qnaEntities.stream().map(QnaDto::new)
+                    .collect(Collectors.toList());
+            ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
+                    .data(qnaDtos)
+                    .build();
+            return ResponseEntity.ok().body(responseDto);
+        }catch (Exception e){
+            String error = e.getMessage();
+            System.out.println("error = " + error);
+            ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
+                    .error(error)
+                    .build();
+            return ResponseEntity.badRequest().body(responseDto);
+        }
+    }
 
+    @PutMapping
+    public ResponseEntity<?> updateQna(@RequestBody QnaDto qnaDto,
+                                       @AuthenticationPrincipal String userId){
+        try {
+            QnaEntity qnaEntity = QnaDto.toEntity(qnaDto);
+            qnaEntity.setQnaUserId(userId);
 
+            List<QnaEntity> qnaEntities = qnaService.update(qnaEntity);
+            List<QnaDto> qnaDtos = qnaEntities.stream().map(QnaDto::new).collect(Collectors.toList());
+            ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
+                    .data(qnaDtos)
+                    .build();
+            return ResponseEntity.ok().body(responseDto);
+        }catch (Exception e){
+            String error = e.getMessage();
+            ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
+                    .error(error)
+                    .build();
+            return ResponseEntity.badRequest().body(responseDto);
+        }
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> deleteQna(@AuthenticationPrincipal String userId,
+                                       @RequestBody QnaDto qnaDto){
+        try {
+            QnaEntity qnaEntity = QnaDto.toEntity(qnaDto);
+            qnaEntity.setQnaUserId(userId);
+            List<QnaEntity> qnaEntities = qnaService.delete(qnaEntity);
+            List<QnaDto> qnaDtos = qnaEntities.stream().map(QnaDto::new)
+                    .collect(Collectors.toList());
+            ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
+                    .data(qnaDtos)
+                    .build();
+            return ResponseEntity.ok().body(responseDto);
+        }catch (Exception e){
+            String error = e.getMessage();
+            ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
+                    .error(error)
+                    .build();
+            return ResponseEntity.badRequest().body(responseDto);
+        }
+    }
 }
