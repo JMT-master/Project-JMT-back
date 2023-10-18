@@ -12,9 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Getter
-@Setter
-@ToString
+@Data
 @Table
 public class Member {
 
@@ -50,4 +48,17 @@ public class Member {
 
     @Column(length = 1 , nullable = false)
     private String adminYn;
+
+    public void changeMember(Member member) {
+        userid = member.getUserid();
+        username = member.getUsername();
+        password = member.getPassword();
+        passwordChk = member.getPasswordChk();
+        zipcode = member.getZipcode();
+        address = member.getAddress();
+        addressDetail = member.getAddressDetail();
+        phone = member.getPhone();
+        email = member.getEmail();
+        adminYn = member.getAdminYn();
+    }
 }

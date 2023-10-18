@@ -16,9 +16,8 @@ import javax.persistence.*;
 public class KnowledgeEntity extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "kn_id")
-    private Long id;
+    private String id;
 
     @Column(nullable = false,
     name = "kn_title")

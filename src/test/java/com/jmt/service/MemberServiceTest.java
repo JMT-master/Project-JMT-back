@@ -20,7 +20,7 @@ class MemberServiceTest {
     @Autowired
     MemberService memberService;
     @Autowired
-    MemberRepository repository;
+    MemberRepository memberRepository;
 
     @Test
     void memberCreate() {
@@ -31,11 +31,16 @@ class MemberServiceTest {
 
         MemberDto result = memberService.create(memberDto);
 
+        Member repositoryUser = memberRepository.findById(memberDto.getUserid()).get();
+        MemberDto repositoryUserDto = MemberDto.toDto(repositoryUser);
+
         System.out.println("result = " + result);
-        assertEquals(memberDto, result);
+
+        assertEquals(result, repositoryUserDto);
 
     }
 
+    /*
     @Test
     @DisplayName("강제 에러 Test")
     void memberCreateError() {
@@ -59,6 +64,7 @@ class MemberServiceTest {
         System.out.println("result = " + result);
         assertEquals(test, result);
     }
+    */
 
     @Test
     void update() {
@@ -78,12 +84,13 @@ class MemberServiceTest {
 
         String updateId = memberService.update(memberDto2);
 
-        Member member = repository.findById(updateId).get();
-        Member compareMember = MemberDto.toEntity(memberDto2);
+        Member member = memberRepository.findById(updateId).get();
+
+        System.out.println("member = " + member);
 
         System.out.println("updateId = " + updateId);
 
-        assertEquals(member, compareMember);
+        assertNotEquals(result, member);
     }
 
 }

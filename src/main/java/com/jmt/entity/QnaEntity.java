@@ -16,9 +16,8 @@ import javax.persistence.*;
 public class QnaEntity extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "qna_id")
-    private Long id;
+    private String id;
 
     @Column(nullable = false)
     private String qnaTitle;
