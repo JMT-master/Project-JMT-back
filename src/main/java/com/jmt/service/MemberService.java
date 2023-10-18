@@ -122,7 +122,7 @@ public class MemberService {
     
     // 구글
 
-    /*
+
     public void validationUser(String username){
         Member findMember = memberRepository.findByUsername(username);
         if(findMember != null){
@@ -140,5 +140,5 @@ public class MemberService {
             log.error(e.getMessage());
         }
     }
-    */
+
 }
