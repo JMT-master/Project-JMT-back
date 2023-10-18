@@ -1,6 +1,6 @@
 package com.jmt.service;
 
-import com.jmt.dto.ChatRoom;
+import com.jmt.dto.ChatRoomDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ChatService {
 
-    private Map<String, ChatRoom> chatRooms;
+    private Map<String, ChatRoomDto> chatRooms;
 
     @PostConstruct
     //의존관계 주입 완료 되면 실행 되는 코드
@@ -23,24 +23,24 @@ public class ChatService {
     }
 
     //채팅방 불러오기
-    public List<ChatRoom> findAllRoom(){
+    public List<ChatRoomDto> findAllRoom(){
         //채팅방 최근 생성 순으로 반환
-        List<ChatRoom> result = new ArrayList<>(chatRooms.values());
+        List<ChatRoomDto> result = new ArrayList<>(chatRooms.values());
         Collections.reverse(result);
 
         return result;
     }
 
     //채팅방 하나 불러오기
-    public ChatRoom findById(String roomId){
+    public ChatRoomDto findById(String roomId){
 
         return chatRooms.get(roomId);
     }
 
     //채팅방 생성
-    public List<ChatRoom> createRoom(String name){
-        ChatRoom chatRoom = ChatRoom.create(name);
-        chatRooms.put(chatRoom.getRoomId(), chatRoom);
-        return (List<ChatRoom>) chatRooms;
+    public List<ChatRoomDto> createRoom(String name){
+        ChatRoomDto chatRoomDto = ChatRoomDto.create(name);
+        chatRooms.put(chatRoomDto.getRoomId(), chatRoomDto);
+        return (List<ChatRoomDto>) chatRooms;
     }
 }

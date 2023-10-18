@@ -1,6 +1,7 @@
 package com.jmt.entity;
 
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
@@ -14,9 +15,10 @@ import javax.persistence.*;
 public class ChatUserEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "system-uuid")
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
     @Column(name = "chat_id")
-    private Long chatId;
+    private String chatId;
 
     private String nickName;
 

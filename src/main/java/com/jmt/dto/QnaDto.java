@@ -1,6 +1,6 @@
 package com.jmt.dto;
 
-import com.jmt.entity.QnaEntity;
+import com.jmt.entity.Qna;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -24,17 +24,17 @@ public class QnaDto {
     private String qnaFileKey;
 
     //entity를 dto로
-    public QnaDto(final QnaEntity qnaEntity) {
-        this.qnaTitle = qnaEntity.getQnaTitle();
-        this.qnaContent = qnaEntity.getQnaContent();
-        this.qnaCategory = qnaEntity.getQnaCategory();
-        this.qnaView = qnaEntity.getQnaView();
-        this.qnaFileKey = qnaEntity.getQnaFileKey();
+    public QnaDto(final Qna qna) {
+        this.qnaTitle = qna.getQnaTitle();
+        this.qnaContent = qna.getQnaContent();
+        this.qnaCategory = qna.getQnaCategory();
+        this.qnaView = qna.getQnaView();
+        this.qnaFileKey = qna.getQnaFileKey();
     }
 
     //dto를 entity로
-    public static QnaEntity toEntity(final QnaDto qnaDto){
-        return QnaEntity.builder()
+    public static Qna toEntity(final QnaDto qnaDto){
+        return Qna.builder()
                 .qnaTitle(qnaDto.getQnaTitle())
                 .qnaContent(qnaDto.getQnaContent())
                 .qnaCategory(qnaDto.getQnaCategory())

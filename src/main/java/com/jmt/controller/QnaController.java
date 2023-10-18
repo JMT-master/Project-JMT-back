@@ -2,7 +2,7 @@ package com.jmt.controller;
 
 import com.jmt.dto.QnaDto;
 import com.jmt.dto.ResponseDto;
-import com.jmt.entity.QnaEntity;
+import com.jmt.entity.Qna;
 import com.jmt.service.MemberService;
 import com.jmt.service.QnaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +27,11 @@ public class QnaController {
                                        @AuthenticationPrincipal String userid){
 
         try {
-            QnaEntity qnaEntity = QnaDto.toEntity(qnaDto);
-            qnaEntity.setId(null);
-            qnaEntity.setMember(memberService.getMember(userid));
+            Qna qna = QnaDto.toEntity(qnaDto);
+            qna.setId(null);
+            qna.setMember(memberService.getMember(userid));
 
-            List<QnaEntity> qnaEntities = qnaService.create(qnaEntity);
+            List<Qna> qnaEntities = qnaService.create(qna);
             List<QnaDto> qnaDtos = qnaEntities.stream().map(QnaDto::new)
                     .collect(Collectors.toList());
             ResponseDto<QnaDto> response = ResponseDto.<QnaDto>builder()
@@ -52,7 +52,7 @@ public class QnaController {
     public ResponseEntity<?> readQna(@AuthenticationPrincipal String userId){
         try {
 //            List<QnaEntity> qnaEntities = qnaService.readByUserId(userId);
-            List<QnaEntity> qnaEntities = qnaService.read();
+            List<Qna> qnaEntities = qnaService.read();
             List<QnaDto> qnaDtos = qnaEntities.stream().map(QnaDto::new)
                     .collect(Collectors.toList());
             ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
@@ -73,10 +73,10 @@ public class QnaController {
     public ResponseEntity<?> updateQna(@RequestBody QnaDto qnaDto,
                                        @AuthenticationPrincipal String userId){
         try {
-            QnaEntity qnaEntity = QnaDto.toEntity(qnaDto);
-            qnaEntity.setMember(memberService.getMember(userId));
+            Qna qna = QnaDto.toEntity(qnaDto);
+            qna.setMember(memberService.getMember(userId));
 
-            List<QnaEntity> qnaEntities = qnaService.update(qnaEntity);
+            List<Qna> qnaEntities = qnaService.update(qna);
             List<QnaDto> qnaDtos = qnaEntities.stream().map(QnaDto::new).collect(Collectors.toList());
             ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
                     .data(qnaDtos)
@@ -95,9 +95,9 @@ public class QnaController {
     public ResponseEntity<?> deleteQna(@AuthenticationPrincipal String userId,
                                        @RequestBody QnaDto qnaDto){
         try {
-            QnaEntity qnaEntity = QnaDto.toEntity(qnaDto);
-            qnaEntity.setMember(memberService.getMember(userId));
-            List<QnaEntity> qnaEntities = qnaService.delete(qnaEntity);
+            Qna qna = QnaDto.toEntity(qnaDto);
+            qna.setMember(memberService.getMember(userId));
+            List<Qna> qnaEntities = qnaService.delete(qna);
             List<QnaDto> qnaDtos = qnaEntities.stream().map(QnaDto::new)
                     .collect(Collectors.toList());
             ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()

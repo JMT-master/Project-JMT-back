@@ -15,7 +15,7 @@ public class ChatUserDto {
     //Chat User Entity를 보고 작성
 
     // DB에 저장 되는 chat id;
-    private Long chatId;
+    private String chatId;
     //소셜에서 제공 받은 유저 닉네임
     private String nickName;
     //제공받은 이메일

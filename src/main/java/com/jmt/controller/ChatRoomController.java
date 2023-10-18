@@ -1,15 +1,15 @@
 package com.jmt.controller;
 
-import com.jmt.dto.ChatRoom;
+import com.jmt.dto.ChatRoomDto;
 import com.jmt.dto.ResponseDto;
 import com.jmt.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -24,12 +24,11 @@ public class ChatRoomController {
     @GetMapping("/room")
     public ResponseEntity<?> rooms(){
         try {
-            List<ChatRoom> chatRooms =  chatService.findAllRoom();
-            ResponseDto<ChatRoom> responseDto = ResponseDto.<ChatRoom>builder()
-                    .data(chatRooms)
+            List<ChatRoomDto> chatRoomDtos =  chatService.findAllRoom();
+            ResponseDto<ChatRoomDto> responseDto = ResponseDto.<ChatRoomDto>builder()
+                    .data(chatRoomDtos)
                     .build();
             return ResponseEntity.ok().body(responseDto);
-
         }catch (Exception e){
             return null;
         }
@@ -37,27 +36,29 @@ public class ChatRoomController {
 
     //모든 채팅방 목록 반환
     @GetMapping("/rooms")
-    @ResponseBody
     public ResponseEntity<?> room(){
         try {
-            List<ChatRoom> chatRooms = chatService.findAllRoom();
-            ResponseDto<ChatRoom> responseDto = ResponseDto.<ChatRoom>builder()
-                    .data(chatRooms)
+            List<ChatRoomDto> chatRoomDtos = chatService.findAllRoom();
+            ResponseDto<List<ChatRoomDto>> responseDto = ResponseDto.<List<ChatRoomDto>>builder()
+                    .data(Collections.singletonList(chatRoomDtos))
                     .build();
             return ResponseEntity.ok().body(responseDto);
         }catch (Exception e){
-            return null;
+            String error = e.getMessage();
+            ResponseDto<String> responseDto = ResponseDto.<String>builder()
+                    .error(error).build();
+            return ResponseEntity.badRequest().body(responseDto);
         }
     }
 
     //채팅방 생성
     @PostMapping("/room")
     @ResponseBody
-    public ResponseEntity<?> createRoom(@RequestBody ChatRoom chatRoom){
+    public ResponseEntity<?> createRoom(@RequestBody ChatRoomDto chatRoomDto){
         try {
-               List<ChatRoom> chatRooms = chatService.createRoom(chatRoom.getRoomName());
-                ResponseDto<ChatRoom> responseDto = ResponseDto.<ChatRoom>builder()
-                        .data(chatRooms)
+               List<ChatRoomDto> chatRoomDtos = chatService.createRoom(chatRoomDto.getRoomName());
+                ResponseDto<ChatRoomDto> responseDto = ResponseDto.<ChatRoomDto>builder()
+                        .data(chatRoomDtos)
                         .build();
                 return ResponseEntity.ok().body(responseDto);
         }catch (Exception e){
@@ -76,7 +77,7 @@ public class ChatRoomController {
     //특정 채팅방 조회
     @GetMapping("/room/{roomId}")
     @ResponseBody
-    public ChatRoom roomInfo(@PathVariable String roomId){
+    public ChatRoomDto roomInfo(@PathVariable String roomId){
         return chatService.findById(roomId);
     }
 }

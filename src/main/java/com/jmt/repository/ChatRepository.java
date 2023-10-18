@@ -1,9 +1,9 @@
 package com.jmt.repository;
 
-import com.jmt.dto.ChatRoom;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface ChatRepository extends JpaRepository<ChatRoom, String> {
+@Repository
+public interface ChatRepository {
 
 
 
