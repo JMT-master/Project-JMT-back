@@ -18,7 +18,7 @@ public class KnowledgeEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "kn_id")
-    private String id;
+    private Long id;
 
     @Column(nullable = false,
     name = "kn_title")

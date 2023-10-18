@@ -20,8 +20,6 @@ public class ChatUserDto {
     private String nickName;
     //제공받은 이메일
     private String email;
-    //소셜 아이디를 제공하는 사이트 ex) 네이버, 카카오
-    private String provider;
 
     // chat user entity를 to dto
     public static ChatUserDto of(ChatUserEntity chatUser){
@@ -29,7 +27,6 @@ public class ChatUserDto {
                 .chatId(chatUser.getChatId())
                 .nickName(chatUser.getNickName())
                 .email(chatUser.getEmail())
-                .provider(chatUser.getProvider())
                 .build();
         return chatUserDto;
     }

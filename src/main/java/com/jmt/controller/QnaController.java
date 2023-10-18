@@ -3,6 +3,7 @@ package com.jmt.controller;
 import com.jmt.dto.QnaDto;
 import com.jmt.dto.ResponseDto;
 import com.jmt.entity.QnaEntity;
+import com.jmt.service.MemberService;
 import com.jmt.service.QnaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,8 @@ public class QnaController {
 
     @Autowired
     private QnaService qnaService;
+    @Autowired
+    private MemberService memberService;
 
     @PostMapping("/write")
     public ResponseEntity<?> createQna(@RequestBody QnaDto qnaDto,
@@ -26,7 +29,7 @@ public class QnaController {
         try {
             QnaEntity qnaEntity = QnaDto.toEntity(qnaDto);
             qnaEntity.setId(null);
-            qnaEntity.setQnaUserId(userid);
+            qnaEntity.setMember(memberService.getMember(userid));
 
             List<QnaEntity> qnaEntities = qnaService.create(qnaEntity);
             List<QnaDto> qnaDtos = qnaEntities.stream().map(QnaDto::new)
@@ -71,7 +74,7 @@ public class QnaController {
                                        @AuthenticationPrincipal String userId){
         try {
             QnaEntity qnaEntity = QnaDto.toEntity(qnaDto);
-            qnaEntity.setQnaUserId(userId);
+            qnaEntity.setMember(memberService.getMember(userId));
 
             List<QnaEntity> qnaEntities = qnaService.update(qnaEntity);
             List<QnaDto> qnaDtos = qnaEntities.stream().map(QnaDto::new).collect(Collectors.toList());
@@ -93,7 +96,7 @@ public class QnaController {
                                        @RequestBody QnaDto qnaDto){
         try {
             QnaEntity qnaEntity = QnaDto.toEntity(qnaDto);
-            qnaEntity.setQnaUserId(userId);
+            qnaEntity.setMember(memberService.getMember(userId));
             List<QnaEntity> qnaEntities = qnaService.delete(qnaEntity);
             List<QnaDto> qnaDtos = qnaEntities.stream().map(QnaDto::new)
                     .collect(Collectors.toList());

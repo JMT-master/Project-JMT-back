@@ -35,7 +35,7 @@ public class QnaService {
         log.info("qna saved..?", qnaEntity.getId());
         //user는 관리자이다. 따라서 관리자 아이디로 create하고 난 뒤 전체 qna 글을 가져온다.
         //사실상 id가 다르다면 create 조차 불가능
-        return qnaRepository.findByQnaUserId(qnaEntity.getQnaUserId());
+        return qnaRepository.findByQnaUserId(qnaEntity.getMember().getUserid());
     }
 
     //관리자용 read
@@ -69,7 +69,7 @@ public class QnaService {
             qnaRepository.save(qna);
         });
 
-        return readByUserId(qnaEntity.getQnaUserId());
+        return readByUserId(qnaEntity.getMember().getUserid());
     }
 
     //delete문
@@ -83,7 +83,7 @@ public class QnaService {
             throw new RuntimeException("delete 도중 error 발생함..." + qnaEntity.getId());
         }
 
-        return readByUserId(qnaEntity.getQnaUserId());
+        return readByUserId(qnaEntity.getMember().getUserid());
     }
 
 }

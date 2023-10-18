@@ -14,17 +14,22 @@ public class ChatConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
 
         //stomp 접속 주소 url => /ws-stomp로 설정할 것입
-        registry.addEndpoint("/ws-stomp") //연결될 엔드포인트
+        registry.addEndpoint("/ws/chat") //연결될 엔드포인트
                 .withSockJS(); //sockjs 연결할 것
     }
 
+    //    @Override
+//    public void configureMessageBroker(MessageBrokerRegistry registry) {
+//        //메세지를 구독하는 요청 url => 메시지를 받을 때
+//        registry.enableSimpleBroker("/sub");
+//
+//        //메시지를 발행하는 요청 url => 즉 메시지를 보낼 때
+//        registry.setApplicationDestinationPrefixes("/pub");
+//
+//    }
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        //메세지를 구독하는 요청 url => 메시지를 받을 때
-        registry.enableSimpleBroker("/sub");
-
-        //메시지를 발행하는 요청 url => 즉 메시지를 보낼 때
-        registry.setApplicationDestinationPrefixes("/pub");
-
+        registry.enableSimpleBroker("/queue", "/topic");
+        registry.setApplicationDestinationPrefixes("/app");
     }
 }

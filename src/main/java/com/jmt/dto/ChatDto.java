@@ -27,12 +27,4 @@ public class ChatDto {
     //채팅 발송한 시간
     private String time;
 
-//    //파일을 업로드 한다면 사용할 변수
-//    //근데 파일 부분은 아마 뺄듯
-//    private String dataUrl;
-//    //파일 이름
-//    private String fileName;
-//    //파일 경로
-//    private String fileDir;
-
 }

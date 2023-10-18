@@ -11,8 +11,6 @@ import javax.validation.constraints.NotBlank;
 @ToString
 public class QnaDto {
 
-    private String qnaId;
-
     @NotBlank(message = "제목은 필수입니다.") // 빈 문자열 또는 null일 경우 에러 메시지를 설정한 어노테이션
     private String qnaTitle; // Q&A 제목을 나타내는 필드
 
@@ -27,7 +25,6 @@ public class QnaDto {
 
     //entity를 dto로
     public QnaDto(final QnaEntity qnaEntity) {
-        this.qnaId = qnaEntity.getId();
         this.qnaTitle = qnaEntity.getQnaTitle();
         this.qnaContent = qnaEntity.getQnaContent();
         this.qnaCategory = qnaEntity.getQnaCategory();
@@ -38,7 +35,6 @@ public class QnaDto {
     //dto를 entity로
     public static QnaEntity toEntity(final QnaDto qnaDto){
         return QnaEntity.builder()
-                .id(qnaDto.getQnaId())
                 .qnaTitle(qnaDto.getQnaTitle())
                 .qnaContent(qnaDto.getQnaContent())
                 .qnaCategory(qnaDto.getQnaCategory())
