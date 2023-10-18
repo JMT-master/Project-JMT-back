@@ -14,7 +14,7 @@ public interface QnaRepository extends JpaRepository<QnaEntity, String> {
     Optional<QnaEntity> findById(String qnaId);
 
     //userId(관리자 아이디)로 전체 qna 가져오기
-    List<QnaEntity> findByQnaUserId(String qnaUserId);
+    List<QnaEntity> findByMember_Userid(String userId);
 
     //category를 바탕으로 qna list를 가져오는 method
     @Query("select q from QnaEntity q where q.qnaCategory = :qnaCategory")

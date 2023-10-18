@@ -18,6 +18,7 @@ public class ChatService {
     @PostConstruct
     //의존관계 주입 완료 되면 실행 되는 코드
     private void init(){
+
         chatRooms = new LinkedHashMap<>();
     }
 
@@ -32,13 +33,14 @@ public class ChatService {
 
     //채팅방 하나 불러오기
     public ChatRoom findById(String roomId){
+
         return chatRooms.get(roomId);
     }
 
     //채팅방 생성
-    public ChatRoom createRoom(String name){
+    public List<ChatRoom> createRoom(String name){
         ChatRoom chatRoom = ChatRoom.create(name);
         chatRooms.put(chatRoom.getRoomId(), chatRoom);
-        return chatRoom;
+        return (List<ChatRoom>) chatRooms;
     }
 }
