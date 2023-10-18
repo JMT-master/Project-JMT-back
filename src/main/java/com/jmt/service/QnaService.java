@@ -54,6 +54,7 @@ public class QnaService {
     }
 
     //update 문
+    /*
     public List<QnaEntity> update(final QnaEntity qnaEntity){
         validate(qnaEntity);
 
@@ -71,6 +72,8 @@ public class QnaService {
 
         return readByUserId(qnaEntity.getMember().getUserid());
     }
+
+     */
 
     //delete문
     public List<QnaEntity> delete(final QnaEntity qnaEntity){
