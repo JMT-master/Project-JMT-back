@@ -15,7 +15,7 @@ import javax.persistence.*;
 @Table
 public class Alarm {
     @Id
-    @Column(length = 50, nullable = false)
+    @Column(nullable = false)
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String alarmId;

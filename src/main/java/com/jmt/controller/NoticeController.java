@@ -33,6 +33,7 @@ public class NoticeController {
             log.error(e.getMessage());
             return ResponseEntity.badRequest().body(entity);
         }
-
     }
+
+
 }

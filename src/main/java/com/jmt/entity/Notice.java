@@ -18,7 +18,7 @@ public class Notice {
     @Id
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    private Integer noticeId;
+    private String noticeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "notice_userid", referencedColumnName = "userid", nullable = false)
