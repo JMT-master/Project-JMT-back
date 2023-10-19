@@ -7,7 +7,6 @@ import com.jmt.service.MemberService;
 import com.jmt.service.QnaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,7 +23,7 @@ public class QnaController {
 
     @PostMapping("/write")
     public ResponseEntity<?> createQna(@RequestBody QnaDto qnaDto,
-                                       @AuthenticationPrincipal String userid){
+                                       String userid){
 
         try {
             Qna qna = QnaDto.toEntity(qnaDto);
@@ -49,7 +48,7 @@ public class QnaController {
     }
 
     @GetMapping
-    public ResponseEntity<?> readQna(@AuthenticationPrincipal String userId){
+    public ResponseEntity<?> readQna( String userId){
         try {
 //            List<QnaEntity> qnaEntities = qnaService.readByUserId(userId);
             List<Qna> qnaEntities = qnaService.read();
@@ -71,7 +70,7 @@ public class QnaController {
 
     @PutMapping
     public ResponseEntity<?> updateQna(@RequestBody QnaDto qnaDto,
-                                       @AuthenticationPrincipal String userId){
+                                       String userId){
         try {
             Qna qna = QnaDto.toEntity(qnaDto);
             qna.setMember(memberService.getMember(userId));
@@ -92,7 +91,7 @@ public class QnaController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteQna(@AuthenticationPrincipal String userId,
+    public ResponseEntity<?> deleteQna( String userId,
                                        @RequestBody QnaDto qnaDto){
         try {
             Qna qna = QnaDto.toEntity(qnaDto);
