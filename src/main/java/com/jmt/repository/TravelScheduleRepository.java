@@ -7,8 +7,6 @@ import java.util.Optional;
 
 public interface TravelScheduleRepository extends JpaRepository<TravelScheduleEntity, String> {
 
-    Optional<TravelScheduleEntity> findById(String travelId);
-
 
 
 }

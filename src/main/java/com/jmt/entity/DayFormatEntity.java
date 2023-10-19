@@ -1,7 +1,16 @@
 package com.jmt.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name="day_format")
 public class DayFormatEntity {
 
@@ -14,8 +23,8 @@ public class DayFormatEntity {
     @JoinColumn(name = "travel_id")
     private TravelScheduleEntity dayTravelId;
 
-    @Column(name="day_select")
-    private int daySelect;   //여행일정에서 몇번째 날인지ex)첫번째날 두번째날
+    @Column(name="day_count")
+    private int dayCount;   //여행일정에서 몇번째 날인지ex)첫번째날 두번째날
 
     @Column(name="day_Index")
     private int dayIndex;    //여행일정에서 각 시간별 영역의 인덱스 값
