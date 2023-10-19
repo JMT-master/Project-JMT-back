@@ -1,8 +1,8 @@
 package com.jmt.entity;
 
-import com.jmt.entity.BaseTimeEntity;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
@@ -16,6 +16,8 @@ import javax.persistence.*;
 public class QnaEntity extends BaseTimeEntity {
 
     @Id
+    @GeneratedValue(generator = "system-uuid")
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
     @Column(name = "qna_id")
     private String id;
 

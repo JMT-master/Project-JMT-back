@@ -1,8 +1,8 @@
 package com.jmt.entity;
 
-import com.jmt.entity.BaseTimeEntity;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
@@ -17,6 +17,8 @@ public class KnowledgeEntity extends BaseTimeEntity {
 
     @Id
     @Column(name = "kn_id")
+    @GeneratedValue(generator = "system-uuid")
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String id;
 
     @Column(nullable = false,
