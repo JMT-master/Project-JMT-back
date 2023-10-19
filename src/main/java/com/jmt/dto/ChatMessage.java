@@ -11,7 +11,7 @@ import lombok.Setter;
 public class ChatMessage {
 
     public enum  MessageType{
-        ENTER, TALK
+        ENTER, TALK, JOIN
     }
 
     private MessageType type;
