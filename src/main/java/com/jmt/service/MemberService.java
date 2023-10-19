@@ -1,5 +1,7 @@
 package com.jmt.service;
 
+import com.jmt.common.TokenProvidor;
+import com.jmt.dto.IdFindDto;
 import com.jmt.dto.LoginDto;
 import com.jmt.dto.MemberDto;
 import com.jmt.entity.Member;
@@ -23,8 +25,8 @@ public class MemberService {
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     @Transactional
-    public Member getMember(String username){
-        return memberRepository.findByUsername(username);
+    public Member getMember(String userid){
+        return memberRepository.findByUserid(userid);
     }
 
     // 회원가입 인증
@@ -117,11 +119,9 @@ public class MemberService {
     // 아이디 찾기
     public String findUser(IdFindDto idFindDto) {
         Member member = memberRepository.findByUsernameAndPhone(idFindDto.getUsername(), idFindDto.getPhone());
-
         if(member != null) {
             return member.getUserid();
         }
-
         return null;
     }
 

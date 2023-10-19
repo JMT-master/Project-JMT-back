@@ -3,7 +3,9 @@ package com.jmt.common;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -92,6 +94,18 @@ public class TokenProvidor {
         System.out.println("text = " + Jwts.parserBuilder().setSigningKey(ACCESS_SECRET_KEY).build().
                 parseClaimsJws(token).getBody().get("userId"));
         return Jwts.parserBuilder().setSigningKey(ACCESS_SECRET_KEY).build().parseClaimsJws(token).getBody().get("userId").toString();
+    }
+
+    public String parseJwt(HttpServletRequest request) {
+        String authorization = request.getHeader("Authorization");
+
+        System.out.println("request = " + request);
+
+        if(StringUtils.hasText(authorization) && authorization.startsWith("Bearer ")) {
+            return authorization.substring(7);
+        }
+
+        return null;
     }
 
 }

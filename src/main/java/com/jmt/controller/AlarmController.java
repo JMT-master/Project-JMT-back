@@ -1,6 +1,9 @@
 package com.jmt.controller;
 
+import antlr.Token;
+import com.jmt.common.TokenProvidor;
 import com.jmt.dto.AlarmDto;
+import com.jmt.dto.MemberDto;
 import com.jmt.entity.Alarm;
 import com.jmt.entity.Member;
 import com.jmt.repository.AlarmRepository;
@@ -12,10 +15,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
-@Controller
+@RestController
 @Slf4j
 @RequestMapping("/alarm")
 public class AlarmController {
@@ -25,11 +29,16 @@ public class AlarmController {
     @Autowired
     MemberService memberService;
 
+    @Autowired
+    TokenProvidor tokenProvidor;
+
     @PutMapping
-    public ResponseEntity<AlarmDto> regAlarm(@RequestBody AlarmDto dto){
-        String userid = "2jang@abc.com";
+    public ResponseEntity<AlarmDto> regAlarm(@RequestBody AlarmDto dto, HttpServletRequest request){
+        System.out.println("request = " + request);
+        String token = tokenProvidor.parseJwt(request);
+        System.out.println("token = " + token);
         Alarm entity = AlarmDto.toEntity(dto);
-        entity.setMember(memberService.getMember(userid));
+        entity.setMember(memberService.getMember(tokenProvidor.getUserId(token)));
         log.info("entity : " + entity);
         AlarmDto alarmDto = AlarmDto.toDto(entity);
         if(entity == null){
@@ -45,11 +54,8 @@ public class AlarmController {
     }
 
     @PostMapping
-    public ResponseEntity<List<AlarmDto>> requestAlarm(String username){
-        Member member = Member.builder()
-                .userid("2jang@abc.com")
-                .build();
-        List<Alarm> entities = alarmService.showAlarm(memberService.getMember(member.getUserid()));
+    public ResponseEntity<List<AlarmDto>> requestAlarm(@RequestBody MemberDto dto){
+        List<Alarm> entities = alarmService.showAlarm(memberService.getMember(dto.getUserid()));
 
         List<AlarmDto> entity = new ArrayList<>();
 
