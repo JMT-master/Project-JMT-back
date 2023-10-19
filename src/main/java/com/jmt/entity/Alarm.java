@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Setter
 @ToString
 @Table
-public class Alarm {
+public class Alarm extends BaseTimeEntity {
     @Id
     @Column(length = 50, nullable = false)
     @GeneratedValue(generator = "system-uuid")

@@ -27,16 +27,17 @@ public class AlarmController {
 
     @PutMapping
     public ResponseEntity<AlarmDto> regAlarm(@RequestBody AlarmDto dto){
-        String username = "이장";
+        String userid = "2jang@abc.com";
         Alarm entity = AlarmDto.toEntity(dto);
-        entity.setMember(memberService.getMember(username));
+        entity.setMember(memberService.getMember(userid));
+        log.info("entity : " + entity);
         AlarmDto alarmDto = AlarmDto.toDto(entity);
         if(entity == null){
             throw new RuntimeException("엔티티 이즈 널");
         }
         try {
             alarmService.addAlarm(entity);
-            return ResponseEntity.ok().body(alarmDto);
+            return ResponseEntity.ok().body(alarmDto    );
         }catch (Exception e){
             log.error(e.getMessage());
             return ResponseEntity.badRequest().body(alarmDto);
@@ -46,9 +47,9 @@ public class AlarmController {
     @PostMapping
     public ResponseEntity<List<AlarmDto>> requestAlarm(String username){
         Member member = Member.builder()
-                .username("이장")
+                .userid("2jang@abc.com")
                 .build();
-        List<Alarm> entities = alarmService.showAlarm(memberService.getMember(member.getUsername()));
+        List<Alarm> entities = alarmService.showAlarm(memberService.getMember(member.getUserid()));
 
         List<AlarmDto> entity = new ArrayList<>();
 

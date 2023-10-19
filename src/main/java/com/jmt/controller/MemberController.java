@@ -23,7 +23,6 @@ public class MemberController {
     public ResponseEntity<MemberDto> createMember(@RequestBody MemberDto dto){
         service.validationUser(dto.getUsername());
         Member entity = MemberDto.toEntity(dto);
-        entity.setUserid(null);
         if(entity == null){
             throw new RuntimeException("엔티티 이즈 널");
         }

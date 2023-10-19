@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Setter
 @ToString
 @Table(name = "notice")
-public class Notice {
+public class Notice extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(generator = "system-uuid")

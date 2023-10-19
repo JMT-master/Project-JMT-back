@@ -14,7 +14,7 @@ import javax.persistence.*;
 @Setter
 @ToString
 @Table
-public class MemberFile {
+public class MemberFile extends BaseTimeEntity {
 
     @Id
     @Column(length = 80)

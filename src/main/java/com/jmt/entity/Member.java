@@ -14,7 +14,7 @@ import java.util.List;
 @Entity
 @Data
 @Table
-public class Member {
+public class Member extends BaseTimeEntity {
 
     @Id
     @Column(name = "userid", unique = true, nullable = false)
