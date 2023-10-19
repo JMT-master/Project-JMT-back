@@ -25,10 +25,12 @@ public class Member {
     @Column(length = 50, nullable = false)
     private String username;
 
-    @Column(length = 50, nullable = false)
+    // password encoder로 인하여 length 변경
+    @Column(length = 500, nullable = false)
     private String password;
 
-    @Column(length = 50, nullable = false)
+    // password encoder로 인하여 length 변경
+    @Column(length = 500, nullable = false)
     private String passwordChk;
 
     @Column(length = 10, nullable = false)

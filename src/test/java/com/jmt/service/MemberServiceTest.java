@@ -1,5 +1,6 @@
 package com.jmt.service;
 
+import com.jmt.dto.IdFindDto;
 import com.jmt.dto.MemberDto;
 import com.jmt.entity.Member;
 import com.jmt.repository.MemberRepository;
@@ -91,6 +92,24 @@ class MemberServiceTest {
         System.out.println("updateId = " + updateId);
 
         assertNotEquals(result, member);
+    }
+
+    @Test
+    void memberFindIdTest() {
+        MemberDto memberDto = new MemberDto(
+                "test","홍길동","1234","1234",
+                "011111","서울시","양천구","010-2345-7891","test@naver.com","Y"
+        );
+
+        MemberDto result = memberService.create(memberDto);
+
+        IdFindDto idFindDto = new IdFindDto();
+        idFindDto.setUsername("홍길동");
+        idFindDto.setPhone("010-2345-7891");
+
+        String user = memberService.findUser(idFindDto);
+        assertEquals(user, "test");
+
     }
 
 }

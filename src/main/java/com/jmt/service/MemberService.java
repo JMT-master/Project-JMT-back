@@ -1,5 +1,7 @@
 package com.jmt.service;
 
+import com.jmt.common.TokenProvidor;
+import com.jmt.dto.IdFindDto;
 import com.jmt.dto.LoginDto;
 import com.jmt.dto.MemberDto;
 import com.jmt.entity.Member;
@@ -19,6 +21,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final TokenProvidor tokenProvidor;
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     @Transactional
@@ -57,7 +60,6 @@ public class MemberService {
         member.setPassword(encodePwd);
         member.setPasswordChk(encodePwdChk);
 
-        System.out.println("create");
         return MemberDto.toDto(memberRepository.save(member));
     }
     
@@ -79,8 +81,6 @@ public class MemberService {
         member.setPassword(encodePwd);
         member.setPasswordChk(encodePwdChk);
 
-        System.out.println("member = " + member);
-
         result.changeMember(member);
 
         return member.getUserid();
@@ -91,27 +91,41 @@ public class MemberService {
     
     // 로그인
     @Transactional
-    public LoginDto Login(LoginDto loginDto) {
+    public LoginDto login(LoginDto loginDto) {
         Optional<Member> member = memberRepository.findById(loginDto.getUserid());
 
         // Id가 Repository에 있으면
         if(member.isPresent() && passwordEncoder.matches(loginDto.getPassword(), member.get().getPassword())) {
-            // token Create
+            Member resultMember = member.get();
 
-            // LoginDto에 token 추가
+            String accessToken = tokenProvidor.createAcessToken(resultMember.getUserid());
+            String refreshToken = tokenProvidor.createRefreshToken(resultMember.getUserid());
 
-            // return LoginDto
-            return null;
+            System.out.println("acessToken = " + accessToken);
+            return LoginDto.builder()
+                    .userid(resultMember.getUserid())
+                    .email(resultMember.getEmail())
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
+                    .build();
         } else {
-            return null;
+            throw new RuntimeException("등록되지 않은 사용자입니다.");
         }
 
     }
     
-    
     // 로그 아웃
 
     // 아이디 찾기
+    public String findUser(IdFindDto idFindDto) {
+        Member member = memberRepository.findByUsernameAndPhone(idFindDto.getUsername(), idFindDto.getPhone());
+
+        if(member != null) {
+            return member.getUserid();
+        }
+
+        return null;
+    }
 
     // 비밀번호 찾기
 
