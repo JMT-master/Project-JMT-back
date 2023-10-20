@@ -14,21 +14,21 @@ import java.util.List;
 @Entity
 @Data
 @Table
-public class Member {
+public class Member extends BaseTimeEntity {
 
     @Id
     @Column(name = "userid", unique = true, nullable = false)
-//    @GeneratedValue(generator = "system-uuid")
-//    @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String userid;
 
     @Column(length = 50, nullable = false)
     private String username;
 
-    @Column(length = 50, nullable = false)
+    // password encoder로 인하여 length 변경
+    @Column(length = 2500, nullable = false)
     private String password;
 
-    @Column(length = 50, nullable = false)
+    // password encoder로 인하여 length 변경
+    @Column(length = 2500, nullable = false)
     private String passwordChk;
 
     @Column(length = 10, nullable = false)

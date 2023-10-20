@@ -13,9 +13,9 @@ import javax.persistence.*;
 @Setter
 @ToString
 @Table
-public class Alarm {
+public class Alarm extends BaseTimeEntity {
     @Id
-    @Column(length = 50, nullable = false)
+    @Column(nullable = false)
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String alarmId;
