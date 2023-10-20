@@ -1,22 +1,35 @@
 package com.jmt.dto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.jmt.entity.ChatMessage;
+import com.jmt.entity.ChatRoom;
+import com.jmt.service.ChatService;
+import lombok.*;
+import org.springframework.web.socket.WebSocketSession;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
-@Getter @Setter
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ChatRoomDto {
 
     private String roomId;
     private String roomName;
 
-    public static ChatRoomDto create(String name){
-        ChatRoomDto room = new ChatRoomDto();
-        room.roomId = UUID.randomUUID().toString();
-        room.roomName = name;
-        return room;
+    public ChatRoomDto(final ChatRoom chatRoom){
+        this.roomId = chatRoom.getRoomId();
+        this.roomName = chatRoom.getRoomName();
+    }
+
+    public static ChatRoom toEntity(final ChatRoomDto chatRoomDto){
+        return ChatRoom.builder()
+                .roomId(UUID.randomUUID().toString())
+                .roomName(chatRoomDto.getRoomName())
+                .build();
     }
 }
