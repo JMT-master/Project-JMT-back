@@ -11,6 +11,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.jmt.common.ExpiredTime.EXPIRED_TIMEOUT;
+
 @Service
 public class TokenProvidor {
     // jmt-final, algorithm : HS256
@@ -33,7 +35,7 @@ public class TokenProvidor {
                 .setHeader(headerMap)                                               // Header
                 .claim("userId", userId)                                         // payload 정보
                 .setIssuedAt(now)                                                   // 발행시간
-                .setExpiration(new Date(System.currentTimeMillis()+1*(1000*60*60))) // 만료기간
+                .setExpiration(new Date(System.currentTimeMillis()+EXPIRED_TIMEOUT)) // 만료기간
                 .signWith(SignatureAlgorithm.HS512, ACCESS_SECRET_KEY)              // algorithem
                 .compact();
     }

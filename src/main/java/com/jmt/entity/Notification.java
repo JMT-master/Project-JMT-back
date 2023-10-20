@@ -13,23 +13,23 @@ import javax.persistence.*;
 @Setter
 @ToString
 @Table
-public class Alarm extends BaseTimeEntity {
+public class Notification extends BaseTimeEntity {
     @Id
     @Column(nullable = false)
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    private String alarmId;
+    private String notificationId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "alarm_userid", referencedColumnName = "userid", nullable = false)
+    @JoinColumn(name = "notification_userid", referencedColumnName = "userid", nullable = false)
     private Member member;
 
     @Column(length = 1200, nullable = false)
-    private String alarmContent;
+    private String notificationContent;
 
-    private String alarmUrl;
+    private String notificationUrl;
     @Column(length = 1, nullable = false)
-    private String alarmYn;
+    private String notificationYn;
 
 
 }
