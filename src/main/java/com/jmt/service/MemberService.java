@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import javax.servlet.http.Cookie;
 import java.util.Optional;
 
 @Service
@@ -122,9 +123,11 @@ public class MemberService {
             String accessToken = tokenProvidor.createAcessToken(resultMember.getUserid());
             String refreshToken = tokenProvidor.createRefreshToken(resultMember.getUserid());
 
+            Cookie accessCookie = tokenProvidor.createCookie("ACCESS_TOKEN", accessToken);
+
             return LoginDto.builder()
                     .userid(resultMember.getUserid())
-                    .accessToken(accessToken)
+                    .accessToken(accessCookie)
                     .refreshToken(refreshToken)
                     .build();
         } else {

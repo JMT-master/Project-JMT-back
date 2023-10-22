@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.function.EntityResponse;
 
+import javax.servlet.http.HttpServletResponse;
+
 @RestController
 @RequestMapping("/")
 @Slf4j
@@ -85,10 +87,12 @@ public class MemberController {
     }
 
     @PostMapping("login")
-    public ResponseEntity<LoginDto> loginMember(@RequestBody LoginDto loginDto) {
+    public ResponseEntity<LoginDto> loginMember(@RequestBody LoginDto loginDto, HttpServletResponse response) {
         LoginDto login = null;
         try{
             login = service.login(loginDto);
+            response.addCookie(login.getAccessToken());
+            System.out.println("login = " + login);
             return ResponseEntity.ok().body(login);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
