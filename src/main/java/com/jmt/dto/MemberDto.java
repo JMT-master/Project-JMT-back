@@ -22,8 +22,6 @@ public class MemberDto {
 
     private String phone;
 
-    private String email;
-
     private String adminYn;
 
     public MemberDto(Member member) {
@@ -35,7 +33,6 @@ public class MemberDto {
         this.address = member.getAddress();
         this.addressDetail = member.getAddressDetail();
         this.phone = member.getPhone();
-        this.email = member.getEmail();
         this.adminYn = member.getAdminYn();
     }
 
@@ -51,7 +48,6 @@ public class MemberDto {
                     .address(dto.getAddress())
                     .addressDetail(dto.getAddressDetail())
                     .phone(dto.getPhone())
-                    .email(dto.getEmail())
                     .adminYn(dto.getAdminYn())
                     .build();
         } catch (Exception e) {
@@ -71,7 +67,6 @@ public class MemberDto {
                     .address(entity.getAddress())
                     .addressDetail(entity.getAddressDetail())
                     .phone(entity.getPhone())
-                    .email(entity.getEmail())
                     .adminYn(entity.getAdminYn())
                     .build();
         } catch (Exception e) {

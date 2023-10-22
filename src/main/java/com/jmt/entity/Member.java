@@ -17,10 +17,10 @@ import java.util.List;
 public class Member {
 
     @Id
-    @Column(name = "userid", unique = true, nullable = false)
+    @Column(name = "userid", nullable = false)
 //    @GeneratedValue(generator = "system-uuid")
 //    @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    private String userid;
+    private String userid; // email
 
     @Column(length = 50, nullable = false)
     private String username;
@@ -42,11 +42,8 @@ public class Member {
     @Column(length = 150, nullable = false)
     private String addressDetail;
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 20, unique = true, nullable = false)
     private String phone;
-
-    @Column()
-    private String email;
 
     @Column(length = 1 , nullable = false)
     private String adminYn;
@@ -60,7 +57,6 @@ public class Member {
         address = member.getAddress();
         addressDetail = member.getAddressDetail();
         phone = member.getPhone();
-        email = member.getEmail();
         adminYn = member.getAdminYn();
     }
 }

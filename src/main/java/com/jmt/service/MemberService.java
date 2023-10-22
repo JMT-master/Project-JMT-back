@@ -4,6 +4,7 @@ import com.jmt.common.TokenProvidor;
 import com.jmt.dto.IdFindDto;
 import com.jmt.dto.LoginDto;
 import com.jmt.dto.MemberDto;
+import com.jmt.dto.PasswordFindDto;
 import com.jmt.entity.Member;
 import com.jmt.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,18 +33,33 @@ public class MemberService {
     // 회원가입 인증
     // check : false(회원가입), true(수정)
     private void validate(Member member, boolean check) {
-        // 비어있을 때
-        if(member == null || member.getUserid() == null ||
-           member.getUsername() == null || member.getPassword() == null || member.getPasswordChk() == null ||
-        member.getZipcode() == null || member.getAddress() == null || member.getAddressDetail() == null ||
-        member.getPhone() == null || member.getAdminYn() == null) {
-            throw new RuntimeException("invalid argument");
+        try {
+            // 비어있을 때
+            if(member == null || member.getUserid() == null ||
+                    member.getUsername() == null || member.getPassword() == null || member.getPasswordChk() == null ||
+                    member.getZipcode() == null || member.getAddress() == null || member.getAddressDetail() == null ||
+                    member.getPhone() == null || member.getAdminYn() == null) {
+                throw new RuntimeException("invalid argument");
 
-        } else if(!member.getPassword().equals(member.getPasswordChk())) {
-            throw new RuntimeException("비밀번호 다름");
-        }else if(!check && memberRepository.existsById(member.getUserid())) {
-            throw new RuntimeException("이미 등록된 사용자가 있습니다.");
+            } else if(!member.getPassword().equals(member.getPasswordChk())) {
+                throw new RuntimeException("비밀번호 다름");
+            }else if(!check && memberRepository.existsById(member.getUserid())) {
+                throw new RuntimeException("이미 등록된 사용자가 있습니다.");
+            }
+        } catch (RuntimeException e) {
+            throw new RuntimeException("invalid argument");
         }
+
+
+    }
+
+    // 이메일 중복 확인
+    @Transactional
+    public Member emailValidate(MemberDto memberDto) {
+        Member member;
+        member = memberRepository.findById(memberDto.getUserid()).orElseThrow(EntityNotFoundException::new);
+
+        return member;
     }
 
     // 회원 가입
@@ -51,7 +67,11 @@ public class MemberService {
     public MemberDto create(MemberDto memberDto) {
         Member member = MemberDto.toEntity(memberDto);
 
+        System.out.println("memberDto = " + memberDto);
+        System.out.println("member = " + member);
+
         validate(member,false);
+        System.out.println("다음???????");
 
         // password 암호화
         String encodePwd = passwordEncoder.encode(member.getPassword());
@@ -60,6 +80,7 @@ public class MemberService {
         member.setPassword(encodePwd);
         member.setPasswordChk(encodePwdChk);
 
+        System.out.println("-------------------------------------");
         return MemberDto.toDto(memberRepository.save(member));
     }
     
@@ -101,10 +122,8 @@ public class MemberService {
             String accessToken = tokenProvidor.createAcessToken(resultMember.getUserid());
             String refreshToken = tokenProvidor.createRefreshToken(resultMember.getUserid());
 
-            System.out.println("acessToken = " + accessToken);
             return LoginDto.builder()
                     .userid(resultMember.getUserid())
-                    .email(resultMember.getEmail())
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
                     .build();
@@ -117,7 +136,7 @@ public class MemberService {
     // 로그 아웃
 
     // 아이디 찾기
-    public String findUser(IdFindDto idFindDto) {
+    public String findUserId(IdFindDto idFindDto) {
         Member member = memberRepository.findByUsernameAndPhone(idFindDto.getUsername(), idFindDto.getPhone());
 
         if(member != null) {
@@ -128,6 +147,16 @@ public class MemberService {
     }
 
     // 비밀번호 찾기
+    // 이메일 인증 보낸 후 맞으면 재확인 하게끔 설정
+//    public String findPassWord(PasswordFindDto passwordFindDto) {
+//        Member member = memberRepository.findByUseridAndEmail(passwordFindDto.getId(), passwordFindDto.getEmail());
+//
+//        if(member != null) {
+//            return member.getPassword();
+//        }
+//
+//        return null;
+//    }
 
     // 메일 인증
     

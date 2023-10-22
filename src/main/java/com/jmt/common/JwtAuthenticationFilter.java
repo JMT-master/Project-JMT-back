@@ -23,29 +23,18 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final TokenProvidor tokenProvidor;
+    public static String tokenUserId = "";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String jwt = parseJwt(request);
+        String jwt = tokenProvidor.parseJwt(request);
 
         if(jwt != null && tokenProvidor.validateAccessToken(jwt)) {
-            String userId = tokenProvidor.getUserId(jwt);
-            Authentication auth = new UsernamePasswordAuthenticationToken(userId,null, AuthorityUtils.NO_AUTHORITIES); // AuthorityUtils.NO_AUTHORITIES : 권한 비교가 없는 것
+            tokenUserId = tokenProvidor.getUserId(jwt);
+            Authentication auth = new UsernamePasswordAuthenticationToken(tokenUserId,null, AuthorityUtils.NO_AUTHORITIES); // AuthorityUtils.NO_AUTHORITIES : 권한 비교가 없는 것
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
 
         filterChain.doFilter(request,response); // 다음 Filter로 넘겨줘야하므로 사용
-    }
-
-    private String parseJwt(HttpServletRequest request) {
-        String authorization = request.getHeader("Authorization");
-
-        System.out.println("request = " + request);
-
-        if(StringUtils.hasText(authorization) && authorization.startsWith("Bearer ")) {
-            return authorization.substring(7);
-        }
-
-        return null;
     }
 }
