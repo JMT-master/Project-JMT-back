@@ -44,7 +44,12 @@ public class NotificationController {
 
     @PostMapping("/send")
     public ResponseEntity<NotificationDto> sendData(@AuthenticationPrincipal String userid, @RequestBody NotificationDto dto) {
-        Notification notification = NotificationDto.toEntity(dto);
+//        Notification notification = NotificationDto.toEntity(dto);
+        Notification notification = Notification.builder()
+                .notificationContent("test")
+                .notificationUrl("abc")
+                .notificationYn("Y")
+                .build();
         NotificationDto notificationDto = NotificationDto.toDto(notification);
         emitterService.send(userid, "message",notification);
         return ResponseEntity.ok().body(notificationDto);
