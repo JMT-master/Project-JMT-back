@@ -14,13 +14,12 @@ import javax.persistence.*;
 @Setter
 @ToString
 @Table
-public class MemberFile {
+public class MemberFile extends BaseTimeEntity {
 
     @Id
-    @Column(length = 80)
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    private Integer fileId;
+    private String fileId;
 
     @Column(nullable = false)
     private String fileName;
