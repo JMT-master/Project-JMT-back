@@ -24,8 +24,6 @@ import java.util.List;
 @RequestMapping("/notification")
 @RequiredArgsConstructor
 public class NotificationController {
-
-
     private final NotificationService notificationService;
 
     private final MemberService memberService;
@@ -44,12 +42,17 @@ public class NotificationController {
         return checkEmitter;
     }
 
-//    @PostMapping("/send")
-//    public void sendData(@AuthenticationPrincipal String userid) {
-//        emitterService.notify(userid, notificationService.showNotification(userid));
-//    }
+    @PostMapping("/send")
+    public ResponseEntity<NotificationDto> sendData(@AuthenticationPrincipal String userid, @RequestBody NotificationDto dto) {
+        Notification notification = NotificationDto.toEntity(dto);
+        NotificationDto notificationDto = NotificationDto.toDto(notification);
+        emitterService.send(userid, "message",notification);
+        return ResponseEntity.ok().body(notificationDto);
+    }
+
+    //Todo : 등록시 알람 갱신되는지 확인하기
     @PutMapping
-    public ResponseEntity<NotificationDto> regNotification(@RequestBody NotificationDto dto){
+    public ResponseEntity<NotificationDto> regNotification(NotificationDto dto){
         Notification entity = NotificationDto.toEntity(dto);
 //        entity.setMember(memberService.getMember(tokenProvidor.getUserId(token)));
         log.info("entity : " + entity);

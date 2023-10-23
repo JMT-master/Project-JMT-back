@@ -1,14 +1,12 @@
 package com.jmt.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 public class LoginDto {
     private String userid;   // 자체 로그인시 사용할 ID
     private String email;    // 소셜 로그인시 email 사용

@@ -7,6 +7,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -24,7 +25,15 @@ public class EmitterRepository {
     public void save(String userid, SseEmitter emitter){
         System.out.println("save의 이미터 : " + userid + emitter);
         emitters.put(userid, emitter);
+    }
 
+    public Map<String,SseEmitter> findAllEmitterByMemberId(String userid){
+        return emitters.entrySet().stream()
+                //emitter 저장시 맵<유저 아이디, 이미터> 타입으로 저장
+                //등록된 emiiters중에 유저 아이디가 userid와 똑같이 시작하거나 끝나는 이미터를 제외하고 필터
+                .filter(entry -> entry.getKey().startsWith(userid))
+                //필터링 된 이미터에서 키와 밸류를 가져와 맵으로 만들어 반환
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
 //    해당되는 id 이미터를 제거
