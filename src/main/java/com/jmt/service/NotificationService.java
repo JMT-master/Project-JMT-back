@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.io.IOException;
 import java.util.List;
 
 import static com.jmt.common.ExpiredTime.EXPIRED_TIMEOUT;
@@ -43,16 +44,4 @@ public class NotificationService {
         repository.delete(getNotification(alarmId));
     }
 
-//    -이미터-
-
-    public SseEmitter createEmitter(String userid){
-        SseEmitter emitter = new SseEmitter(EXPIRED_TIMEOUT);
-        emitterRepository.save(userid, emitter);
-        // Emitter가 완료될 때(모든 데이터가 성공적으로 전송된 상태) Emitter를 삭제한다.
-        emitter.onCompletion(() -> emitterRepository.deleteById(userid));
-        // Emitter가 타임아웃 되었을 때(지정된 시간동안 어떠한 이벤트도 전송되지 않았을 때) Emitter를 삭제한다.
-        emitter.onTimeout(() -> emitterRepository.deleteById(userid));
-
-        return emitter;
-    }
 }

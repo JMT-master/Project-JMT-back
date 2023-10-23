@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Repository
 @RequiredArgsConstructor
 public class EmitterRepository {
+    //이미터는 DB가 따로 필요하지 않기 때문에 JPA를 이용한 인터페이스가 아닌 클래스로 작성
 
     //모든 이미터를 저장하는 ConcurrentHashMap
     // ConcurrentHashMap은 읽기 작업에는 여러 쓰레드가 동시에 읽을 수 있지만,
@@ -21,7 +22,9 @@ public class EmitterRepository {
 //    userid - 사용자의 아이디
 //    emitter - 이벤트 emitter
     public void save(String userid, SseEmitter emitter){
+        System.out.println("save의 이미터 : " + userid + emitter);
         emitters.put(userid, emitter);
+
     }
 
 //    해당되는 id 이미터를 제거
