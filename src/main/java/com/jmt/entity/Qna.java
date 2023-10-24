@@ -22,8 +22,11 @@ public class Qna extends BaseTimeEntity {
     private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "qna_userid", referencedColumnName = "userid", nullable = false)
+    @JoinColumn(name = "qna_userid", referencedColumnName = "userid")
     private Member member;
+
+    @Column
+    private Long qnaNum;
 
     @Column(nullable = false)
     private String qnaTitle;
@@ -34,10 +37,10 @@ public class Qna extends BaseTimeEntity {
     @ColumnDefault("0")
     private int qnaView;
 
-    @Column(length =  50, nullable = false)
+    @Column(length =  50)
     private String qnaCategory;
 
-    @Column(nullable = false)
+    @Column
     private String qnaFileKey;
 
 }

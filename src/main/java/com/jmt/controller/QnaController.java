@@ -5,14 +5,17 @@ import com.jmt.dto.ResponseDto;
 import com.jmt.entity.Qna;
 import com.jmt.service.MemberService;
 import com.jmt.service.QnaService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@Slf4j
 @RequestMapping("/qna")
 public class QnaController {
 
@@ -21,18 +24,19 @@ public class QnaController {
     @Autowired
     private MemberService memberService;
 
-    @PostMapping("/write")
-    public ResponseEntity<?> createQna(@RequestBody QnaDto qnaDto,
-                                       String userid){
-
+    @PostMapping("/admin/write")
+    public ResponseEntity<?> createQna(@RequestBody QnaDto qnaDto, @AuthenticationPrincipal String userid){
         try {
             Qna qna = QnaDto.toEntity(qnaDto);
-            qna.setId(null);
+            log.info("userId : " +userid);
+//            qna.setQnaColNum(null);
+            qna.updateModDate();
             qna.setMember(memberService.getMember(userid));
-
             List<Qna> qnaEntities = qnaService.create(qna);
+//            log.info("qnaEntities : {}",qnaEntities);
             List<QnaDto> qnaDtos = qnaEntities.stream().map(QnaDto::new)
                     .collect(Collectors.toList());
+            log.info("qnaDtos : {}",qnaDtos);
             ResponseDto<QnaDto> response = ResponseDto.<QnaDto>builder()
                     .data(qnaDtos)
                     .build();
@@ -44,11 +48,10 @@ public class QnaController {
                     .build();
             return ResponseEntity.badRequest().body(responseDto);
         }
-
     }
 
     @GetMapping
-    public ResponseEntity<?> readQna( String userId){
+    public ResponseEntity<?> readQna(String userId){
         try {
 //            List<QnaEntity> qnaEntities = qnaService.readByUserId(userId);
             List<Qna> qnaEntities = qnaService.read();
@@ -68,13 +71,14 @@ public class QnaController {
         }
     }
 
-    @PutMapping
+    @PostMapping("/admin/{qnaNum}")
     public ResponseEntity<?> updateQna(@RequestBody QnaDto qnaDto,
-                                       String userId){
+                                      @PathVariable Long qnaNum
+                                      ,@AuthenticationPrincipal String userId){
         try {
             Qna qna = QnaDto.toEntity(qnaDto);
             qna.setMember(memberService.getMember(userId));
-
+            qna.updateModDate();
             List<Qna> qnaEntities = qnaService.update(qna);
             List<QnaDto> qnaDtos = qnaEntities.stream().map(QnaDto::new).collect(Collectors.toList());
             ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
@@ -90,8 +94,8 @@ public class QnaController {
         }
     }
 
-    @DeleteMapping
-    public ResponseEntity<?> deleteQna( String userId,
+    @DeleteMapping("/admin")
+    public ResponseEntity<?> deleteQna(@AuthenticationPrincipal String userId,
                                        @RequestBody QnaDto qnaDto){
         try {
             Qna qna = QnaDto.toEntity(qnaDto);
@@ -104,6 +108,55 @@ public class QnaController {
                     .build();
             return ResponseEntity.ok().body(responseDto);
         }catch (Exception e){
+            String error = e.getMessage();
+            ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
+                    .error(error)
+                    .build();
+            return ResponseEntity.badRequest().body(responseDto);
+        }
+    }
+
+    //특정 qna 읽어오는 mapping
+    @GetMapping("/{id}")
+    public ResponseEntity<?> readByQnaColNum(@PathVariable Long id,
+                                             @AuthenticationPrincipal String userid) {
+        try {
+            // qnaColNum을 사용하여 데이터베이스에서 해당 Qna를 검색
+            List<Qna> qnas = qnaService.readByQnaColNum(id);
+            log.info("qnas : {}", qnas);
+            List<QnaDto> qnaDtos = qnas.stream().map(QnaDto::new)
+                    .collect(Collectors.toList());
+            log.info("qnaDtos {} : ",qnaDtos);
+            ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
+                    .data(qnaDtos)
+                    .build();
+            return ResponseEntity.ok().body(responseDto);
+        } catch (Exception e) {
+            String error = e.getMessage();
+            ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
+                    .error(error)
+                    .build();
+            return ResponseEntity.badRequest().body(responseDto);
+        }
+    }
+
+    //업데이트를 위한 getMapping
+    //특정 qna 읽어오는 mapping
+    @GetMapping("/admin/{id}")
+    public ResponseEntity<?> readForUpdate(@PathVariable Long id,
+                                             @AuthenticationPrincipal String userid) {
+        try {
+            // qnaColNum을 사용하여 데이터베이스에서 해당 Qna를 검색
+            List<Qna> qnas = qnaService.readByQnaColNum(id);
+            log.info("qnas : {}", qnas);
+            List<QnaDto> qnaDtos = qnas.stream().map(QnaDto::new)
+                    .collect(Collectors.toList());
+            log.info("qnaDtos {} : ",qnaDtos);
+            ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
+                    .data(qnaDtos)
+                    .build();
+            return ResponseEntity.ok().body(responseDto);
+        } catch (Exception e) {
             String error = e.getMessage();
             ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
                     .error(error)
