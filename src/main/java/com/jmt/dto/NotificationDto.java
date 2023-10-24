@@ -4,10 +4,12 @@ import com.jmt.entity.Notification;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @Builder
+@ToString
 public class NotificationDto {
     String id;
     String content;

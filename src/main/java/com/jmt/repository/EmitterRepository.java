@@ -23,11 +23,12 @@ public class EmitterRepository {
 //    userid - 사용자의 아이디
 //    emitter - 이벤트 emitter
     public void save(String userid, SseEmitter emitter){
-        System.out.println("save의 이미터 : " + userid + emitter);
+        System.out.println("save의 이미터 : " + userid + "의 이미터 : " + emitter);
         emitters.put(userid, emitter);
     }
 
     public Map<String,SseEmitter> findAllEmitterByMemberId(String userid){
+        System.out.println("emitters = " + emitters);
         return emitters.entrySet().stream()
                 //emitter 저장시 맵<유저 아이디, 이미터> 타입으로 저장
                 //등록된 emiiters중에 유저 아이디가 userid와 똑같이 시작하거나 끝나는 이미터를 제외하고 필터
