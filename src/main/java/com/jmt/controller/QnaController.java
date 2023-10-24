@@ -76,7 +76,10 @@ public class QnaController {
                                       @PathVariable Long qnaNum
                                       ,@AuthenticationPrincipal String userId){
         try {
-            Qna qna = QnaDto.toEntity(qnaDto);
+            Qna qna = qnaService.readByQnaNum(qnaNum);
+            qna.setQnaCategory(qnaDto.getQnaCategory());
+            qna.setQnaTitle(qnaDto.getQnaTitle());
+            qna.setQnaContent(qnaDto.getQnaContent());
             qna.setMember(memberService.getMember(userId));
             qna.updateModDate();
             List<Qna> qnaEntities = qnaService.update(qna);
@@ -122,7 +125,7 @@ public class QnaController {
                                              @AuthenticationPrincipal String userid) {
         try {
             // qnaColNum을 사용하여 데이터베이스에서 해당 Qna를 검색
-            List<Qna> qnas = qnaService.readByQnaColNum(id);
+            List<Qna> qnas = qnaService.readByQnaListColNum(id);
             log.info("qnas : {}", qnas);
             List<QnaDto> qnaDtos = qnas.stream().map(QnaDto::new)
                     .collect(Collectors.toList());
@@ -147,11 +150,9 @@ public class QnaController {
                                              @AuthenticationPrincipal String userid) {
         try {
             // qnaColNum을 사용하여 데이터베이스에서 해당 Qna를 검색
-            List<Qna> qnas = qnaService.readByQnaColNum(id);
-            log.info("qnas : {}", qnas);
+            List<Qna> qnas = qnaService.readByQnaListColNum(id);
             List<QnaDto> qnaDtos = qnas.stream().map(QnaDto::new)
                     .collect(Collectors.toList());
-            log.info("qnaDtos {} : ",qnaDtos);
             ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
                     .data(qnaDtos)
                     .build();

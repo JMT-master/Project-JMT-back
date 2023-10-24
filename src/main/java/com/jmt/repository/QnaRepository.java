@@ -22,4 +22,6 @@ public interface QnaRepository extends JpaRepository<Qna, String> {
 
     //qnaColNum으로 하나 가져오기
     List<Qna> findByQnaNum(Long qnaNum);
+
+    Qna findQnaByQnaNum(Long qnaNum);
 }

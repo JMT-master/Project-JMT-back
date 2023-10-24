@@ -46,8 +46,13 @@ public class QnaService {
     }
 
     //qna 상세 페이지 들어가는 용 read
-    public List<Qna> readByQnaColNum(Long qnaNum){
+    public List<Qna> readByQnaListColNum(Long qnaNum){
         return qnaRepository.findByQnaNum(qnaNum);
+    }
+
+    //값 하나 가져오기
+    public Qna readByQnaNum(Long qnaNum){
+        return qnaRepository.findQnaByQnaNum(qnaNum);
     }
 
     //일반 유저용 read
