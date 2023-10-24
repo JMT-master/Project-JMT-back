@@ -17,25 +17,22 @@ import javax.persistence.*;
 public class MemberFile {
 
     @Id
-    @Column(length = 80)
-    @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    private Integer fileId;
+    private Integer fileId; // 고유 아이디
 
     @Column(nullable = false)
-    private String fileName;
+    private String fileName; // 파일 이름
 
     @Column(nullable = false)
-    private String fileSize;
+    private Long fileSize; // 파일 크기
+
+//    @Column(nullable = false)
+//    private String fileClientPath; // view에서 받아오는 Path???
 
     @Column(nullable = false)
-    private String fileClientPath;
+    private String fileServerPath; // 서버 Path
 
-    @Column(nullable = false)
-    private String fileServerPath;
-
-    @Column(nullable = false)
-    private String fileMaxSize;
+//    @Column(nullable = false)
+//    private String fileMaxSize; // 최대크기???
 
     @Column(nullable = false)
     private String fileCategory;

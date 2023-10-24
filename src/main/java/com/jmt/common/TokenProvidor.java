@@ -115,7 +115,6 @@ public class TokenProvidor {
         cookie.setPath("/"); // 모든 곳에서 쿠키 열람이 가능하도록 설정
         cookie.setMaxAge(60*60); // 60분
 
-
         return cookie;
     }
 

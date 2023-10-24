@@ -22,8 +22,11 @@ public class Member {
 //    @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String userid; // email
 
+    @Column(nullable = false)
+    private String email; // email
+
     @Column(length = 50, nullable = false)
-    private String username;
+    private String username; // 이름
 
     // password encoder로 인하여 length 변경
     @Column(length = 500, nullable = false)
@@ -47,6 +50,9 @@ public class Member {
 
     @Column(length = 1 , nullable = false)
     private String adminYn;
+
+    @Column(length = 1 , nullable = false)
+    private String socialYn;
 
     public void changeMember(Member member) {
         userid = member.getUserid();

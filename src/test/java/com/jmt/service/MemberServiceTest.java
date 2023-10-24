@@ -27,8 +27,8 @@ class MemberServiceTest {
     @Test
     void memberCreate() {
         MemberDto memberDto = new MemberDto(
-                "test","홍길동","1234","1234",
-                "011111","서울시","양천구","010-2345-7891","Y"
+                "test","홍길동","abc@abc.com","1234","1234",
+                "011111","서울시","양천구","010-2345-7891","Y","N"
         );
 
         MemberDto result = memberService.create(memberDto);
@@ -71,8 +71,8 @@ class MemberServiceTest {
     @Test
     void update() {
         MemberDto memberDto = new MemberDto(
-                "test","홍길동","1234","1234",
-                "011111","서울시","양천구","010-2345-7891","Y"
+                "test","홍길동","abc@abc.com","1234","1234",
+                "011111","서울시","양천구","010-2345-7891","Y","N"
         );
 
         MemberDto result = memberService.create(memberDto);
@@ -80,8 +80,8 @@ class MemberServiceTest {
         System.out.println("create 후 result = " + result);
 
         MemberDto memberDto2 = new MemberDto(
-                "test","홍길동2","1234","1234",
-                "11111","서울시zzz","양fff천구","010-2345-7891","Y"
+                "test","홍길동2","abc@abc.com","1234","1234",
+                "11111","서울시zzz","양fff천구","010-2345-7891","Y","N"
         );
 
         String updateId = memberService.update(memberDto2);
@@ -98,8 +98,8 @@ class MemberServiceTest {
     @Test
     void memberFindIdTest() {
         MemberDto memberDto = new MemberDto(
-                "test","홍길동","1234","1234",
-                "011111","서울시","양천구","010-2345-7891","Y"
+                "test","홍길동","abc@abc.com","1234","1234",
+                "011111","서울시","양천구","010-2345-7891","Y","N"
         );
 
         MemberDto result = memberService.create(memberDto);

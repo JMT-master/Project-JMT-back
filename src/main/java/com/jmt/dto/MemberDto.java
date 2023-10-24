@@ -12,6 +12,7 @@ public class MemberDto {
     private String userid;
 
     private String username;
+    private String email;
 
     private String password;
     private String passwordChk;
@@ -23,10 +24,12 @@ public class MemberDto {
     private String phone;
 
     private String adminYn;
+    private String socialYn;
 
     public MemberDto(Member member) {
         this.userid = member.getUserid();
         this.username = member.getUsername();
+        this.email = member.getEmail();
         this.password = member.getPassword();
         this.passwordChk = member.getPasswordChk();
         this.zipcode = member.getZipcode();
@@ -34,6 +37,7 @@ public class MemberDto {
         this.addressDetail = member.getAddressDetail();
         this.phone = member.getPhone();
         this.adminYn = member.getAdminYn();
+        this.socialYn = member.getSocialYn();
     }
 
     // Dto -> Entity
@@ -42,6 +46,7 @@ public class MemberDto {
             return Member.builder()
                     .userid(dto.getUserid())
                     .username(dto.getUsername())
+                    .email(dto.getEmail())
                     .password(dto.getPassword())
                     .passwordChk(dto.getPasswordChk())
                     .zipcode(dto.getZipcode())
@@ -49,6 +54,7 @@ public class MemberDto {
                     .addressDetail(dto.getAddressDetail())
                     .phone(dto.getPhone())
                     .adminYn(dto.getAdminYn())
+                    .socialYn(dto.getSocialYn())
                     .build();
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
@@ -61,6 +67,7 @@ public class MemberDto {
             return MemberDto.builder()
                     .userid(entity.getUserid())
                     .username(entity.getUsername())
+                    .email(entity.getEmail())
                     .password(entity.getPassword())
                     .passwordChk(entity.getPasswordChk())
                     .zipcode(entity.getZipcode())
@@ -68,6 +75,7 @@ public class MemberDto {
                     .addressDetail(entity.getAddressDetail())
                     .phone(entity.getPhone())
                     .adminYn(entity.getAdminYn())
+                    .socialYn(entity.getSocialYn())
                     .build();
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
