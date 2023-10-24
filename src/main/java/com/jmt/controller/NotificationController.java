@@ -160,12 +160,11 @@ public class NotificationController {
         log.debug("이미터 유저 확인 : " + userid);
         SseEmitter checkEmitter= emitterService.subscribe(userid);
         log.debug("emitter sub chekc : " + checkEmitter);
-
         return checkEmitter;
     }
 
     @PostMapping("/send")
-    public void sendData(
+    public ResponseEntity<NotificationDto> sendData(
             @AuthenticationPrincipal String userid,
             @RequestBody NotificationDto dto) {
         Notification notification = NotificationDto.toEntity(dto);
@@ -173,9 +172,10 @@ public class NotificationController {
         Member member = memberService.getMember(userid);
         notification.setMember(member);
 
-        emitterService.send(userid,notification);
+        emitterService.send(userid,dto);
 
         NotificationDto notificationDto = NotificationDto.toDto(notification);
+        return ResponseEntity.ok().body(dto);
     }
 
     //Todo : 등록시 알람 갱신되는지 확인하기

@@ -37,7 +37,7 @@ public class EmitterService {
             if (notify != null) {
                 //ToDo : 보낼때 Notification형태로 보내지지 않음 혹은 프론트에서 받지 못함 . 고쳐야함
                 log.debug("notifyChk" + notify);
-                sendToClient(userid, "sse", notify);
+                sendToClient(userid, "sse", "등록됨");
             } else {
                 log.debug("notifyChk" + notify);
 //                sendToClient(userid, "User = " + userid + "의 이미터 생성됨");
@@ -54,8 +54,8 @@ public class EmitterService {
 
     사용을 위해 만든 메소드, 다른 서비스 로직에서 sendToClient 메소드를 이용해 유저에게 데이터를 전송
      */
-    public void send(@AuthenticationPrincipal String userid, Notification entity) {
-        Notification notification = notificationRepository.save(entity);
+    public void send(@AuthenticationPrincipal String userid, Object data) {
+//        Notification notification = notificationRepository.save(entity);
 
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllEmitterByMemberId(userid);
         log.debug("send sseEmitters" + sseEmitters);
@@ -64,7 +64,7 @@ public class EmitterService {
                 (key, emitter) -> {
                     log.debug("sseEmitters.forEach send to client!");
                     emitterRepository.save(key, emitter);
-                    sendToClient(key, "send", notification);
+                    sendToClient(key, "sse", data);
                 }
         );
 
@@ -77,7 +77,7 @@ public class EmitterService {
     사용자 아이디를 기반으로 이미터를 생성함.
     */
     private SseEmitter createEmitter(String userid) {
-        SseEmitter emitter = new SseEmitter(EXPIRED_TIMEOUT);
+        SseEmitter emitter = new SseEmitter((long) (1000 * 60 * 100));
 
         emitterRepository.save(userid, emitter);
         log.debug("createEmitter의 이미터 : " + emitter);
@@ -85,7 +85,7 @@ public class EmitterService {
         emitter.onCompletion(() -> emitterRepository.deleteById(userid));
         // Emitter가 타임아웃 되었을 때(지정된 시간동안 어떠한 이벤트도 전송되지 않았을 때) Emitter를 삭제한다.
         emitter.onTimeout(() -> emitterRepository.deleteById(userid));
-//        sendToClient(userid,"Emitter Created. Userid = " + userid);
+        sendToClient(userid,"sse","Emitter Created. Userid = " + userid);
         return emitter;
     }
 
