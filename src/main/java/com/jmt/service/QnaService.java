@@ -45,6 +45,11 @@ public class QnaService {
         return qnaRepository.findByMember_Userid(userId);
     }
 
+    //qna 상세 페이지 들어가는 용 read
+    public List<Qna> readByQnaColNum(Long qnaNum){
+        return qnaRepository.findByQnaNum(qnaNum);
+    }
+
     //일반 유저용 read
     public List<Qna> read(){
         return qnaRepository.findAll();

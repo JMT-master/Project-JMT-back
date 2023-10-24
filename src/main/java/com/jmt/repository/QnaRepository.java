@@ -20,5 +20,6 @@ public interface QnaRepository extends JpaRepository<Qna, String> {
     @Query("select q from Qna q where q.qnaCategory = :qnaCategory")
     List<Qna> findByQnaCategory(@Param("qnaCategory") String qnaCategory);
 
-
+    //qnaColNum으로 하나 가져오기
+    List<Qna> findByQnaNum(Long qnaNum);
 }
