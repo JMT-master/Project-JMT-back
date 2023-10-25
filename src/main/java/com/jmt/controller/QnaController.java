@@ -1,5 +1,6 @@
 package com.jmt.controller;
 
+import com.jmt.common.PagingUtil;
 import com.jmt.dto.QnaDto;
 import com.jmt.dto.ResponseDto;
 import com.jmt.entity.Qna;
@@ -51,25 +52,31 @@ public class QnaController {
     }
 
     @GetMapping
-    public ResponseEntity<?> readQna(String userId){
-        try {
-//            List<QnaEntity> qnaEntities = qnaService.readByUserId(userId);
-            List<Qna> qnaEntities = qnaService.read();
-            List<QnaDto> qnaDtos = qnaEntities.stream().map(QnaDto::new)
-                    .collect(Collectors.toList());
-            ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
-                    .data(qnaDtos)
-                    .build();
-            return ResponseEntity.ok().body(responseDto);
-        }catch (Exception e){
-            String error = e.getMessage();
-            System.out.println("error = " + error);
-            ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
-                    .error(error)
-                    .build();
-            return ResponseEntity.badRequest().body(responseDto);
-        }
+    public ResponseEntity<?> getQnaList(@RequestParam(defaultValue = "1") int page,
+                                                         @RequestParam(defaultValue = "10") int size) {
+        PagingUtil<QnaDto> qnaPaging = qnaService.getQnaList(page, size);
+        return ResponseEntity.ok().body(qnaPaging);
     }
+
+//    @GetMapping
+//    public ResponseEntity<?> readQna(String userId){
+//        try {
+//            List<Qna> qnaEntities = qnaService.read();
+//            List<QnaDto> qnaDtos = qnaEntities.stream().map(QnaDto::new)
+//                    .collect(Collectors.toList());
+//            ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
+//                    .data(qnaDtos)
+//                    .build();
+//            return ResponseEntity.ok().body(responseDto);
+//        }catch (Exception e){
+//            String error = e.getMessage();
+//            System.out.println("error = " + error);
+//            ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
+//                    .error(error)
+//                    .build();
+//            return ResponseEntity.badRequest().body(responseDto);
+//        }
+//    }
 
     @PostMapping("/admin/{qnaNum}")
     public ResponseEntity<?> updateQna(@RequestBody QnaDto qnaDto,
@@ -82,6 +89,7 @@ public class QnaController {
             qna.setQnaContent(qnaDto.getQnaContent());
             qna.setMember(memberService.getMember(userId));
             qna.updateModDate();
+            log.info("qna : {} ",qna);
             List<Qna> qnaEntities = qnaService.update(qna);
             List<QnaDto> qnaDtos = qnaEntities.stream().map(QnaDto::new).collect(Collectors.toList());
             ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
@@ -99,9 +107,9 @@ public class QnaController {
 
     @DeleteMapping("/admin")
     public ResponseEntity<?> deleteQna(@AuthenticationPrincipal String userId,
-                                       @RequestBody QnaDto qnaDto){
+                                       @RequestBody Long qnaNum){
         try {
-            Qna qna = QnaDto.toEntity(qnaDto);
+            Qna qna = qnaService.readByQnaNum(qnaNum);
             qna.setMember(memberService.getMember(userId));
             List<Qna> qnaEntities = qnaService.delete(qna);
             List<QnaDto> qnaDtos = qnaEntities.stream().map(QnaDto::new)

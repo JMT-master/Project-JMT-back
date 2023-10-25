@@ -1,15 +1,22 @@
 package com.jmt.service;
 
+import com.jmt.common.PagingInfo;
+import com.jmt.common.PagingUtil;
+import com.jmt.dto.QnaDto;
 import com.jmt.entity.Qna;
 import com.jmt.repository.QnaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -70,6 +77,8 @@ public class QnaService {
         validate(qnaEntity);
 
         final Optional<Qna> original = qnaRepository.findById(qnaEntity.getId());
+
+//        original.set(akl)
         original.ifPresent(qna -> {
             qna.setQnaTitle(qnaEntity.getQnaTitle());
             qna.setQnaContent(qnaEntity.getQnaContent());
@@ -89,15 +98,32 @@ public class QnaService {
     //delete문
     public List<Qna> delete(final Qna qna){
         validate(qna);
-
         try {
             qnaRepository.delete(qna);
         }catch (Exception e){
             log.error("delete 도중 error 발생...", qna.getId(), e);
             throw new RuntimeException("delete 도중 error 발생함..." + qna.getId());
         }
-
         return readByUserId(qna.getMember().getUserid());
+    }
+
+    //paging을 이용한 QnaList 가져오기
+    public PagingUtil<QnaDto> getQnaList(int page, int size){
+        PageRequest pageRequest = PageRequest.of(page -1, size, Sort.by(Sort.Order.desc("regDate")));
+        Page<Qna> qnaPage = qnaRepository.findAll(pageRequest);
+
+        List<QnaDto> qnaDtoList = qnaPage.getContent().stream()
+                .map(QnaDto::new).collect(Collectors.toList());
+
+        PagingInfo pagingInfo = new PagingInfo();
+        pagingInfo.setCurrentPage(qnaPage.getNumber()+1);
+        pagingInfo.setPageSize(qnaPage.getSize());
+        pagingInfo.setTotalPages(qnaPage.getTotalPages());
+        pagingInfo.setTotalItems(qnaPage.getTotalElements());
+        pagingInfo.setHasNext(qnaPage.hasNext());
+        pagingInfo.setHasPrevious(qnaPage.hasPrevious());
+
+        return new PagingUtil<>(qnaDtoList, pagingInfo);
     }
 
 }
