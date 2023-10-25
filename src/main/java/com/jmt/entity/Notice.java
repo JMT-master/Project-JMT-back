@@ -13,12 +13,12 @@ import javax.persistence.*;
 @Setter
 @ToString
 @Table(name = "notice")
-public class Notice {
+public class Notice extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    private Integer noticeId;
+    private String noticeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "notice_userid", referencedColumnName = "userid", nullable = false)
