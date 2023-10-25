@@ -26,7 +26,7 @@ public class QnaController {
     private MemberService memberService;
 
     @PostMapping("/admin/write")
-    public ResponseEntity<?> createQna(@RequestBody QnaDto qnaDto, @AuthenticationPrincipal String userid){
+    public ResponseEntity<?> createQna(@RequestBody QnaDto qnaDto, @CookieValue String userid){
         try {
             Qna qna = QnaDto.toEntity(qnaDto);
             log.info("userId : " +userid);
@@ -55,6 +55,7 @@ public class QnaController {
     public ResponseEntity<?> getQnaList(@RequestParam(defaultValue = "1") int page,
                                                          @RequestParam(defaultValue = "10") int size) {
         PagingUtil<QnaDto> qnaPaging = qnaService.getQnaList(page, size);
+
         return ResponseEntity.ok().body(qnaPaging);
     }
 
@@ -81,7 +82,7 @@ public class QnaController {
     @PostMapping("/admin/{qnaNum}")
     public ResponseEntity<?> updateQna(@RequestBody QnaDto qnaDto,
                                       @PathVariable Long qnaNum
-                                      ,@AuthenticationPrincipal String userId){
+                                      ,@CookieValue String userId){
         try {
             Qna qna = qnaService.readByQnaNum(qnaNum);
             qna.setQnaCategory(qnaDto.getQnaCategory());
@@ -106,7 +107,7 @@ public class QnaController {
     }
 
     @DeleteMapping("/admin")
-    public ResponseEntity<?> deleteQna(@AuthenticationPrincipal String userId,
+    public ResponseEntity<?> deleteQna(@CookieValue String userId,
                                        @RequestBody Long qnaNum){
         try {
             Qna qna = qnaService.readByQnaNum(qnaNum);
@@ -129,8 +130,7 @@ public class QnaController {
 
     //특정 qna 읽어오는 mapping
     @GetMapping("/{id}")
-    public ResponseEntity<?> readByQnaColNum(@PathVariable Long id,
-                                             @AuthenticationPrincipal String userid) {
+    public ResponseEntity<?> readByQnaColNum(@PathVariable Long id) {
         try {
             // qnaColNum을 사용하여 데이터베이스에서 해당 Qna를 검색
             List<Qna> qnas = qnaService.readByQnaListColNum(id);
@@ -155,7 +155,7 @@ public class QnaController {
     //특정 qna 읽어오는 mapping
     @GetMapping("/admin/{id}")
     public ResponseEntity<?> readForUpdate(@PathVariable Long id,
-                                             @AuthenticationPrincipal String userid) {
+                                           @CookieValue String userid) {
         try {
             // qnaColNum을 사용하여 데이터베이스에서 해당 Qna를 검색
             List<Qna> qnas = qnaService.readByQnaListColNum(id);

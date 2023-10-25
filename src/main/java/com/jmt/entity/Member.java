@@ -22,7 +22,7 @@ public class Member {
 //    @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String userid; // email
 
-    @Column(nullable = false)
+    @Column
     private String email; // email
 
     @Column(length = 50, nullable = false)
@@ -48,10 +48,10 @@ public class Member {
     @Column(length = 20, unique = true, nullable = false)
     private String phone;
 
-    @Column(length = 1 , nullable = false)
+    @Column(length = 1 )
     private String adminYn;
 
-    @Column(length = 1 , nullable = false)
+    @Column(length = 1 )
     private String socialYn;
 
     public void changeMember(Member member) {
