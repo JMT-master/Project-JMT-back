@@ -15,7 +15,6 @@ import javax.persistence.*;
 @ToString
 @Table
 public class MemberFile {
-
     @Id
     private Integer fileId; // 고유 아이디
 
@@ -25,14 +24,8 @@ public class MemberFile {
     @Column(nullable = false)
     private Long fileSize; // 파일 크기
 
-//    @Column(nullable = false)
-//    private String fileClientPath; // view에서 받아오는 Path???
-
     @Column(nullable = false)
     private String fileServerPath; // 서버 Path
-
-//    @Column(nullable = false)
-//    private String fileMaxSize; // 최대크기???
 
     @Column(nullable = false)
     private String fileCategory;
@@ -40,7 +33,4 @@ public class MemberFile {
     @Comment("파일이 포함된 게시글 아이디")
     @Column(nullable = false)
     private String fileCommonId;
-
-
-
 }

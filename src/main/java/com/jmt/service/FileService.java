@@ -23,6 +23,7 @@ public class FileService {
     @Value("${itemImgLocation}")
     private String itemImageLocation;
 
+    // 파일, KN/QNA/NOTICE, 글번호
     public List<String> fileUpload(List<MultipartFile> multipartFiles, Board fileIdName, int count) {
         String divideBoard = "";
         String fileKey = "";
