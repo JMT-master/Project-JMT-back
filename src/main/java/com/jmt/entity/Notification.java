@@ -24,6 +24,8 @@ public class Notification extends BaseTimeEntity {
     @JoinColumn(name = "notification_userid", referencedColumnName = "userid", nullable = false)
     private Member member;
 
+    @Column(name = "notify_num")
+    private Long notifyIdx;
     @Column(length = 1200, nullable = false)
     private String notificationContent;
 

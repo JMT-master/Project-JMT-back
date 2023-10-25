@@ -171,16 +171,17 @@ public class NotificationController {
         log.debug("MemberTest Userid : " + userid);
         Member member = memberService.getMember(userid);
         notification.setMember(member);
+        notificationService.addNotification(notification);
 
         emitterService.send(userid,dto);
 
         NotificationDto notificationDto = NotificationDto.toDto(notification);
-        return ResponseEntity.ok().body(dto);
+        return ResponseEntity.ok().body(notificationDto);
     }
 
     //Todo : 등록시 알람 갱신되는지 확인하기
     @PutMapping
-    public ResponseEntity<NotificationDto> regNotification(NotificationDto dto){
+    public ResponseEntity<NotificationDto> regNotification(@RequestBody NotificationDto dto){
         Notification entity = NotificationDto.toEntity(dto);
 //        entity.setMember(memberService.getMember(tokenProvidor.getUserId(token)));
         log.info("entity : " + entity);
