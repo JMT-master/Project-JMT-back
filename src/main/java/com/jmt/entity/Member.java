@@ -14,21 +14,26 @@ import java.util.List;
 @Entity
 @Data
 @Table
-public class Member extends BaseTimeEntity {
+public class Member {
 
     @Id
-    @Column(name = "userid", unique = true, nullable = false)
-    private String userid;
+    @Column(name = "userid", nullable = false)
+//    @GeneratedValue(generator = "system-uuid")
+//    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    private String userid; // email
+
+    @Column
+    private String email; // email
 
     @Column(length = 50, nullable = false)
-    private String username;
+    private String username; // 이름
 
     // password encoder로 인하여 length 변경
-    @Column(length = 2500, nullable = false)
+    @Column(length = 500, nullable = false)
     private String password;
 
     // password encoder로 인하여 length 변경
-    @Column(length = 2500, nullable = false)
+    @Column(length = 500, nullable = false)
     private String passwordChk;
 
     @Column(length = 10, nullable = false)
@@ -40,14 +45,14 @@ public class Member extends BaseTimeEntity {
     @Column(length = 150, nullable = false)
     private String addressDetail;
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 20, unique = true, nullable = false)
     private String phone;
 
-    @Column()
-    private String email;
-
-    @Column(length = 1 , nullable = false)
+    @Column(length = 1 )
     private String adminYn;
+
+    @Column(length = 1 )
+    private String socialYn;
 
     public void changeMember(Member member) {
         userid = member.getUserid();
@@ -58,7 +63,6 @@ public class Member extends BaseTimeEntity {
         address = member.getAddress();
         addressDetail = member.getAddressDetail();
         phone = member.getPhone();
-        email = member.getEmail();
         adminYn = member.getAdminYn();
     }
 }
