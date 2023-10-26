@@ -29,6 +29,7 @@ public class DayFormatService {
         dto.setDayCount(dayCount);
         DayFormatEntity ff = DayFormatDto.toEntity(dto);
         ff.setDayTravelId(travelScheduleEntity);
+
         DayFormatEntity save = dayFormatRepository.save(ff);
 
         return DayFormatDto.toDto(save);

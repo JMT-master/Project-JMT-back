@@ -9,6 +9,7 @@ import com.jmt.repository.TravelScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 
 @Service
 @Transactional
@@ -21,6 +22,13 @@ public class TravelScheduleService {
         TravelScheduleEntity save = travelScheduleRepository.save(TravelScheduleDto.toEntity(dto));
 
         return TravelScheduleDto.toDto(save);
+    }
+
+    public TravelScheduleDto scheduleSelect(TravelScheduleDto dto){
+
+        TravelScheduleEntity select = travelScheduleRepository.findByTravelid(dto.getTravelId());
+
+        return TravelScheduleDto.toDto(select);
     }
 
 }

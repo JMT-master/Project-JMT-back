@@ -6,7 +6,7 @@ import com.jmt.entity.QnaEntity;
 import com.jmt.service.QnaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+//import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,7 +21,7 @@ public class QnaController {
 
     @PostMapping("/write")
     public ResponseEntity<?> createQna(@RequestBody QnaDto qnaDto,
-                                       @AuthenticationPrincipal String userid){
+                                        String userid){
 
         try {
             QnaEntity qnaEntity = QnaDto.toEntity(qnaDto);
@@ -45,7 +45,7 @@ public class QnaController {
 
     }
 
-    @GetMapping
-
+//    @GetMapping
+//
 
 }
