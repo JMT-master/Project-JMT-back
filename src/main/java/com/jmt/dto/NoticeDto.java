@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @Builder
@@ -13,10 +15,13 @@ public class NoticeDto {
     private String category;
     private String content;
     private String title;
+    private LocalDateTime regDate;
+    private LocalDateTime modDate;
 
     public static Notice toEntity(final NoticeDto dto) {
         try {
             return Notice.builder()
+                    .noticeIdx(dto.getIdx())
                     .noticeTitle(dto.getTitle())
                     .noticeCategory(dto.getCategory())
                     .noticeContent(dto.getContent())
@@ -33,6 +38,8 @@ public class NoticeDto {
                     .category(entity.getNoticeCategory())
                     .content(entity.getNoticeContent())
                     .idx(entity.getNoticeIdx())
+                    .regDate(entity.getRegDate())
+                    .modDate(entity.getModDate())
                     .build();
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());

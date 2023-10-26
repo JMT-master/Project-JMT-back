@@ -42,7 +42,7 @@ public class NoticeController {
         NoticeDto noticeDto = NoticeDto.toDto(noticeService.readNotice(idx));
         return ResponseEntity.ok().body(noticeDto);
     }
-    @PostMapping("/send")
+    @PostMapping("/write")
     public ResponseEntity<NoticeDto> writeNotice(@AuthenticationPrincipal String userid, @RequestBody NoticeDto dto) {
         Notice entity = NoticeDto.toEntity(dto);
         if (entity == null) {
@@ -52,7 +52,6 @@ public class NoticeController {
         NoticeDto noticeDto = NoticeDto.toDto(entity);
         try {
             noticeService.createNotice(entity);
-            emitterService.send(userid,dto);
             return ResponseEntity.ok().body(noticeDto);
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -69,13 +68,13 @@ public class NoticeController {
         return ResponseEntity.ok().body(notice);
     }
 
-    @PostMapping("/delete")
-    public ResponseEntity<List<NoticeDto>> deleteNotice(long idx){
-        Notice targetNotice = noticeService.readNotice(idx);
+    @DeleteMapping
+    public ResponseEntity<List<NoticeDto>> deleteNotice(@RequestBody NoticeDto dto){
+        log.debug("Notice Delete idx : " + dto.getIdx());
+        Notice targetNotice = noticeService.readNotice(dto.getIdx());
+        log.debug("Notice Delete : " + targetNotice);
         noticeService.deleteNotice(targetNotice);
         return readAll();
 
     }
-
-
 }
