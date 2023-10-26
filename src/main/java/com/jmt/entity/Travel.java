@@ -2,6 +2,8 @@ package com.jmt.entity;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter @Setter
@@ -9,6 +11,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Travel {
-    private List<TravelPlan> travelPlans;
+
+    private LocalDateTime startTime;
+    private String place;
+    private String placeName;
+    //    private String imageUrl;
 }
 

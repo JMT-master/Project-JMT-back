@@ -60,63 +60,54 @@ public class PdfService {
 //        System.out.println("들어옴?");
 //
 //        document.close();
-
-        try {
-            PDDocument document = new PDDocument();
-            String fontFilePath = "D:\\final-project\\final\\src\\main\\resources\\static\\NanumGothic-Regular.ttf";
-            try {
-                InputStream fontStream = Files.newInputStream(Paths.get(fontFilePath));
-                List<TravelPlan> travelPlans = travel.getTravelPlans();
-
-                for (int i = 0; i < travelPlans.size(); i++) {
-                    TravelPlan travelPlan = travelPlans.get(i);
-                    PDPage page = new PDPage();
-                    document.addPage(page);
-
-                    // Build content as a string for debugging
-                    StringBuilder contentBuilder = new StringBuilder();
-                    contentBuilder.append("시간 : ").append(travelPlan.getStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd :HH:mm"))).append("\n");
-                    contentBuilder.append("장소 : ").append(travelPlan.getPlace()).append("\n");
-                    contentBuilder.append("장소 이름 : ").append(travelPlan.getPlaceName());
-
-                    // Print content for debugging
-                    System.out.println("Content for Page " + (i + 1) + ":\n" + contentBuilder.toString());
-
-                    try {
-                        PDPageContentStream contentStream = new PDPageContentStream(document, page);
-
-//                        if (i == 0) {
-//                        }
-                        contentStream.beginText();
-                        contentStream.setFont(PDType0Font.load(document, fontStream), 12);
-                        contentStream.newLineAtOffset(100, 700);
-                        contentStream.showText("시간 : " + travelPlan.getStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd :HH:mm")));
-                        contentStream.newLine();
-                        contentStream.showText("장소 : " + travelPlan.getPlace());
-                        contentStream.newLine();
-                        contentStream.showText("장소 이름 : " + travelPlan.getPlaceName());
-                        contentStream.endText();
-                        contentStream.close();
-
-//                        if (i == travelPlans.size()) {
-//                        }
-                    } catch (Exception e) {
-                        String error = e.getMessage();
-                        System.out.println("for문 도중 error = " + error);
-                    }
-                }
-                fontStream.close();
-                document.save("D:\\my_pdf.pdf");
-                document.close();
-            } catch (Exception e) {
-                String error = e.getMessage();
-                System.out.println(" for문 바깥 error  = " + error);
-            }
-        } catch (Exception e) {
-            String error = e.getMessage();
-            System.out.println(" 마지막 error  = " + error);
-        }
-        return byteArrayOutputStream;
+//
+//        try {
+//            PDDocument document = new PDDocument();
+//            try {
+//                List<TravelPlan> travelPlans = travel.getTravelPlans();
+//
+//                for (int i = 0; i < travelPlans.size(); i++) {
+//                    TravelPlan travelPlan = travelPlans.get(i);
+//                    PDPage page = new PDPage();
+//                    document.addPage(page);
+//
+//                    // Build content as a string for debugging
+//                    StringBuilder contentBuilder = new StringBuilder();
+//                    contentBuilder.append("시간 : ").append(travelPlan.getStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd :HH:mm"))).append("\n");
+//                    contentBuilder.append("장소 : ").append(travelPlan.getPlace()).append("\n");
+//                    contentBuilder.append("장소 이름 : ").append(travelPlan.getPlaceName());
+//
+//                    // Print content for debugging
+//                    System.out.println("Content for Page " + (i + 1) + ":\n" + contentBuilder.toString());
+//
+//                    try {
+//                        PDPageContentStream contentStream = new PDPageContentStream(document, page);
+//                        contentStream.beginText();
+//                        contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+//                        contentStream.newLineAtOffset(100, 700);
+//                        contentStream.showText("시간 : " + travelPlan.getStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd :HH:mm")));
+//                        contentStream.newLine();
+//                        contentStream.showText("장소 : " + travelPlan.getPlace());
+//                        contentStream.newLine();
+//                        contentStream.showText("장소 이름 : " + travelPlan.getPlaceName());
+//                        contentStream.endText();
+//                        contentStream.close();
+//                    } catch (Exception e) {
+//                        String error = e.getMessage();
+//                        System.out.println("for문 도중 error = " + error);
+//                    }
+//                }
+//                document.save("C:\\travel-plan.pdf");
+//                document.close();
+//            } catch (Exception e) {
+//                String error = e.getMessage();
+//                System.out.println(" for문 바깥 error  = " + error);
+//            }
+//        } catch (Exception e) {
+//            String error = e.getMessage();
+//            System.out.println(" 마지막 error  = " + error);
+//        }
+        return null;
     }
 
 }
