@@ -12,6 +12,7 @@ public class MemberDto {
     private String userid;
 
     private String username;
+    private String email;
 
     private String password;
     private String passwordChk;
@@ -22,21 +23,21 @@ public class MemberDto {
 
     private String phone;
 
-    private String email;
-
     private String adminYn;
+    private String socialYn;
 
     public MemberDto(Member member) {
         this.userid = member.getUserid();
         this.username = member.getUsername();
+        this.email = member.getEmail();
         this.password = member.getPassword();
         this.passwordChk = member.getPasswordChk();
         this.zipcode = member.getZipcode();
         this.address = member.getAddress();
         this.addressDetail = member.getAddressDetail();
         this.phone = member.getPhone();
-        this.email = member.getEmail();
         this.adminYn = member.getAdminYn();
+        this.socialYn = member.getSocialYn();
     }
 
     // Dto -> Entity
@@ -45,14 +46,15 @@ public class MemberDto {
             return Member.builder()
                     .userid(dto.getUserid())
                     .username(dto.getUsername())
+                    .email(dto.getEmail())
                     .password(dto.getPassword())
                     .passwordChk(dto.getPasswordChk())
                     .zipcode(dto.getZipcode())
                     .address(dto.getAddress())
                     .addressDetail(dto.getAddressDetail())
                     .phone(dto.getPhone())
-                    .email(dto.getEmail())
                     .adminYn(dto.getAdminYn())
+                    .socialYn(dto.getSocialYn())
                     .build();
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
@@ -65,14 +67,15 @@ public class MemberDto {
             return MemberDto.builder()
                     .userid(entity.getUserid())
                     .username(entity.getUsername())
+                    .email(entity.getEmail())
                     .password(entity.getPassword())
                     .passwordChk(entity.getPasswordChk())
                     .zipcode(entity.getZipcode())
                     .address(entity.getAddress())
                     .addressDetail(entity.getAddressDetail())
                     .phone(entity.getPhone())
-                    .email(entity.getEmail())
                     .adminYn(entity.getAdminYn())
+                    .socialYn(entity.getSocialYn())
                     .build();
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());

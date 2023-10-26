@@ -2,6 +2,7 @@ package com.jmt.service;
 
 import com.jmt.dto.IdFindDto;
 import com.jmt.dto.MemberDto;
+import com.jmt.dto.PasswordFindDto;
 import com.jmt.entity.Member;
 import com.jmt.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -26,8 +27,8 @@ class MemberServiceTest {
     @Test
     void memberCreate() {
         MemberDto memberDto = new MemberDto(
-                "test","홍길동","1234","1234",
-                "011111","서울시","양천구","010-2345-7891","test@naver.com","Y"
+                "test","홍길동","abc@abc.com","1234","1234",
+                "011111","서울시","양천구","010-2345-7891","Y","N"
         );
 
         MemberDto result = memberService.create(memberDto);
@@ -70,8 +71,8 @@ class MemberServiceTest {
     @Test
     void update() {
         MemberDto memberDto = new MemberDto(
-                "test","홍길동","1234","1234",
-                "011111","서울시","양천구","010-2345-7891","test@naver.com","Y"
+                "test","홍길동","abc@abc.com","1234","1234",
+                "011111","서울시","양천구","010-2345-7891","Y","N"
         );
 
         MemberDto result = memberService.create(memberDto);
@@ -79,8 +80,8 @@ class MemberServiceTest {
         System.out.println("create 후 result = " + result);
 
         MemberDto memberDto2 = new MemberDto(
-                "test","홍길동2","1234","1234",
-                "11111","서울시zzz","양fff천구","010-2345-7891","test@naver.com","Y"
+                "test","홍길동2","abc@abc.com","1234","1234",
+                "11111","서울시zzz","양fff천구","010-2345-7891","Y","N"
         );
 
         String updateId = memberService.update(memberDto2);
@@ -97,8 +98,8 @@ class MemberServiceTest {
     @Test
     void memberFindIdTest() {
         MemberDto memberDto = new MemberDto(
-                "test","홍길동","1234","1234",
-                "011111","서울시","양천구","010-2345-7891","test@naver.com","Y"
+                "test","홍길동","abc@abc.com","1234","1234",
+                "011111","서울시","양천구","010-2345-7891","Y","N"
         );
 
         MemberDto result = memberService.create(memberDto);
@@ -107,9 +108,27 @@ class MemberServiceTest {
         idFindDto.setUsername("홍길동");
         idFindDto.setPhone("010-2345-7891");
 
-        String user = memberService.findUser(idFindDto);
+        String user = memberService.findUserId(idFindDto);
         assertEquals(user, "test");
 
     }
+
+//    @Test
+//    void memberFindPasswordTest() {
+//        MemberDto memberDto = new MemberDto(
+//                "test","홍길동","1234","1234",
+//                "011111","서울시","양천구","010-2345-7891","Y"
+//        );
+//
+//        MemberDto result = memberService.create(memberDto);
+//
+//        PasswordFindDto passwordFindDto = new PasswordFindDto();
+//        passwordFindDto.setId(memberDto.getUserid());
+//
+//        String pwd = memberService.findPassWord(passwordFindDto);
+//        assertEquals(pwd, "1234");
+//
+//    }
+
 
 }

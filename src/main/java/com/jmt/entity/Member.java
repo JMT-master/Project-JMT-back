@@ -16,16 +16,19 @@ import java.util.List;
 @Setter
 @ToString
 @Table
-public class Member extends BaseTimeEntity {
+public class Member {
 
     @Id
-    @Column(name = "userid", unique = true, nullable = false)
+    @Column(name = "userid", nullable = false)
 //    @GeneratedValue(generator = "system-uuid")
 //    @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    private String userid;
+    private String userid; // email
+
+    @Column
+    private String email; // email
 
     @Column(length = 50, nullable = false)
-    private String username;
+    private String username; // 이름
 
     // password encoder로 인하여 length 변경
     @Column(length = 500, nullable = false)
@@ -44,14 +47,14 @@ public class Member extends BaseTimeEntity {
     @Column(length = 150, nullable = false)
     private String addressDetail;
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 20, unique = true, nullable = false)
     private String phone;
 
-    @Column()
-    private String email;
-
-    @Column(length = 1 , nullable = false)
+    @Column(length = 1 )
     private String adminYn;
+
+    @Column(length = 1 )
+    private String socialYn;
 
     public void changeMember(Member member) {
         userid = member.getUserid();
@@ -62,7 +65,6 @@ public class Member extends BaseTimeEntity {
         address = member.getAddress();
         addressDetail = member.getAddressDetail();
         phone = member.getPhone();
-        email = member.getEmail();
         adminYn = member.getAdminYn();
     }
 }

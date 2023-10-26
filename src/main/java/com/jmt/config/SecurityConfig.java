@@ -28,9 +28,9 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/login/**", "/", "/destination/**", "/curator",
-                        "/selectSchedule", "/travelSchedule", "/traffic", "/knowledge",
+                        "/selectSchedule", "/travelSchedule", "/traffic", "/knowledge/**",
                         "/knowledgeDetail/**", "/noticeBoard/**", "/qnABoard/**",
-                        "/joinUser", "/notification/**").permitAll(); // 리소스 접근 인증 절차 없이 허용
+                        "/joinUser", "/notification/**", "/ws/chat", "/ws/**").permitAll(); // 리소스 접근 인증 절차 없이 허용
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

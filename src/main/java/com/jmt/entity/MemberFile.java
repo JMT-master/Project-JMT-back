@@ -14,27 +14,18 @@ import javax.persistence.*;
 @Setter
 @ToString
 @Table
-public class MemberFile extends BaseTimeEntity {
-
+public class MemberFile {
     @Id
-    @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    private String fileId;
+    private Integer fileId; // 고유 아이디
 
     @Column(nullable = false)
-    private String fileName;
+    private String fileName; // 파일 이름
 
     @Column(nullable = false)
-    private String fileSize;
+    private Long fileSize; // 파일 크기
 
     @Column(nullable = false)
-    private String fileClientPath;
-
-    @Column(nullable = false)
-    private String fileServerPath;
-
-    @Column(nullable = false)
-    private String fileMaxSize;
+    private String fileServerPath; // 서버 Path
 
     @Column(nullable = false)
     private String fileCategory;
@@ -42,7 +33,4 @@ public class MemberFile extends BaseTimeEntity {
     @Comment("파일이 포함된 게시글 아이디")
     @Column(nullable = false)
     private String fileCommonId;
-
-
-
 }

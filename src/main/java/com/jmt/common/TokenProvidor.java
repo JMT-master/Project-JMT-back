@@ -5,6 +5,7 @@ import io.jsonwebtoken.io.Decoders;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
@@ -35,7 +36,7 @@ public class TokenProvidor {
                 .setHeader(headerMap)                                               // Header
                 .claim("userId", userId)                                         // payload 정보
                 .setIssuedAt(now)                                                   // 발행시간
-                .setExpiration(new Date(System.currentTimeMillis()+EXPIRED_TIMEOUT)) // 만료기간
+                .setExpiration(new Date(System.currentTimeMillis()+1*(1000*60*60))) // 만료기간 60분
                 .signWith(SignatureAlgorithm.HS512, ACCESS_SECRET_KEY)              // algorithem
                 .compact();
     }
@@ -61,6 +62,7 @@ public class TokenProvidor {
 
     public Boolean validateAccessToken(String token) {
         try {
+            System.out.println("token !!!!!!!!!!!!!!!! = " + token);
             Jwts.parserBuilder().setSigningKey(ACCESS_SECRET_KEY).build().
                     parseClaimsJws(token);
 
@@ -101,13 +103,22 @@ public class TokenProvidor {
     public String parseJwt(HttpServletRequest request) {
         String authorization = request.getHeader("Authorization");
 
-        System.out.println("request = " + request);
-
         if(StringUtils.hasText(authorization) && authorization.startsWith("Bearer ")) {
             return authorization.substring(7);
         }
 
         return null;
+    }
+
+    public Cookie createCookie(String name, String value) {
+        Cookie cookie = new Cookie(name,value);
+        cookie.setDomain("localhost");
+//        cookie.setHttpOnly(true); // XSS와 같은 공격을 차단하기 위해 만든 Option, 자바스크립트에서 방어
+        cookie.setSecure(true); // 네트워크에서 직접적으로 가로채는 것을 막는 방법
+        cookie.setPath("/"); // 모든 곳에서 쿠키 열람이 가능하도록 설정
+        cookie.setMaxAge(60*60); // 60분
+
+        return cookie;
     }
 
 }
