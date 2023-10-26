@@ -28,7 +28,7 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/login/**", "/", "/destination/**", "/curator",
-                        "/selectSchedule", "/travelSchedule", "/traffic", "/knowledge",
+                        "/selectSchedule", "/travelSchedule", "/traffic", "/knowledge/**",
                         "/knowledgeDetail/**", "/noticeBoard/**", "/qnABoard/**",
                         "/joinUser", "/alarm", "/ws/chat", "/ws/**").permitAll(); // 리소스 접근 인증 절차 없이 허용
 
