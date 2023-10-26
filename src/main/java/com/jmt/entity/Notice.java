@@ -36,7 +36,7 @@ public class Notice extends BaseTimeEntity {
     @Column(length = 6500, nullable = false)
     private String noticeContent;
 
-    @Column(nullable = false)
+    @Column
     private String noticeFileKey;
 
 }
