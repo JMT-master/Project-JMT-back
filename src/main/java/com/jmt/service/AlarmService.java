@@ -26,8 +26,8 @@ public class AlarmService {
 
     @Transactional
     public List<Alarm> showAlarm(Member member){
-        log.info("AlarmTest :" + repository.findAlarmsByMember_Userid(member.getUserid()));
-        return repository.findAlarmsByMember_Userid(member.getUserid());
+        log.info("AlarmTest :" + repository.findAlarmsByMember_Userid(member.getEmail()));
+        return repository.findAlarmsByMember_Userid(member.getEmail());
     }
 
     @Transactional

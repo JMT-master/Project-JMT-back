@@ -18,11 +18,11 @@ public class Member {
 
     @Id
     @Column(name = "userid", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 //    @GeneratedValue(generator = "system-uuid")
 //    @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    private String userid; // email
+    private Long userid; // email
 
-    @Column
     private String email; // email
 
     @Column(length = 50, nullable = false)

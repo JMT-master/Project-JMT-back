@@ -26,13 +26,14 @@ public class QnaController {
     private MemberService memberService;
 
     @PostMapping("/admin/write")
-    public ResponseEntity<?> createQna(@RequestBody QnaDto qnaDto, @CookieValue String userid){
+    public ResponseEntity<?> createQna(@RequestBody QnaDto qnaDto, @AuthenticationPrincipal String userid){
         try {
             Qna qna = QnaDto.toEntity(qnaDto);
             log.info("userId : " +userid);
 //            qna.setQnaColNum(null);
             qna.updateModDate();
             qna.setMember(memberService.getMember(userid));
+            log.info("qna.getmember : {}", qna.getMember());
             List<Qna> qnaEntities = qnaService.create(qna);
 //            log.info("qnaEntities : {}",qnaEntities);
             List<QnaDto> qnaDtos = qnaEntities.stream().map(QnaDto::new)
@@ -82,7 +83,7 @@ public class QnaController {
     @PostMapping("/admin/{qnaNum}")
     public ResponseEntity<?> updateQna(@RequestBody QnaDto qnaDto,
                                       @PathVariable Long qnaNum
-                                      ,@CookieValue String userId){
+                                      ,@AuthenticationPrincipal String userId){
         try {
             Qna qna = qnaService.readByQnaNum(qnaNum);
             qna.setQnaCategory(qnaDto.getQnaCategory());
@@ -107,7 +108,7 @@ public class QnaController {
     }
 
     @DeleteMapping("/admin")
-    public ResponseEntity<?> deleteQna(@CookieValue String userId,
+    public ResponseEntity<?> deleteQna(@AuthenticationPrincipal String userId,
                                        @RequestBody Long qnaNum){
         try {
             Qna qna = qnaService.readByQnaNum(qnaNum);
@@ -155,7 +156,7 @@ public class QnaController {
     //특정 qna 읽어오는 mapping
     @GetMapping("/admin/{id}")
     public ResponseEntity<?> readForUpdate(@PathVariable Long id,
-                                           @CookieValue String userid) {
+                                           @AuthenticationPrincipal String userid) {
         try {
             // qnaColNum을 사용하여 데이터베이스에서 해당 Qna를 검색
             List<Qna> qnas = qnaService.readByQnaListColNum(id);

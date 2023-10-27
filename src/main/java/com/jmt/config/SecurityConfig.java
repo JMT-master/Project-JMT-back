@@ -30,7 +30,11 @@ public class SecurityConfig {
                 .antMatchers("/login/**", "/", "/destination/**", "/curator",
                         "/selectSchedule", "/travelSchedule", "/traffic", "/knowledge/**",
                         "/knowledgeDetail/**", "/noticeBoard/**", "/qnABoard/**",
+<<<<<<< HEAD
                         "/joinUser", "/alarm", "/ws/chat", "/ws/**", "/travel/**").permitAll(); // 리소스 접근 인증 절차 없이 허용
+=======
+                        "/joinUser", "/alarm", "/ws/chat", "/ws/**", "/travel/**", "/travel/generate-pdf").permitAll(); // 리소스 접근 인증 절차 없이 허용
+>>>>>>> f546c4a249469579bb1c70d9506b6c214590bf2e
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

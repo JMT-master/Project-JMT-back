@@ -28,27 +28,33 @@ public class MemberService {
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     @Transactional
     public Member getMember(String userid){
-        return memberRepository.findByUserid(userid);
+        log.info("userid : {}", userid);
+        return memberRepository.findByEmail(userid).get();
     }
 
     // 회원가입 인증
     // check : false(회원가입), true(수정)
     private void validate(Member member, boolean check) {
         try {
+            System.out.println("member = " + member);
             // 비어있을 때
-            if(member == null || member.getUserid() == null ||
+            if(member == null || member.getEmail() == null ||
                     member.getUsername() == null || member.getPassword() == null || member.getPasswordChk() == null ||
                     member.getZipcode() == null || member.getAddress() == null || member.getAddressDetail() == null ||
                     member.getPhone() == null || member.getAdminYn() == null) {
+                System.out.println("여기1?");
                 throw new RuntimeException("invalid argument");
 
             } else if(!member.getPassword().equals(member.getPasswordChk())) {
+                System.out.println("여기2?");
                 throw new RuntimeException("비밀번호 다름");
-            }else if(!check && memberRepository.existsById(member.getUserid())) {
+            }else if(!check && memberRepository.existsByEmail(member.getEmail())) {
+                System.out.println("여기3?");
                 throw new RuntimeException("이미 등록된 사용자가 있습니다.");
             }
         } catch (RuntimeException e) {
-            throw new RuntimeException("invalid argument");
+            e.printStackTrace();
+            throw new RuntimeException("invalid 여기???");
         }
 
 
@@ -58,7 +64,7 @@ public class MemberService {
     @Transactional
     public Member emailValidate(MemberDto memberDto) {
         Member member;
-        member = memberRepository.findById(memberDto.getUserid()).orElseThrow(EntityNotFoundException::new);
+        member = memberRepository.findById(memberDto.getEmail()).orElseThrow(EntityNotFoundException::new);
 
         return member;
     }
@@ -93,7 +99,7 @@ public class MemberService {
         validate(member, true);
 
         // Dirty Checking(변경감지)로 인하여 update문이 따로 필요 없이 준속성에 의하여 조회 후 변경하면 자동 변경
-        Optional<Member> id = memberRepository.findById(member.getUserid());
+        Optional<Member> id = memberRepository.findByEmail(member.getEmail());
         Member result = id.orElseThrow(EntityNotFoundException::new);
 
         // password 암호화
@@ -105,7 +111,7 @@ public class MemberService {
 
         result.changeMember(member);
 
-        return member.getUserid();
+        return member.getEmail();
     }
     
     // 회원 탈퇴
@@ -114,24 +120,26 @@ public class MemberService {
     // 로그인
     @Transactional
     public LoginDto login(LoginDto loginDto) {
-        Optional<Member> member = memberRepository.findById(loginDto.getUserid());
+        Optional<Member> member = memberRepository.findByEmail(loginDto.getEmail());
 
         // Id가 Repository에 있으면
         if(member.isPresent() && passwordEncoder.matches(loginDto.getPassword(), member.get().getPassword())) {
+            System.out.println("???????????????");
             Member resultMember = member.get();
 
-            String accessToken = tokenProvidor.createAcessToken(resultMember.getUserid());
-            String refreshToken = tokenProvidor.createRefreshToken(resultMember.getUserid());
+            String accessToken = tokenProvidor.createAcessToken(resultMember.getEmail());
+            String refreshToken = tokenProvidor.createRefreshToken(resultMember.getEmail());
 
             Cookie accessCookie = tokenProvidor.createCookie("ACCESS_TOKEN", accessToken);
 
             return LoginDto.builder()
-                    .userid(resultMember.getUserid())
+                    .userid(resultMember.getEmail())
                     .accessToken(accessCookie)
                     .refreshToken(refreshToken)
                     .build();
         } else {
-            throw new RuntimeException("등록되지 않은 사용자입니다.");
+            System.out.println("여기??");
+            return null;
         }
 
     }
@@ -142,7 +150,7 @@ public class MemberService {
     public String findUserId(IdFindDto idFindDto) {
         Member member = memberRepository.findByUsernameAndPhone(idFindDto.getUsername(), idFindDto.getPhone());
         if(member != null) {
-            return member.getUserid();
+            return member.getEmail();
         }
         return null;
     }
