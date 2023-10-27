@@ -21,8 +21,11 @@ public class Notice extends BaseTimeEntity {
     private String noticeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "notice_userid", referencedColumnName = "userid", nullable = false)
+    @JoinColumn(name = "notice_userid", referencedColumnName = "userid")
     private Member member;
+
+    @Column
+    private Long noticeNum;
 
     @Column(length = 50, nullable = false)
     private String noticeCategory;
@@ -33,7 +36,7 @@ public class Notice extends BaseTimeEntity {
     @Column(length = 6500, nullable = false)
     private String noticeContent;
 
-    @Column(nullable = false)
+    @Column
     private String noticeFileKey;
 
 }

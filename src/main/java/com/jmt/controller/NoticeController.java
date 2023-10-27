@@ -20,21 +20,21 @@ public class NoticeController {
     @Autowired
     NoticeService noticeService;
 
-    @PostMapping("/write")
-    public ResponseEntity<Notice> writeNotice(@RequestBody NoticeDto dto){
-        Notice entity = NoticeDto.toEntity(dto);
-        if(entity == null){
-            throw new RuntimeException("엔티티 이즈 널");
-        }
-        entity.setNoticeId(null);
-        try{
-            noticeService.createNotice(entity);
-            return ResponseEntity.ok().body(entity);
-        }catch (Exception e){
-            log.error(e.getMessage());
-            return ResponseEntity.badRequest().body(entity);
-        }
-    }
+//    @PostMapping("/write")
+//    public ResponseEntity<Notice> writeNotice(@RequestBody NoticeDto dto){
+//        Notice entity = NoticeDto.toEntity(dto);
+//        if(entity == null){
+//            throw new RuntimeException("엔티티 이즈 널");
+//        }
+//        entity.setNoticeId(null);
+//        try{
+//            noticeService.createNotice(entity);
+//            return ResponseEntity.ok().body(entity);
+//        }catch (Exception e){
+//            log.error(e.getMessage());
+//            return ResponseEntity.badRequest().body(entity);
+//        }
+//    }
 
 
 }

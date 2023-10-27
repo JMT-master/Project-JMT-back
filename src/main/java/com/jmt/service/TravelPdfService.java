@@ -3,11 +3,14 @@ package com.jmt.service;
 import com.itextpdf.io.font.FontProgram;
 import com.itextpdf.io.font.FontProgramFactory;
 import com.itextpdf.io.font.PdfEncodings;
+import com.itextpdf.io.image.ImageData;
+import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.font.FontProvider;
 import com.jmt.entity.Travel;
@@ -40,12 +43,16 @@ public class TravelPdfService {
         FontProgram fontProgram = FontProgramFactory.createFont(fontBytes);
         PdfFont customFont = PdfFontFactory.createFont(fontProgram, PdfEncodings.IDENTITY_H, PdfFontFactory.EmbeddingStrategy.PREFER_EMBEDDED);
 
-
+        //이미지 만드는 부분
+        ImageData imageData = ImageDataFactory.create("D:\\final-project\\final\\src\\main\\resources\\static\\image\\035e1737735049018a2ed2964dda596c_750S.jpg");
+        Image image = new Image(imageData).scaleAbsolute(100,200);
         System.out.println("서비스에서 확인하는 travelList = " + travelList);
 //        System.out.println("서비스에서 확인하는 travelList.getTravels = " + travelList.getTravels());
 
         //여행 일정 데이터를 PDF에 추가하는 방법 다시
         for (Travel travel : travelList){
+            //이미지를 넣어보기 테스트중
+            document.add(image);
             document.add(new Paragraph("날짜 : " + travel.getStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd : HH:mm")))
                     .setFont(customFont));
             document.add(new Paragraph("주소 : " + travel.getPlace())
