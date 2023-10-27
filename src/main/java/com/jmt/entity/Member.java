@@ -2,6 +2,7 @@ package com.jmt.entity;
 
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.validator.constraints.UniqueElements;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -11,29 +12,29 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Getter
-@Setter
-@ToString
+@Data
 @Table
 public class Member {
 
     @Id
-    @Column(name = "userid")
-    @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    private String userid;
+    @Column(name = "userid", nullable = false)
+//    @GeneratedValue(generator = "system-uuid")
+//    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    private String userid; // email
+
+    @Column
+    private String email; // email
 
     @Column(length = 50, nullable = false)
+    private String username; // 이름
+
+    // password encoder로 인하여 length 변경
+    @Column(length = 500, nullable = false)
     private String password;
 
-    @Column(length = 50, nullable = false)
-    private String passwordCheck;
-
-    @Column(length = 50, nullable = false)
-    private String username;
-
-    @Column(length = 20, nullable = false)
-    private String phone;
+    // password encoder로 인하여 length 변경
+    @Column(length = 500, nullable = false)
+    private String passwordChk;
 
     @Column(length = 10, nullable = false)
     private String zipcode;
@@ -44,8 +45,24 @@ public class Member {
     @Column(length = 150, nullable = false)
     private String addressDetail;
 
-    @Column(length = 1 , nullable = false)
+    @Column(length = 20, unique = true, nullable = false)
+    private String phone;
+
+    @Column(length = 1 )
     private String adminYn;
 
+    @Column(length = 1 )
+    private String socialYn;
 
+    public void changeMember(Member member) {
+        userid = member.getUserid();
+        username = member.getUsername();
+        password = member.getPassword();
+        passwordChk = member.getPasswordChk();
+        zipcode = member.getZipcode();
+        address = member.getAddress();
+        addressDetail = member.getAddressDetail();
+        phone = member.getPhone();
+        adminYn = member.getAdminYn();
+    }
 }

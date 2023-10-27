@@ -12,24 +12,22 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Entity
 @Table(name="travelSchedule")
 public class TravelScheduleEntity extends BaseTimeEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="travel_id")
-    private String travelId;
+    private Integer travelId;
 
-    @Column(name="travel_userid")
-    private String travelUserid;
+    private String travelUserId;
 
     @Column(name="travel_title")
     private String travelTitle;
 
-    @Column(name="travel_yn")
     private String travelYn;
 
-    @Column(name="travel_pNum")
+    @Column(name="travel_pnum")
     private int travelPnum;
 
     @Column(name="travel_startDate")
@@ -37,5 +35,11 @@ public class TravelScheduleEntity extends BaseTimeEntity{
 
     @Column(name="travel_endDate")
     private LocalDateTime travelEndDate;
+
+    @Column(name="travle_startTime")
+    private LocalDateTime travelStartTime;
+
+    @Column(name="travle_endTime")
+    private LocalDateTime travleEndTime;
 
 }

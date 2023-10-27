@@ -5,47 +5,51 @@ import com.jmt.entity.TravelScheduleEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.Optional;
+import java.util.List;
 
 public interface DayFormatRepository extends JpaRepository<DayFormatEntity,String> {
 
-    public TravelScheduleEntity findByTravelUserid(String userid);
 
-    @Query(value = "select b.region1," +
-            "      b.region2," +
-            "      b.title," +
-            "      b.day_travel_id," +
+    DayFormatEntity findByTravelId(int travelId);
+
+    @Query(value = "select b.day_region1," +
+            "      b.day_region2," +
+            "      b.day_title," +
+            "      b.day_travelid," +
             "      b.day_index" +
             " from travelschedule a inner join dayformat b" +
-            "   on a.travel_id = b.day_travel_id" +
-            "where a.travel_userid = ? " +
+            "   on a.travel_id = b.day_travelid" +
+            "where a.travel_user_id = ? " +
+            "  and b.day_travelid = ?" +
             "  and b.day_count = 1" +
             "  and b.day_index is not null",nativeQuery = true)
-    TravelScheduleEntity dayFormatSelect1(String userid);
+    List<DayFormatEntity> dayFormatSelect1(String userid, int travelId);
 
-    @Query(value = "select b.region1," +
-            "      b.region2," +
-            "      b.title," +
-            "      b.day_travel_id," +
+    @Query(value = "select b.day_region1," +
+            "      b.day_region2," +
+            "      b.day_title," +
+            "      b.day_travelid," +
             "      b.day_index" +
             " from travelschedule a inner join dayformat b" +
-            "   on a.travel_id = b.day_travel_id" +
-            "where a.travel_userid = ? " +
-            "  and b.day_count = 2" +
+            "   on a.travel_id = b.day_travelid" +
+            "where a.travel_user_id = ? " +
+            "  and b.day_travelid = ?" +
+            "  and b.day_count = 1" +
             "  and b.day_index is not null",nativeQuery = true)
-    TravelScheduleEntity dayFormatSelect2(String userid);
+    List<DayFormatEntity> dayFormatSelect2(String userid, int travelId);
 
-    @Query(value = "select b.region1," +
-            "      b.region2," +
-            "      b.title," +
-            "      b.day_travel_id," +
+    @Query(value = "select b.day_region1," +
+            "      b.day_region2," +
+            "      b.day_title," +
+            "      b.day_travelid," +
             "      b.day_index" +
             " from travelschedule a inner join dayformat b" +
-            "   on a.travel_id = b.day_travel_id" +
-            "where a.travel_userid = ? " +
-            "  and b.day_count = 3" +
+            "   on a.travel_id = b.day_travelid" +
+            "where a.travel_user_id = ? " +
+            "  and b.day_travelid = ?" +
+            "  and b.day_count = 1" +
             "  and b.day_index is not null",nativeQuery = true)
-    TravelScheduleEntity dayFormatSelect3(String userid);
+    List<DayFormatEntity> dayFormatSelect3(String userid, int travelId);
 
 
 

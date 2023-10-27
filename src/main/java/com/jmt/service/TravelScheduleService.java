@@ -26,7 +26,7 @@ public class TravelScheduleService {
 
     public TravelScheduleDto scheduleSelect(TravelScheduleDto dto){
 
-        TravelScheduleEntity select = travelScheduleRepository.findByTravelid(dto.getTravelId());
+        TravelScheduleEntity select = travelScheduleRepository.findByTravelId(dto.getTravelId());
 
         return TravelScheduleDto.toDto(select);
     }

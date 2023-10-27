@@ -13,9 +13,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DayFormatDto {
 
-    private String dayId;
+    private int dayId;
 
-    private String dayTravelId;
+    private int dayTravelId;
 
     private int dayCount;
 
