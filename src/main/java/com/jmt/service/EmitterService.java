@@ -12,6 +12,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.jmt.common.ExpiredTime.EXPIRED_TIMEOUT;
 
@@ -35,16 +36,12 @@ public class EmitterService {
         List<Notification> notifications = notificationRepository.findNotificationsByMember_Userid(userid);
         notifications.forEach(notify -> {
             if (notify != null) {
-                //ToDo : 보낼때 Notification형태로 보내지지 않음 혹은 프론트에서 받지 못함 . 고쳐야함
                 log.debug("notifyChk" + notify);
                 sendToClient(userid, "sse", "등록됨");
             } else {
                 log.debug("notifyChk" + notify);
-//                sendToClient(userid, "User = " + userid + "의 이미터 생성됨");
             }
         });
-
-//        log.debug("만들어진 emitter 확인  : " + emitter);
         return emitter;
     }
 
@@ -55,16 +52,17 @@ public class EmitterService {
     사용을 위해 만든 메소드, 다른 서비스 로직에서 sendToClient 메소드를 이용해 유저에게 데이터를 전송
      */
     public void send(@AuthenticationPrincipal String userid, Object data) {
-//        Notification notification = notificationRepository.save(entity);
+        Map<String, SseEmitter> sseEmitters = null;
+        if(!Objects.equals(userid, "anonymousUser")) {
+            sseEmitters = emitterRepository.findAllEmitterByMemberId(userid);
+            log.debug("send sseEmitters" + sseEmitters);
+        }
 
-        Map<String, SseEmitter> sseEmitters = emitterRepository.findAllEmitterByMemberId(userid);
-        log.debug("send sseEmitters" + sseEmitters);
-
-        sseEmitters.forEach(
+        Objects.requireNonNull(sseEmitters).forEach(
                 (key, emitter) -> {
                     log.debug("sseEmitters.forEach send to client!");
                     emitterRepository.save(key, emitter);
-                    sendToClient(key, "sse", data);
+                    sendToClient(key, "sse", userid);
                 }
         );
 
@@ -77,7 +75,7 @@ public class EmitterService {
     사용자 아이디를 기반으로 이미터를 생성함.
     */
     private SseEmitter createEmitter(String userid) {
-        SseEmitter emitter = new SseEmitter((long) (1000 * 60 * 100));
+        SseEmitter emitter = new SseEmitter((long) (1000 * 60 * 1000));
 
         emitterRepository.save(userid, emitter);
         log.debug("createEmitter의 이미터 : " + emitter);

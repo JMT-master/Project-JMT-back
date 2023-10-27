@@ -179,7 +179,6 @@ public class NotificationController {
         return ResponseEntity.ok().body(notificationDto);
     }
 
-    //Todo : 등록시 알람 갱신되는지 확인하기
     @PutMapping
     public ResponseEntity<NotificationDto> regNotification(@RequestBody NotificationDto dto){
         Notification entity = NotificationDto.toEntity(dto);
@@ -200,7 +199,6 @@ public class NotificationController {
 
     @PostMapping
     public ResponseEntity<List<NotificationDto>> requestNotification(@AuthenticationPrincipal String userid){
-        log.debug("===============알람 userid : " + userid);
         List<Notification> entities = notificationService.showNotification(userid);
         log.debug("===============entities : " + entities);
         List<NotificationDto> entity = new ArrayList<>();
@@ -224,10 +222,9 @@ public class NotificationController {
     }
 
     @DeleteMapping
-    public ResponseEntity<List<NotificationDto>> removeNotification(String alarmId , @AuthenticationPrincipal String userid){
+    public ResponseEntity<List<NotificationDto>> removeNotification(@RequestBody NotificationDto dto, @AuthenticationPrincipal String userid){
         String tempNotificationId = "8a8ab7938b3cbcaf018b3cbd84990000";
-        Member member = memberService.getMember("이장");
-        notificationService.deleteNotification(tempNotificationId);
+        notificationService.deleteNotification(dto.getId());
         List<Notification> entities = notificationService.showNotification(userid);
 
         List<NotificationDto> entity = new ArrayList<>();
