@@ -34,6 +34,7 @@ public class MemberController {
     @Autowired
     KaKaoLoginService kaKaoLoginService;
 
+    // 회원가입
     @PostMapping("joinUser")
     public ResponseEntity<MemberDto> createMember(@RequestBody MemberDto dto){
         MemberDto memberDto = null;
@@ -68,7 +69,7 @@ public class MemberController {
     public ResponseEntity<ResponseDto> sendEmailValidate(@RequestBody MemberDto memberDto) {
         ResponseDto responseDto = new ResponseDto();
         try {
-            emailService.sendMail(memberDto.getUserid());
+            emailService.sendMail(memberDto.getEmail());
             responseDto.setError("success");
             return ResponseEntity.ok().body(responseDto);
         } catch (Exception e) {
@@ -91,6 +92,7 @@ public class MemberController {
         LoginDto login = null;
         try{
             login = service.login(loginDto);
+            System.out.println("login = " + login);
             response.addCookie(login.getAccessToken());
             System.out.println("login = " + login);
             return ResponseEntity.ok().body(login);

@@ -16,21 +16,22 @@ import javax.persistence.*;
 @Table
 public class MemberFile {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer fileId; // 고유 아이디
 
     @Column(nullable = false)
-    private String fileName; // 파일 이름
+    private String fileName; // kn_01_3_셔츠6.jpg
 
     @Column(nullable = false)
     private Long fileSize; // 파일 크기
 
     @Column(nullable = false)
-    private String fileServerPath; // 서버 Path
+    private String fileServerPath; // C:\jmt\images
 
     @Column(nullable = false)
-    private String fileCategory;
+    private String fileCategory; // Board.KN
 
     @Comment("파일이 포함된 게시글 아이디")
     @Column(nullable = false)
-    private String fileCommonId;
+    private String fileCommonId; // ID
 }
