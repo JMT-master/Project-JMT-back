@@ -40,16 +40,18 @@ public class QnaService {
     //create부터
     public List<Qna> create(Qna qna){
         validate(qna);
+        System.out.println("qna.getQnaTitle() = " + qna.getQnaTitle());
         qnaRepository.save(qna);
-        log.info("qna saved..?", qna.getId());
+        System.out.println("qnaRepository.save(qna) = " + qnaRepository.save(qna));
         //user는 관리자이다. 따라서 관리자 아이디로 create하고 난 뒤 전체 qna 글을 가져온다.
         //사실상 id가 다르다면 create 조차 불가능
-        return qnaRepository.findByMember_Userid(qna.getMember().getEmail());
+        return qnaRepository.findByMember_Userid(qna.getMember().getUserid());
     }
 
     //관리자용 read
-    public List<Qna> readByUserId(String userId){
+    public List<Qna> readByUserId(Long userId){
         return qnaRepository.findByMember_Userid(userId);
+//        return null;
     }
 
     //qna 상세 페이지 들어가는 용 read
@@ -90,7 +92,7 @@ public class QnaService {
             qnaRepository.save(qna);
         });
 
-        return readByUserId(qnaEntity.getMember().getEmail());
+        return readByUserId(qnaEntity.getMember().getUserid());
     }
 
 
@@ -104,7 +106,7 @@ public class QnaService {
             log.error("delete 도중 error 발생...", qna.getId(), e);
             throw new RuntimeException("delete 도중 error 발생함..." + qna.getId());
         }
-        return readByUserId(qna.getMember().getEmail());
+        return readByUserId(qna.getMember().getUserid());
     }
 
     //paging을 이용한 QnaList 가져오기

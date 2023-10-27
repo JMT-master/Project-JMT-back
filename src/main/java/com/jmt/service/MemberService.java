@@ -28,7 +28,8 @@ public class MemberService {
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     @Transactional
     public Member getMember(String userid){
-        return memberRepository.findByUserid(userid);
+        log.info("userid : {}", userid);
+        return memberRepository.findByEmail(userid).get();
     }
 
     // 회원가입 인증

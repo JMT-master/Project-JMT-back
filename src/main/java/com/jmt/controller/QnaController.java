@@ -33,6 +33,7 @@ public class QnaController {
 //            qna.setQnaColNum(null);
             qna.updateModDate();
             qna.setMember(memberService.getMember(userid));
+            log.info("qna.getmember : {}", qna.getMember());
             List<Qna> qnaEntities = qnaService.create(qna);
 //            log.info("qnaEntities : {}",qnaEntities);
             List<QnaDto> qnaDtos = qnaEntities.stream().map(QnaDto::new)
