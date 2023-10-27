@@ -1,50 +1,50 @@
 package com.jmt.dto;
 
 import com.jmt.entity.KnowledgeEntity;
-import com.jmt.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class KnowledgeDto {
-    private Long   num;
+public class KnowledgeSendDto {
+    private Long num;
     private String userid;
     private String category;
     private String title;
     private String content;
     private int view;
-    private List<String> fileKey;
+    private String fileSendKey;
     private LocalDateTime regDate;
     private LocalDateTime modDate;
 
-    public static KnowledgeDto toDto(KnowledgeEntity knowledgeEntity) {
-        return KnowledgeDto.builder()
+    public static com.jmt.dto.KnowledgeSendDto toDto(KnowledgeEntity knowledgeEntity) {
+        return com.jmt.dto.KnowledgeSendDto.builder()
                 .num(knowledgeEntity.getNum())
                 .userid(knowledgeEntity.getUserid().getEmail())
                 .category(knowledgeEntity.getCategory())
                 .title(knowledgeEntity.getTitle())
                 .content(knowledgeEntity.getContent())
                 .view(knowledgeEntity.getView())
+                .fileSendKey(knowledgeEntity.getFileKey())
                 .regDate(knowledgeEntity.getRegDate())
                 .modDate(knowledgeEntity.getModDate())
-                .build() ;
+                .build();
     }
 
-    public static KnowledgeEntity toEntity(KnowledgeDto knowledgeDto) {
+    public static KnowledgeEntity toEntity(KnowledgeSendDto knowledgeSendDtoDto) {
         return KnowledgeEntity.builder()
-                .num(knowledgeDto.getNum())
-                .title(knowledgeDto.getTitle())
-                .content(knowledgeDto.getContent())
-                .category(knowledgeDto.getCategory())
-                .view(knowledgeDto.getView())
+                .num(knowledgeSendDtoDto.getNum())
+                .title(knowledgeSendDtoDto.getTitle())
+                .content(knowledgeSendDtoDto.getContent())
+                .category(knowledgeSendDtoDto.getCategory())
+                .view(knowledgeSendDtoDto.getView())
+                .fileKey(knowledgeSendDtoDto.getFileSendKey())
                 .build();
     }
 }

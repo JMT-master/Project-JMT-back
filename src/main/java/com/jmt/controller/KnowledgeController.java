@@ -2,6 +2,7 @@ package com.jmt.controller;
 
 import com.jmt.constant.Board;
 import com.jmt.dto.KnowledgeDto;
+import com.jmt.dto.KnowledgeSendDto;
 import com.jmt.service.FileService;
 import com.jmt.service.KnowledgeService;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,16 @@ public class KnowledgeController {
     private final KnowledgeService knowledgeService;
     private final FileService fileService;
 
-    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+    // knowledge 첫 화면 List
+    @GetMapping("knowledge")
+    public ResponseEntity<List<KnowledgeDto>> readKnowledge() {
+
+        List<KnowledgeDto> knowledgeDtos = knowledgeService.allKnowledgeList();
+
+        return ResponseEntity.ok().body(knowledgeDtos);
+    }
+
+    // 글 작성
     @PostMapping("knowledgeWrite/send")
     public ResponseEntity<?> createKnowledge(
             @AuthenticationPrincipal String userid,
@@ -28,23 +38,20 @@ public class KnowledgeController {
             @RequestPart(value = "file", required = false) List<MultipartFile> multipartFiles,
             @RequestPart(value = "data")KnowledgeDto knowledgeDto
             ) {
-        System.out.println("multipartFiles = " + multipartFiles);
-        System.out.println("knowledgeDto = " + knowledgeDto);
-        System.out.println("userid = " + userid);
-
-        if(multipartFiles != null) {
-            for(int i=0; i< multipartFiles.size(); i++) {
-                String originalFilename = multipartFiles.get(i).getOriginalFilename();
-                long size = multipartFiles.get(i).getSize();
-                System.out.println("originalFilename = " + originalFilename);
-                System.out.println("size = " + size);
-            }
-
-            List<String> strings = fileService.fileUpload(multipartFiles, Board.KN, 0);
-            System.out.println("strings = " + strings);
-        }
+        knowledgeService.create(multipartFiles,knowledgeDto,userid);
 
         return ResponseEntity.ok().body("success");
+    }
+
+    @PostMapping("knowledgeDetail")
+    public ResponseEntity<List<KnowledgeSendDto>> createKnowledgeDetail(@RequestBody KnowledgeDto knowledgeDto, @RequestParam("id") Long id) {
+        System.out.println("knowledgeDto = " + knowledgeDto);
+        List<KnowledgeSendDto> knowledgeSendDtos = knowledgeService.writeNumKnowledgeList(knowledgeDto, id);
+
+        System.out.println("id = " + id);
+        System.out.println("knowledgeSendDtos = " + knowledgeSendDtos);
+
+        return ResponseEntity.ok().body(knowledgeSendDtos);
     }
 
 }

@@ -55,7 +55,7 @@ public class AlarmController {
 
     @PostMapping
     public ResponseEntity<List<AlarmDto>> requestAlarm(@RequestBody MemberDto dto){
-        List<Alarm> entities = alarmService.showAlarm(memberService.getMember(dto.getUserid()));
+        List<Alarm> entities = alarmService.showAlarm(memberService.getMember(dto.getEmail()));
 
         List<AlarmDto> entity = new ArrayList<>();
 

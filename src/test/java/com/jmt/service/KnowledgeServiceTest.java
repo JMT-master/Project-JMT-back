@@ -47,7 +47,7 @@ class KnowledgeServiceTest {
                     .view(0)
                     .build();
 
-            Long l = knowledgeService.create(knowledgeDto, repositoryUser.getUserid());
+//            knowledgeService.create(knowledgeDto, repositoryUser.getEmail());
         }
 
     }
@@ -74,12 +74,12 @@ class KnowledgeServiceTest {
                     .view(0)
                     .build();
 
-            Long l = knowledgeService.create(knowledgeDto, repositoryUser.getUserid());
+//            knowledgeService.create(knowledgeDto, repositoryUser.getEmail());
         }
 
         List<KnowledgeDto> knowledgeDtos = knowledgeService.allKnowledgeList();
 
-        System.out.println("knowledgeDtos = " + knowledgeDtos);
+
 
     }
 

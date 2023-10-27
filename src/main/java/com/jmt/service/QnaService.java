@@ -44,7 +44,7 @@ public class QnaService {
         log.info("qna saved..?", qna.getId());
         //user는 관리자이다. 따라서 관리자 아이디로 create하고 난 뒤 전체 qna 글을 가져온다.
         //사실상 id가 다르다면 create 조차 불가능
-        return qnaRepository.findByMember_Userid(qna.getMember().getUserid());
+        return qnaRepository.findByMember_Userid(qna.getMember().getEmail());
     }
 
     //관리자용 read
@@ -90,7 +90,7 @@ public class QnaService {
             qnaRepository.save(qna);
         });
 
-        return readByUserId(qnaEntity.getMember().getUserid());
+        return readByUserId(qnaEntity.getMember().getEmail());
     }
 
 
@@ -104,7 +104,7 @@ public class QnaService {
             log.error("delete 도중 error 발생...", qna.getId(), e);
             throw new RuntimeException("delete 도중 error 발생함..." + qna.getId());
         }
-        return readByUserId(qna.getMember().getUserid());
+        return readByUserId(qna.getMember().getEmail());
     }
 
     //paging을 이용한 QnaList 가져오기

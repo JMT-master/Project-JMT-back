@@ -41,7 +41,7 @@ public class KnowledgeEntity extends BaseTimeEntity {
     @ColumnDefault("0")
     private int view; // 조회수
 
-    @Column(name = "kn_file_key")
+    @Column(name = "kn_file_key") // kn_01_3_셔츠6.jpg
     private String fileKey; // 파일 업로드 유무??? => 파일키 추후 작업
 
     public static KnowledgeEntity createKnowledgeEntity(Member member, KnowledgeDto knowledgeDto) {
