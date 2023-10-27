@@ -66,7 +66,7 @@ public class DayFormatService {
     public int dayFormatDelete(int travelId){
         int result = 1;
         try {
-            dayFormatRepository.delete(dayFormatRepository.findByTravelId(travelId));
+            dayFormatRepository.delete(dayFormatRepository.findByDayTravelId(travelId));
             result = 0;
         } catch (Exception e) {
             e.printStackTrace();

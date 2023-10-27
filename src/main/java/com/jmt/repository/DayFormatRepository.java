@@ -10,7 +10,7 @@ import java.util.List;
 public interface DayFormatRepository extends JpaRepository<DayFormatEntity,String> {
 
 
-    DayFormatEntity findByTravelId(int travelId);
+    DayFormatEntity findByDayTravelId(int travelId);
 
     @Query(value = "select b.day_region1," +
             "      b.day_region2," +
