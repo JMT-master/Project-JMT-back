@@ -3,6 +3,8 @@ package com.jmt.service;
 import com.jmt.constant.Board;
 import com.jmt.dto.KnowledgeDto;
 import com.jmt.entity.KnowledgeEntity;
+import com.jmt.entity.MemberFile;
+import com.jmt.repository.MemberFileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,11 +25,14 @@ public class FileService {
     @Value("${itemImgLocation}")
     private String itemImageLocation;
 
+    private final MemberFileRepository memberFileRepository;
+
     // 파일, user, KN/QNA/NOTICE, 글번호
     public List<String> fileUpload(List<MultipartFile> multipartFiles, String userid, Board fileIdName, int count) {
         String divideBoard = "";
         String fileKey = "";
         List<String> fileKeys = new ArrayList<>();
+        List<MemberFile> memberFiles = new ArrayList<>();
 
         File folder = new File(itemImageLocation);
 
@@ -57,6 +62,8 @@ public class FileService {
 
             fileKeys.add(fileKey);
         }
+
+//        memberFileRepository.saveAll();
 
         return fileKeys;
     }
