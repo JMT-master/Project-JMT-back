@@ -35,13 +35,15 @@ public class NotificationService {
     }
 
     @Transactional
-    public Notification getNotification(String alarmId){
-        return repository.findByNotificationId(alarmId);
+    public Notification getNotification(String notifyId){
+        return repository.findByNotificationId(notifyId);
     }
 
     @Transactional
-    public void deleteNotification(String alarmId){
-        repository.delete(getNotification(alarmId));
+    public void deleteNotification(String notifyId){
+        repository.delete(getNotification(notifyId));
     }
 
+    @Transactional
+    public void deleteAllNotification(String userid){ repository.deleteAll(repository.findNotificationsByMember_Userid(userid));}
 }
