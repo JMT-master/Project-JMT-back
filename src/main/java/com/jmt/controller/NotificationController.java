@@ -80,7 +80,7 @@ public class NotificationController {
     }
 
     @PostMapping
-    public ResponseEntity<List<NotificationDto>> requestNotification(@AuthenticationPrincipal String userid){
+    public ResponseEntity<List<NotificationDto>> readAllNotification(@AuthenticationPrincipal String userid){
         List<Notification> entities = notificationService.showNotification(userid);
         log.debug("===============entities : " + entities);
         List<NotificationDto> entity = new ArrayList<>();
@@ -122,7 +122,23 @@ public class NotificationController {
     }
 
     @DeleteMapping("/all")
-    public void removeAllNotification(@AuthenticationPrincipal String userid){
+    public ResponseEntity<List<NotificationDto>> removeAllNotification(@AuthenticationPrincipal String userid){
         notificationService.deleteAllNotification(userid);
+
+        List<Notification> entities = notificationService.showNotification(userid);
+        List<NotificationDto> entity = new ArrayList<>();
+
+        for(Notification notification : entities){
+            entity.add(NotificationDto.toDto(notification));
+        }
+        if(entities == null){
+            throw new RuntimeException("엔티티가 널임");
+        }
+        try {
+            return ResponseEntity.ok().body(entity);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            return ResponseEntity.badRequest().body(entity);
+        }
     }
 }

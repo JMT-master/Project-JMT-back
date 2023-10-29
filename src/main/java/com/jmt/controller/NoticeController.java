@@ -37,14 +37,16 @@ public class NoticeController {
         return ResponseEntity.ok().body(noticeDtos);
     }
 
-    @GetMapping("/read")
-    public ResponseEntity<NoticeDto> read(Long idx){
+    @GetMapping("/{idx}")
+    public ResponseEntity<NoticeDto> read(@PathVariable Long idx){
+        log.debug("noticeReadIdx : " + idx);
         NoticeDto noticeDto = NoticeDto.toDto(noticeService.readNotice(idx));
         return ResponseEntity.ok().body(noticeDto);
     }
     @PostMapping("/write")
     public ResponseEntity<NoticeDto> writeNotice(@AuthenticationPrincipal String userid, @RequestBody NoticeDto dto) {
         Notice entity = NoticeDto.toEntity(dto);
+        log.debug("form에서 받은 dto : " + dto);
         if (entity == null) {
             throw new RuntimeException("엔티티 이즈 널");
         }
