@@ -40,7 +40,8 @@ public class QnaService {
     //create부터
     public List<Qna> create(Qna qna){
         validate(qna);
-        qnaRepository.save(qna);
+        Qna save = qnaRepository.save(qna);
+        System.out.println("save = " + save);
         log.info("qna saved..?", qna.getId());
         //user는 관리자이다. 따라서 관리자 아이디로 create하고 난 뒤 전체 qna 글을 가져온다.
         //사실상 id가 다르다면 create 조차 불가능
