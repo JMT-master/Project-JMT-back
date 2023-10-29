@@ -26,7 +26,8 @@ public class QnaController {
     private MemberService memberService;
 
     @PostMapping("/admin/write")
-    public ResponseEntity<?> createQna(@RequestBody QnaDto qnaDto, @AuthenticationPrincipal String userid){
+    public ResponseEntity<?> createQna(@RequestBody QnaDto qnaDto,
+                                       @AuthenticationPrincipal String userid){
         try {
             Qna qna = QnaDto.toEntity(qnaDto);
             log.info("userId : " +userid);

@@ -1,17 +1,23 @@
 package com.jmt.service;
 
+import com.jmt.common.PagingInfo;
 import com.jmt.common.PagingUtil;
 import com.jmt.dto.NoticeDto;
+import com.jmt.dto.ResponseDto;
 import com.jmt.entity.Notice;
 import com.jmt.entity.Qna;
 import com.jmt.repository.NoticeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -90,7 +96,20 @@ public class NoticeService {
 
     //paging을 이용한 noticelist 가져오기
     public PagingUtil<NoticeDto> getNoticeList(int page, int size){
-        return null;
+        PageRequest pageRequest = PageRequest.of(page-1, size, Sort.by(Sort.Order.desc("regDate")));
+        Page<Notice> noticePage = noticeRepository.findAll(pageRequest);
+
+        List<NoticeDto> noticeDtoList = noticePage.getContent().stream()
+                .map(NoticeDto::new).collect(Collectors.toList());
+
+        PagingInfo pagingInfo = new PagingInfo();
+        pagingInfo.setCurrentPage(noticePage.getNumber()+1);
+        pagingInfo.setPageSize(noticePage.getSize());
+        pagingInfo.setTotalPages(noticePage.getTotalPages());
+        pagingInfo.setTotalItems(noticePage.getTotalElements());
+        pagingInfo.setHasNext(noticePage.hasNext());
+        pagingInfo.setHasPrevious(noticePage.hasPrevious());
+        return new PagingUtil<>(noticeDtoList, pagingInfo);
     }
 
 //    @Transactional
