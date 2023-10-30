@@ -116,8 +116,6 @@ public class KnowledgeService {
         Member member = memberRepository.findByEmail(knowledgeDto.getUserid()).get();
         List<KnowledgeEntity> entities = knowledgeRepository.findByUseridAndNum(member, num);
 
-        System.out.println("entities = " + entities);
-
         List<KnowledgeSendDto> result = new ArrayList<>();
         for(KnowledgeEntity entity : entities) {
             entity.setView(entity.getView() + 1); // 조회수 1 추가
@@ -132,8 +130,6 @@ public class KnowledgeService {
 
             result.add(dto);
         }
-
-        System.out.println("result = " + result);
 
         return result;
     }
@@ -151,7 +147,6 @@ public class KnowledgeService {
 
             List<String> fileKeys = fileService.fileUpload(multipartFiles, userid, Board.KN, num.intValue());
             knowledgeDto.setFileKey(fileKeys);
-            System.out.println("strings = " + fileKeys);
         }
 
         if(knowledgeDto.getFileKey() == null) {
@@ -175,7 +170,6 @@ public class KnowledgeService {
                 knowledgeEntityList.add(knowledge);
             });
 
-            System.out.println("knowledgeEntityList = " + knowledgeEntityList);
             knowledgeRepository.saveAll(knowledgeEntityList);
         }
     }
@@ -192,15 +186,9 @@ public class KnowledgeService {
         KnowledgeAnswerEntity entity = KnowledgeAnswerDto.toEntity(knowledgeAnswerDto);
         entity.setAnswerWriter(userid);
 
-        System.out.println("entity.getAnswerWriter() = " + entity.getAnswerWriter());
-        System.out.println("entity.getContent() = " + entity.getContent());
-        System.out.println("knowledgeAnswerDto = " + knowledgeAnswerDto.getContent());
-        System.out.println("entity empty" + entity.getContent().replaceAll(" ",""));
-        System.out.println("entity empty true/false" + entity.getContent().replaceAll(" ","").isEmpty());
         try {
             if ((entity.getAnswerWriter() == null) || entity.getAnswerWriter().equals("anonymousUser") ||
                     entity.getContent() == null || entity.getContent().replaceAll(" ","").isEmpty()) {
-                System.out.println("들어옴???");
                 return null;
 
             }
