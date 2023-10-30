@@ -19,11 +19,12 @@ public class KnowledgeSendDto {
     private String title;
     private String content;
     private int view;
-    private String fileSendKey;
+    private String serverPath;
+    private String originalName;
     private LocalDateTime regDate;
     private LocalDateTime modDate;
 
-    public static com.jmt.dto.KnowledgeSendDto toDto(KnowledgeEntity knowledgeEntity) {
+    public static KnowledgeSendDto toDto(KnowledgeEntity knowledgeEntity) {
         return com.jmt.dto.KnowledgeSendDto.builder()
                 .num(knowledgeEntity.getNum())
                 .userid(knowledgeEntity.getUserid().getEmail())
@@ -31,7 +32,6 @@ public class KnowledgeSendDto {
                 .title(knowledgeEntity.getTitle())
                 .content(knowledgeEntity.getContent())
                 .view(knowledgeEntity.getView())
-                .fileSendKey(knowledgeEntity.getFileKey())
                 .regDate(knowledgeEntity.getRegDate())
                 .modDate(knowledgeEntity.getModDate())
                 .build();
@@ -44,7 +44,6 @@ public class KnowledgeSendDto {
                 .content(knowledgeSendDtoDto.getContent())
                 .category(knowledgeSendDtoDto.getCategory())
                 .view(knowledgeSendDtoDto.getView())
-                .fileKey(knowledgeSendDtoDto.getFileSendKey())
                 .build();
     }
 }
