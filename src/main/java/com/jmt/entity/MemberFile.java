@@ -16,11 +16,10 @@ import javax.persistence.*;
 @Table
 public class MemberFile {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer fileId; // 고유 아이디
+    private String fileId; // kn_01_3_셔츠6.jpg
 
     @Column(nullable = false)
-    private String fileName; // kn_01_3_셔츠6.jpg
+    private String fileName; // 셔츠6
 
     @Column(nullable = false)
     private Long fileSize; // 파일 크기

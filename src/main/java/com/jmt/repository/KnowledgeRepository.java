@@ -9,19 +9,21 @@ import java.util.List;
 import java.util.Optional;
 
 public interface KnowledgeRepository extends JpaRepository<KnowledgeEntity, Long> {
-    Optional<KnowledgeEntity> findByTitle(String title);
+    List<KnowledgeEntity> findByCategory(String category);
 
     List<KnowledgeEntity> findByNum(Long num);
 
     List<KnowledgeEntity> findByUseridAndNum(Member userid, Long num);
+
+    List<KnowledgeEntity> findByTitleContaining(String title);
+    List<KnowledgeEntity> findByContentContaining(String content);
 
     // Primary Key가 없어서 되지 않음
 //    @Query("select max(num), title, content, category, view " +
 //            "from KnowledgeEntity " +
 //            "group by title, content, category, view")
 //    List<KnowledgeEntity> distinctBynum();
-
-    @Query("select distinct num from KnowledgeEntity")
+    @Query("select distinct num from KnowledgeEntity order by num desc")
     List<Long> distinctBynum();
 
     @Query("select count(distinct num) from KnowledgeEntity")
