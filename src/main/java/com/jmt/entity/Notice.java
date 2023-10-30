@@ -20,6 +20,9 @@ public class Notice extends BaseTimeEntity {
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String noticeId;
 
+    @Column(name = "notice_num")
+    private Long noticeIdx;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "notice_userid", referencedColumnName = "userid", nullable = false)
     private Member member;
@@ -33,7 +36,7 @@ public class Notice extends BaseTimeEntity {
     @Column(length = 6500, nullable = false)
     private String noticeContent;
 
-    @Column(nullable = false)
+    @Column
     private String noticeFileKey;
 
 }

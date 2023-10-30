@@ -83,7 +83,7 @@ public class MemberService {
         // password 암호화
         String encodePwd = passwordEncoder.encode(member.getPassword());
         String encodePwdChk = passwordEncoder.encode(member.getPasswordChk());
-
+        System.out.println("다음22222");
         member.setPassword(encodePwd);
         member.setPasswordChk(encodePwdChk);
 
@@ -132,10 +132,13 @@ public class MemberService {
 
             Cookie accessCookie = tokenProvidor.createCookie("ACCESS_TOKEN", accessToken);
 
+            Cookie adminChk = tokenProvidor.createCookie("adminChk", memberRepository.findByUserid(loginDto.getUserid()).getAdminYn());
+
             return LoginDto.builder()
                     .userid(resultMember.getEmail())
                     .accessToken(accessCookie)
                     .refreshToken(refreshToken)
+                    .adminChk(adminChk)
                     .build();
         } else {
             System.out.println("여기??");
