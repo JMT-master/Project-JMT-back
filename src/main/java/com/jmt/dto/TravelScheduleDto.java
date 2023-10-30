@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class TravelScheduleDto {
 
-    private int travelId;
+    private String travelId;
 
     private String travelUserId;
 
@@ -36,7 +36,7 @@ public class TravelScheduleDto {
     public static TravelScheduleEntity toEntity(final TravelScheduleDto dto){
         try{
             return TravelScheduleEntity.builder()
-                    .travelId(dto.getTravelId())
+                    .travelId(String.valueOf(dto.getTravelId()))
                     .travelUserId(dto.getTravelUserId())
                     .travelTitle(dto.getTravelTitle())
                     .travelYn(dto.getTravelYn())

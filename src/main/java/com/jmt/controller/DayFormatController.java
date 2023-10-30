@@ -41,9 +41,10 @@ public class DayFormatController {
         return ResponseEntity.ok().body("save");
     }
     @PostMapping("/dayFormatSave")
-    public ResponseEntity<String> dayFormatSave(@RequestBody List<DayFormatDto> dtoList, int travelId){
+    public ResponseEntity<String> dayFormatSave(@RequestBody List<DayFormatDto> dtoList){
 
-        dayFormatService.dayFormatSave(dtoList,travelId);
+        System.out.println("dtoList = " + dtoList);
+        dayFormatService.dayFormatSave(dtoList);
 
         return ResponseEntity.ok().body("save");
     }

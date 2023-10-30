@@ -1,4 +1,5 @@
 package com.jmt.service;
+import com.jmt.dto.DayForm;
 import com.jmt.dto.DayFormatDto;
 import com.jmt.dto.TravelScheduleDto;
 import com.jmt.entity.DayFormatEntity;
@@ -48,18 +49,34 @@ public class DayFormatService {
         return result;
     }
 
-    public List<DayFormatDto> dayFormatSave(List<DayFormatDto> dtoList, int travelId){
+    public int dayFormatSave(List<DayFormatDto> dtoList){
+//        List<DayFormatEntity> dayFormatEntityList = dtoList.stream()
+//                .map(data -> {
+//                    return DayFormatDto.toEntity(dtoList.get(0).getDayId(),dayForm,travelId);
+//                }).collect(Collectors.toList());
+//        List<DayFormatEntity> saveResult = dayFormatRepository.saveAll(dayFormatEntityList);
+//        List<DayFormatDto> result = saveResult.stream().map(DayFormatDto::toDto).collect(Collectors.toList());
+        int result = 1;
 
-        List<DayFormatEntity> dayFormatEntityList = dtoList.stream()
-                .map(data -> {
-                    data.setDayTravelId(travelId);
-                    return DayFormatDto.toEntity(data);
-                }).collect(Collectors.toList());
+        try{
+            TravelScheduleEntity travelId = travelScheduleRepository.findByTravelId(dtoList.get(0).getDayTravelId());
+            DayForm dayForm = new DayForm();
 
-        List<DayFormatEntity> saveResult = dayFormatRepository.saveAll(dayFormatEntityList);
+            for(int i=0; i<dtoList.size(); i++){
+                dayForm.setDayCount(dtoList.get(i).getDayCount());
+                dayForm.setDayIndex(dtoList.get(i).getDayIndex());
+                dayForm.setDayTitle(dtoList.get(i).getDayTitle());
+                dayForm.setDayRegion1(dtoList.get(i).getDayRegion1());
+                dayForm.setDayRegion2(dtoList.get(i).getDayRegion2());
 
-        List<DayFormatDto> result = saveResult.stream().map(DayFormatDto::toDto).collect(Collectors.toList());
+                DayFormatEntity dayFormatEntity = DayFormatDto.toEntity(dtoList.get(0).getDayId(),dayForm,travelId);
 
+                dayFormatRepository.save(dayFormatEntity);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            result = 0;
+        }
         return result;
     }
 

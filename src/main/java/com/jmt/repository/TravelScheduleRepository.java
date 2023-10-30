@@ -7,6 +7,6 @@ import org.springframework.data.repository.NoRepositoryBean;
 import java.util.Optional;
 public interface TravelScheduleRepository extends JpaRepository<TravelScheduleEntity, Integer> {
 
-    TravelScheduleEntity findByTravelId(int id);
+    TravelScheduleEntity findByTravelId(String id);
 
 }
