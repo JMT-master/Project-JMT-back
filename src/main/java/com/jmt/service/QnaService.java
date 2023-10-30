@@ -2,8 +2,10 @@ package com.jmt.service;
 
 import com.jmt.common.PagingInfo;
 import com.jmt.common.PagingUtil;
+import com.jmt.constant.Board;
 import com.jmt.dto.QnaDto;
 import com.jmt.entity.Qna;
+import com.jmt.repository.MemberFileRepository;
 import com.jmt.repository.QnaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,8 +14,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,6 +29,8 @@ import java.util.stream.Collectors;
 public class QnaService {
 
     private final QnaRepository qnaRepository;
+    private final MemberFileRepository memberFileRepository;
+    private final FileService fileService;
 
     //crud 다 해야함
     //근데 c, u ,d는 관리자만 read는 일반 유저도 qna 페이지에 들어가면 읽을 수 있어야함
@@ -47,6 +53,44 @@ public class QnaService {
         //사실상 id가 다르다면 create 조차 불가능
         return qnaRepository.findByMember_Userid(qna.getMember().getUserid());
     }
+
+    public void createQna(List<MultipartFile> multipartFiles, QnaDto qnaDto, String userId){
+        Qna qna = QnaDto.toEntity(qnaDto);
+        Long qnaNum = qnaRepository.countByQnaNum();
+        qnaNum += 1;
+        qna.setQnaNum(qnaNum);
+
+        if (multipartFiles != null){
+            List<String> fileKeys = fileService.fileUpload(multipartFiles, userId, Board.QNA, qnaNum.intValue());
+            qnaDto.setQnaFileKey(fileKeys);
+        }
+
+        if (qnaDto.getQnaFileKey() == null) {
+            qnaRepository.save(qna);
+        }else {
+            List<Qna> qnaList = new ArrayList<>();
+            qnaDto.getQnaFileKey().forEach(data -> {
+                qna.setQnaFileKey(data);
+
+                Qna qna1 = Qna.builder()
+                        .id(qna.getId())
+                        .member(qna.getMember())
+                        .qnaNum(qna.getQnaNum())
+                        .qnaTitle(qna.getQnaTitle())
+                        .qnaContent(qna.getQnaContent())
+                        .qnaCategory(qna.getQnaCategory())
+                        .qnaView(qna.getQnaView())
+                        .qnaFileKey(qna.getQnaFileKey())
+                        .build();
+
+                qnaList.add(qna1);
+            });
+
+            qnaRepository.saveAll(qnaList);
+        }
+
+    }
+
 
     //관리자용 read
     public List<Qna> readByUserId(Long userId){

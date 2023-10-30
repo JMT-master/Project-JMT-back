@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,31 +27,35 @@ public class QnaController {
     private MemberService memberService;
 
     @PostMapping("/admin/write")
-    public ResponseEntity<?> createQna(@RequestBody QnaDto qnaDto,
+    public ResponseEntity<?> createQna(@RequestPart(value = "file", required = false) List<MultipartFile> multipartFiles,
+                                       @RequestPart(value = "data") QnaDto qnaDto,
                                        @AuthenticationPrincipal String userid){
-        try {
-            Qna qna = QnaDto.toEntity(qnaDto);
-            log.info("userId : " +userid);
-//            qna.setQnaColNum(null);
-            qna.updateModDate();
-            qna.setMember(memberService.getMember(userid));
-            log.info("qna.getmember : {}", qna.getMember());
-            List<Qna> qnaEntities = qnaService.create(qna);
-//            log.info("qnaEntities : {}",qnaEntities);
-            List<QnaDto> qnaDtos = qnaEntities.stream().map(QnaDto::new)
-                    .collect(Collectors.toList());
-            log.info("qnaDtos : {}",qnaDtos);
-            ResponseDto<QnaDto> response = ResponseDto.<QnaDto>builder()
-                    .data(qnaDtos)
-                    .build();
-            return ResponseEntity.ok().body(response);
-        }catch (Exception e){
-            String error = e.getMessage();
-            ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
-                    .error(error)
-                    .build();
-            return ResponseEntity.badRequest().body(responseDto);
-        }
+
+        qnaService.createQna(multipartFiles, qnaDto, userid);
+        return ResponseEntity.ok().body("success");
+//        try {
+//            Qna qna = QnaDto.toEntity(qnaDto);
+//            log.info("userId : " +userid);
+////            qna.setQnaColNum(null);
+//            qna.updateModDate();
+//            qna.setMember(memberService.getMember(userid));
+//            log.info("qna.getmember : {}", qna.getMember());
+//            List<Qna> qnaEntities = qnaService.create(qna);
+////            log.info("qnaEntities : {}",qnaEntities);
+//            List<QnaDto> qnaDtos = qnaEntities.stream().map(QnaDto::new)
+//                    .collect(Collectors.toList());
+//            log.info("qnaDtos : {}",qnaDtos);
+//            ResponseDto<QnaDto> response = ResponseDto.<QnaDto>builder()
+//                    .data(qnaDtos)
+//                    .build();
+//            return ResponseEntity.ok().body(response);
+//        }catch (Exception e){
+//            String error = e.getMessage();
+//            ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
+//                    .error(error)
+//                    .build();
+//            return ResponseEntity.badRequest().body(responseDto);
+//        }
     }
 
     @GetMapping

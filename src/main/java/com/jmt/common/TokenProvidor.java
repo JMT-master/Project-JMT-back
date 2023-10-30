@@ -12,6 +12,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.jmt.common.ExpiredTime.EXPIRED_TIMEOUT;
+
 @Service
 public class TokenProvidor {
     // jmt-final, algorithm : HS256
