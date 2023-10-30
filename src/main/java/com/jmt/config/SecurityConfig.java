@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/login/**", "/", "/destination/**", "/curator",
                         "/selectSchedule", "/travelSchedule", "/traffic", "/knowledge/**",
-                        "/knowledgeDetail/**", "/noticeBoard/**", "/qnABoard/**",
+                        "/knowledgeDetail/**", "/checkUser", "/qnABoard/**",
                         "/joinUser", "/notification/**", "/ws/chat", "/ws/**", "/notice/**").permitAll(); // 리소스 접근 인증 절차 없이 허용
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

@@ -3,20 +3,17 @@ package com.jmt.controller;
 import com.jmt.dto.LoginDto;
 import com.jmt.dto.MemberDto;
 import com.jmt.dto.ResponseDto;
+import com.jmt.dto.UserChkDto;
 import com.jmt.entity.Member;
 import com.jmt.service.EmailService;
 import com.jmt.service.KaKaoLoginService;
 import com.jmt.service.MemberService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
-import org.springframework.stereotype.Controller;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.function.EntityResponse;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -35,13 +32,13 @@ public class MemberController {
     KaKaoLoginService kaKaoLoginService;
 
     @PostMapping("joinUser")
-    public ResponseEntity<MemberDto> createMember(@RequestBody MemberDto dto){
+    public ResponseEntity<MemberDto> createMember(@RequestBody MemberDto dto) {
         MemberDto memberDto = null;
 
-        try{
+        try {
             memberDto = service.create(dto);
             return ResponseEntity.ok().body(memberDto);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage());
             return ResponseEntity.badRequest().body(memberDto);
         }
@@ -89,9 +86,11 @@ public class MemberController {
     @PostMapping("login")
     public ResponseEntity<LoginDto> loginMember(@RequestBody LoginDto loginDto, HttpServletResponse response) {
         LoginDto login = null;
-        try{
+        try {
             login = service.login(loginDto);
+            response.addCookie(login.getAdminChk());
             response.addCookie(login.getAccessToken());
+
             System.out.println("login = " + login);
             return ResponseEntity.ok().body(login);
         } catch (Exception e) {
@@ -107,4 +106,20 @@ public class MemberController {
 
         return null;
     }
+
+//    @PostMapping("checkUser")
+//    public ResponseEntity<UserChkDto> checkUser(@AuthenticationPrincipal String userid, @RequestBody MemberDto dto) {
+//        UserChkDto chkDto = new UserChkDto();
+//        log.debug("유저 아이디 : " + userid);
+//        log.debug("유저 dto : " + dto);
+//        Member member = service.getMember(userid);
+//        if(dto!=null) {
+//            chkDto.setIsSameUser(dto.getUserid().equals(userid));
+//        }else{
+//            chkDto.setIsSameUser(false);
+//        }
+//        chkDto.setIsAdmin(member.getAdminYn().equalsIgnoreCase("y"));
+//        log.debug("chk dto : " + chkDto);
+//        return ResponseEntity.ok().body(chkDto);
+//    }
 }

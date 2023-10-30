@@ -15,4 +15,5 @@ public class LoginDto {
     private String password; // 비밀번호
     private Cookie accessToken;    // access Token
     private String refreshToken;    // refresh Token
+    private Cookie adminChk;
 }
