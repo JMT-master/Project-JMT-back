@@ -29,9 +29,9 @@ public class NotificationService {
     }
 
     @Transactional
-    public List<Notification> showNotification(String userid){
-        log.info("NotificationTest :" + repository.findNotificationsByMember_Userid(userid));
-        return repository.findNotificationsByMember_Userid(userid);
+    public List<Notification> showNotification(String email){
+        log.info("NotificationTest :" + repository.findNotificationsByMember_Email(email));
+        return repository.findNotificationsByMember_Email(email);
     }
 
     @Transactional
@@ -45,5 +45,5 @@ public class NotificationService {
     }
 
     @Transactional
-    public void deleteAllNotification(String userid){ repository.deleteAll(repository.findNotificationsByMember_Userid(userid));}
+    public void deleteAllNotification(String userid){ repository.deleteAll(repository.findNotificationsByMember_Email(userid));}
 }

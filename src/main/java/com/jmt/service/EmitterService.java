@@ -33,7 +33,7 @@ public class EmitterService {
         //이미터 생성
         SseEmitter emitter = createEmitter(userid);
         //생성 후, 유저에게 이미터 생성 알림
-        List<Notification> notifications = notificationRepository.findNotificationsByMember_Userid(userid);
+        List<Notification> notifications = notificationRepository.findNotificationsByMember_Email(userid);
         notifications.forEach(notify -> {
             if (notify != null) {
                 log.debug("notifyChk" + notify);

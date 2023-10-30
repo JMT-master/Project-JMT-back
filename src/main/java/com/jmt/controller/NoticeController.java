@@ -1,6 +1,5 @@
 package com.jmt.controller;
 
-import com.jmt.dto.LoginDto;
 import com.jmt.dto.NoticeDto;
 import com.jmt.entity.Notice;
 import com.jmt.service.EmitterService;
@@ -8,13 +7,13 @@ import com.jmt.service.MemberService;
 import com.jmt.service.NoticeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/notice")
@@ -40,7 +39,7 @@ public class NoticeController {
     @GetMapping("/{idx}")
     public ResponseEntity<NoticeDto> read(@PathVariable Long idx){
         log.debug("noticeReadIdx : " + idx);
-        NoticeDto noticeDto = NoticeDto.toDto(noticeService.readNotice(idx));
+        NoticeDto noticeDto = NoticeDto.toDto(noticeService.readNoticeIdx(idx));
         return ResponseEntity.ok().body(noticeDto);
     }
     @PostMapping("/write")
@@ -63,7 +62,7 @@ public class NoticeController {
 
     @PostMapping("/update")
     public ResponseEntity<Notice> updateNotice(Long idx, @RequestBody NoticeDto dto){
-        Notice notice = noticeService.readNotice(idx);
+        Notice notice = noticeService.readNoticeIdx(idx);
         notice.setNoticeCategory(dto.getCategory());
         notice.setNoticeTitle(dto.getTitle());
         notice.setNoticeContent(dto.getTitle());
@@ -73,7 +72,7 @@ public class NoticeController {
     @DeleteMapping
     public ResponseEntity<List<NoticeDto>> deleteNotice(@RequestBody NoticeDto dto){
         log.debug("Notice Delete idx : " + dto.getIdx());
-        Notice targetNotice = noticeService.readNotice(dto.getIdx());
+        Notice targetNotice =  noticeService.readNotice(noticeService.readNoticeIdx(dto.getIdx()).getNoticeId());
         log.debug("Notice Delete : " + targetNotice);
         noticeService.deleteNotice(targetNotice);
         return readAll();

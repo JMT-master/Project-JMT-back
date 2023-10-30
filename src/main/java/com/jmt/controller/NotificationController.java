@@ -39,6 +39,7 @@ public class NotificationController {
 
     @GetMapping(value = "/sub",produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter subscribe(@AuthenticationPrincipal String userid){
+        Member member = memberService.getMember(userid);
         log.debug("이미터 유저 확인 : " + userid);
         SseEmitter checkEmitter= emitterService.subscribe(userid);
         log.debug("emitter sub chekc : " + checkEmitter);

@@ -4,11 +4,11 @@ import com.jmt.entity.Notice;
 import com.jmt.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -27,8 +27,12 @@ public class NoticeService {
     }
 
     @Transactional
-    public Notice readNotice(Long idx){
+    public Notice readNoticeIdx(Long idx){
         return repository.findByNoticeIdx(idx);
+    }
+
+    public Notice readNotice(String noticeId){
+        return repository.findById(noticeId).get();
     }
 
     @Transactional

@@ -27,9 +27,9 @@ public class MemberService {
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     @Transactional
-    public Member getMember(String userid){
-        log.info("userid : {}", userid);
-        return memberRepository.findByEmail(userid).get();
+    public Member getMember(String email){
+        log.info("email : {}", email);
+        return memberRepository.findByEmail(email).get();
     }
 
     // 회원가입 인증
@@ -132,7 +132,7 @@ public class MemberService {
 
             Cookie accessCookie = tokenProvidor.createCookie("ACCESS_TOKEN", accessToken);
 
-            Cookie adminChk = tokenProvidor.createCookie("adminChk", memberRepository.findByUserid(loginDto.getUserid()).getAdminYn());
+            Cookie adminChk = tokenProvidor.createCookie("adminChk", memberRepository.findByEmail(loginDto.getEmail()).get().getAdminYn());
 
             return LoginDto.builder()
                     .userid(resultMember.getEmail())
