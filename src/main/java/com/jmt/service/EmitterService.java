@@ -37,7 +37,7 @@ public class EmitterService {
         notifications.forEach(notify -> {
             if (notify != null) {
                 log.debug("notifyChk" + notify);
-                sendToClient(userid, "sse", "등록됨");
+                sendToClient(userid, "sub", "등록됨");
             } else {
                 log.debug("notifyChk" + notify);
             }
@@ -75,7 +75,7 @@ public class EmitterService {
     사용자 아이디를 기반으로 이미터를 생성함.
     */
     private SseEmitter createEmitter(String userid) {
-        SseEmitter emitter = new SseEmitter((long) (1000 * 60 * 1000));
+        SseEmitter emitter = new SseEmitter(EXPIRED_TIMEOUT);
 
         emitterRepository.save(userid, emitter);
         log.debug("createEmitter의 이미터 : " + emitter);

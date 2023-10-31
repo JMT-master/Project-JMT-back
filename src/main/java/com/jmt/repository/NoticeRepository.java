@@ -11,4 +11,6 @@ public interface NoticeRepository extends JpaRepository<Notice, String> {
     public List<Notice> findByMember(String userid);
 
     public Notice findByNoticeIdx(Long idx);
+
+    public List<Notice> findAllByOrderByNoticeIdxDesc();
 }

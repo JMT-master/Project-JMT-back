@@ -37,7 +37,7 @@ public class NoticeService {
 
     @Transactional
     public List<Notice> readAllNotice(){
-        return repository.findAll();
+        return repository.findAllByOrderByNoticeIdxDesc();
     }
 
     @Transactional

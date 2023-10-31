@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -46,17 +47,28 @@ public class NotificationController {
         return checkEmitter;
     }
 
+    //TOdo 45초 이전마다 메세지를 새로 보내는 메소드 만들기
+//    @Scheduled(fixedRate = 43000) // 5 seconds
+//    public void sendSSE() {
+//        try {
+//            emitterService.send(userid,dto);
+//        } catch (IOException e) {
+//            sseEmitter.complete();
+//        }
+//    }
+
     @PostMapping("/send")
     public ResponseEntity<NotificationDto> sendData(
             @AuthenticationPrincipal String userid,
             @RequestBody NotificationDto dto) {
+        String email = "1234";
         Notification notification = NotificationDto.toEntity(dto);
-        log.debug("MemberTest Userid : " + userid);
-        Member member = memberService.getMember(userid);
+        log.debug("MemberTest Userid : " + email);
+        Member member = memberService.getMember(email);
         notification.setMember(member);
         notificationService.addNotification(notification);
 
-        emitterService.send(userid,dto);
+        emitterService.send(email,dto);
 
         NotificationDto notificationDto = NotificationDto.toDto(notification);
         return ResponseEntity.ok().body(notificationDto);
@@ -77,6 +89,25 @@ public class NotificationController {
         }catch (Exception e){
             log.error(e.getMessage());
             return ResponseEntity.badRequest().body(alarmDto);
+        }
+    }
+
+    @PutMapping("/isRead")
+    public ResponseEntity<List<NotificationDto>> isReadNotify(@RequestBody NotificationDto dto, @AuthenticationPrincipal String email) {
+        log.debug("read : " + dto);
+        notificationService.updateRead(dto.getId());
+
+        List<Notification> entities = notificationService.showNotification(email);
+
+        List<NotificationDto> entity = new ArrayList<>();
+        for (Notification notification : entities) {
+            entity.add(NotificationDto.toDto(notification));
+        }
+        try {
+            return ResponseEntity.ok().body(entity);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.badRequest().body(entity);
         }
     }
 
@@ -106,7 +137,6 @@ public class NotificationController {
 
     @DeleteMapping
     public ResponseEntity<List<NotificationDto>> removeNotification(@RequestBody NotificationDto dto, @AuthenticationPrincipal String userid){
-        String tempNotificationId = "8a8ab7938b3cbcaf018b3cbd84990000";
         notificationService.deleteNotification(dto.getId());
         List<Notification> entities = notificationService.showNotification(userid);
 
