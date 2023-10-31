@@ -45,5 +45,12 @@ public class NotificationService {
     }
 
     @Transactional
-    public void deleteAllNotification(String userid){ repository.deleteAll(repository.findNotificationsByMember_Email(userid));}
+    public void deleteAllNotification(String email){ repository.deleteAll(repository.findNotificationsByMember_Email(email));}
+
+    @Transactional
+    public void updateRead(String notifyId){
+        Notification notification = repository.findByNotificationId(notifyId);
+        notification.setNotificationYn("n");
+        repository.save(notification);
+    }
 }

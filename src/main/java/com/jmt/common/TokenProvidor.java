@@ -116,7 +116,7 @@ public class TokenProvidor {
 //        cookie.setHttpOnly(true); // XSS와 같은 공격을 차단하기 위해 만든 Option, 자바스크립트에서 방어
         cookie.setSecure(true); // 네트워크에서 직접적으로 가로채는 것을 막는 방법
         cookie.setPath("/"); // 모든 곳에서 쿠키 열람이 가능하도록 설정
-        cookie.setMaxAge(60*60); // 60분
+        cookie.setMaxAge(60*60*8); // 60분
 
         return cookie;
     }
