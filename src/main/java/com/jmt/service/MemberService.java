@@ -98,9 +98,13 @@ public class MemberService {
 
         validate(member, true);
 
+        log.info("member in service : {}", member);
+
         // Dirty Checking(변경감지)로 인하여 update문이 따로 필요 없이 준속성에 의하여 조회 후 변경하면 자동 변경
         Optional<Member> id = memberRepository.findByEmail(member.getEmail());
         Member result = id.orElseThrow(EntityNotFoundException::new);
+
+        log.info("result : {}", result);
 
         // password 암호화
         String encodePwd = passwordEncoder.encode(member.getPassword());

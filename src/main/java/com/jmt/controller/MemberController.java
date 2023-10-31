@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -112,6 +113,56 @@ public class MemberController {
         return null;
     }
 
+    //회원 정보 수정
+    @GetMapping("member/update")
+    public ResponseEntity<?> updateMember(@AuthenticationPrincipal String userId){
+        try {
+            log.info("update userId : "+userId);
+            Member member = service.getMember(userId);
+            MemberDto memberDto = MemberDto.toDto(member);
+            memberDto.setPassword(null);
+            memberDto.setPasswordChk(null);
+            log.info("memberDto : {}", memberDto);
+            return ResponseEntity.ok().body(memberDto);
+        }catch (Exception e){
+            String error = e.getMessage();
+            ResponseDto<String> responseDto = ResponseDto.<String>builder()
+                    .error(error)
+                    .build();
+            return ResponseEntity.badRequest().body(responseDto);
+        }
+    }
+
+    @PostMapping("member/update")
+    public ResponseEntity<?> update(@AuthenticationPrincipal String userId,
+                                    @RequestBody MemberDto memberDto){
+        log.info("memberDro : {}", memberDto);
+       String email =  service.update(memberDto);
+       log.info("email : "+email);
+       Member member = service.getMember(email);
+       MemberDto dto = MemberDto.toDto(member);
+        return ResponseEntity.ok().body(dto);
+    }
+
+    //특정 userId의 userDto 값 가져오기
+    @GetMapping("mypage")
+    public ResponseEntity<?> getMember(@AuthenticationPrincipal String userId){
+        try {
+            log.info("update userId : "+userId);
+            Member member = service.getMember(userId);
+            MemberDto memberDto = MemberDto.toDto(member);
+            memberDto.setPassword(null);
+            memberDto.setPasswordChk(null);
+            log.info("memberDto : {}", memberDto);
+            return ResponseEntity.ok().body(memberDto);
+        }catch (Exception e){
+            String error = e.getMessage();
+            ResponseDto<String> responseDto = ResponseDto.<String>builder()
+                    .error(error)
+                    .build();
+            return ResponseEntity.badRequest().body(responseDto);
+        }
+    }
 //    @PostMapping("checkUser")
 //    public ResponseEntity<UserChkDto> checkUser(@AuthenticationPrincipal String userid, @RequestBody MemberDto dto) {
 //        UserChkDto chkDto = new UserChkDto();

@@ -57,7 +57,6 @@ public class Member {
     private String socialYn;
 
     public void changeMember(Member member) {
-        userid = member.getUserid();
         username = member.getUsername();
         password = member.getPassword();
         passwordChk = member.getPasswordChk();

@@ -34,8 +34,6 @@ public class MessageController {
 
     }
 
-
-
     public void sendMessageToSubscribers(String roomId, String message){
         messagingTemplate.convertAndSend("/topic/chat/room/"+roomId, message);
     }
