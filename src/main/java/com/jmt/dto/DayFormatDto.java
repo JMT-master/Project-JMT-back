@@ -51,11 +51,11 @@ public class DayFormatDto {
         }
     }
 
-    public static DayFormatDto toDto(final DayFormatEntity entity){
+    public static DayFormatDto toDto(final DayFormatEntity entity,String dayTravelId){
         try{
             return DayFormatDto.builder()
                     .dayId(entity.getDayId())
-                    .dayTravelId(String.valueOf(entity.getDayTravelId()))
+                    .dayTravelId(dayTravelId)
                     .dayImage(entity.getDayImage())
                     .dayIndex(entity.getDayIndex())
                     .dayCount(entity.getDayCount())
