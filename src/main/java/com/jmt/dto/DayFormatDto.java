@@ -19,7 +19,7 @@ public class DayFormatDto {
 
     private String dayTravelId;
 
-    private List<DayForm> dayForm;
+//    private List<DayForm> dayForm;
 
     private int dayCount;
 
@@ -33,19 +33,18 @@ public class DayFormatDto {
 
     private String dayImage;
 
-    public static DayFormatEntity toEntity(final String dto,final DayForm dayForm, TravelScheduleEntity travelScheduleEntity){
+    public static DayFormatEntity toEntity(final DayFormatDto dto, TravelScheduleEntity travelId){
 
         try{
             return DayFormatEntity.builder()
-                    .dayId(dto)
 //                    .dayTravelId(dto.getDayTravelId())
-                    .dayTravelId(travelScheduleEntity)
-                    .dayCount(dayForm.getDayCount())
-                    .dayIndex(dayForm.getDayIndex())
-                    .dayImage(dayForm.getDayImage())
-                    .dayTitle(dayForm.getDayTitle())
-                    .dayRegion1(dayForm.getDayRegion1())
-                    .dayRegion2(dayForm.getDayRegion2())
+                    .dayTravelId(travelId)
+                    .dayCount(dto.getDayCount())
+                    .dayIndex(dto.getDayIndex())
+                    .dayImage(dto.getDayImage())
+                    .dayTitle(dto.getDayTitle())
+                    .dayRegion1(dto.getDayRegion1())
+                    .dayRegion2(dto.getDayRegion2())
                     .build();
         }catch (Exception e){
             throw new RuntimeException(e.getMessage());
@@ -57,6 +56,12 @@ public class DayFormatDto {
             return DayFormatDto.builder()
                     .dayId(entity.getDayId())
                     .dayTravelId(String.valueOf(entity.getDayTravelId()))
+                    .dayImage(entity.getDayImage())
+                    .dayIndex(entity.getDayIndex())
+                    .dayCount(entity.getDayCount())
+                    .dayTitle(entity.getDayTitle())
+                    .dayRegion1(entity.getDayRegion1())
+                    .dayRegion2(entity.getDayRegion2())
                     .build();
         }catch (Exception e){
             throw new RuntimeException(e.getMessage());

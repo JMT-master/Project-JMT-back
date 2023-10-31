@@ -1,4 +1,5 @@
 package com.jmt.service;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jmt.dto.DayForm;
 import com.jmt.dto.DayFormatDto;
 import com.jmt.dto.TravelScheduleDto;
@@ -11,7 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -49,30 +52,62 @@ public class DayFormatService {
         return result;
     }
 
-    public int dayFormatSave(List<DayFormatDto> dtoList){
-//        List<DayFormatEntity> dayFormatEntityList = dtoList.stream()
-//                .map(data -> {
-//                    return DayFormatDto.toEntity(dtoList.get(0).getDayId(),dayForm,travelId);
-//                }).collect(Collectors.toList());
-//        List<DayFormatEntity> saveResult = dayFormatRepository.saveAll(dayFormatEntityList);
-//        List<DayFormatDto> result = saveResult.stream().map(DayFormatDto::toDto).collect(Collectors.toList());
+    public int dayFormatSave(Map<String,Object> dtoList,String id){
+
+
+//            List<DayFormatEntity> dayFormatEntityList = dtoList1.stream()
+//                    .map(data -> {
+//                        return DayFormatDto.toEntity(dtoList1.get(0).getDayId(),dayForm,travelId);
+//                    }).collect(Collectors.toList());
+//            List<DayFormatEntity> saveResult = dayFormatRepository.saveAll(dayFormatEntityList);
+//            List<DayFormatDto> result = saveResult.stream().map(DayFormatDto::toDto).collect(Collectors.toList());
+
         int result = 1;
 
+        TravelScheduleEntity travelId = travelScheduleRepository.findByTravelId(id);
+
         try{
-            TravelScheduleEntity travelId = travelScheduleRepository.findByTravelId(dtoList.get(0).getDayTravelId());
-            DayForm dayForm = new DayForm();
+            List<DayFormatDto> dtoListForm1 = new ArrayList<>();
+            List<DayFormatDto> dtoListForm2 = new ArrayList<>();
 
-            for(int i=0; i<dtoList.size(); i++){
-                dayForm.setDayCount(dtoList.get(i).getDayCount());
-                dayForm.setDayIndex(dtoList.get(i).getDayIndex());
-                dayForm.setDayTitle(dtoList.get(i).getDayTitle());
-                dayForm.setDayRegion1(dtoList.get(i).getDayRegion1());
-                dayForm.setDayRegion2(dtoList.get(i).getDayRegion2());
+            List<DayFormatDto> dtoFinalForm1 = new ArrayList<>();
+//            DayFormatDto dto = new DayFormatDto();
+            List<Map<String, Object>> dtoList1 = (List<Map<String, Object>>) dtoList.get("dtoList1");
+            List<Map<String, Object>> dtoList2 = (List<Map<String, Object>>) dtoList.get("dtoList2");
 
-                DayFormatEntity dayFormatEntity = DayFormatDto.toEntity(dtoList.get(0).getDayId(),dayForm,travelId);
-
-                dayFormatRepository.save(dayFormatEntity);
+            if (dtoList1 != null && !dtoList1.isEmpty()) {
+                for(int i=0; i<dtoList1.size(); i++){
+//                    dto.setDayImage((String) dtoList1.get(i).get("dayImage"));
+                    dtoListForm1.add((DayFormatDto) dtoList1.get(i).get("dayImage"));
+                    dtoListForm1.add((DayFormatDto) dtoList1.get(i).get("dayTitle"));
+                    dtoListForm1.add((DayFormatDto) dtoList1.get(i).get("dayRegion1"));
+                    dtoListForm1.add((DayFormatDto) dtoList1.get(i).get("dayRegion2"));
+                    dtoListForm1.add((DayFormatDto) dtoList1.get(i).get("dayCount"));
+                    dtoListForm1.add((DayFormatDto) dtoList1.get(i).get("dayCount"));
+                    dtoListForm1.add((DayFormatDto) dtoList1.get(i).get("dayIndex"));
+                    DayFormatEntity dayFormatEntity1 =  DayFormatDto.toEntity(dtoListForm1.get(i),travelId);
+                    dayFormatRepository.save(dayFormatEntity1);
+                }
+            } else {
+                System.out.println("에러에러 dtoList1안에 값이 없어");
             }
+            if (dtoList2 != null && !dtoList2.isEmpty()) {
+                for(int i=0; i<dtoList2.size(); i++){
+                    dtoListForm2.add((DayFormatDto) dtoList2.get(i).get("dayImage"));
+                    dtoListForm2.add((DayFormatDto) dtoList2.get(i).get("dayTitle"));
+                    dtoListForm2.add((DayFormatDto) dtoList2.get(i).get("dayRegion1"));
+                    dtoListForm2.add((DayFormatDto) dtoList2.get(i).get("dayRegion2"));
+                    dtoListForm2.add((DayFormatDto) dtoList2.get(i).get("dayCount"));
+                    dtoListForm2.add((DayFormatDto) dtoList2.get(i).get("dayCount"));
+                    dtoListForm2.add((DayFormatDto) dtoList2.get(i).get("dayIndex"));
+                    DayFormatEntity dayFormatEntity2 =  DayFormatDto.toEntity(dtoListForm2.get(i),travelId);
+                    dayFormatRepository.save(dayFormatEntity2);
+                }
+            } else {
+                System.out.println("에러에러 dtoList2안에 값이 없어");
+            }
+
+
         }catch (Exception e){
             e.printStackTrace();
             result = 0;
@@ -80,7 +115,7 @@ public class DayFormatService {
         return result;
     }
 
-    public int dayFormatDelete(int travelId){
+    public int dayFormatDelete(String travelId){
         int result = 1;
         try {
             dayFormatRepository.delete(dayFormatRepository.findByDayTravelId(travelId));

@@ -9,6 +9,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/travel")
@@ -41,18 +42,19 @@ public class DayFormatController {
         return ResponseEntity.ok().body("save");
     }
     @PostMapping("/dayFormatSave")
-    public ResponseEntity<String> dayFormatSave(@RequestBody List<DayFormatDto> dtoList){
+    public ResponseEntity<String> dayFormatSave(@RequestBody Map<String,Object> dtoList, @RequestParam(value = "id")String id){
 
         System.out.println("dtoList = " + dtoList);
-        dayFormatService.dayFormatSave(dtoList);
+        System.out.println("id = " + id);
+        dayFormatService.dayFormatSave(dtoList,id);
 
         return ResponseEntity.ok().body("save");
     }
 
     @PostMapping("/dayFormatDelete")
-    public ResponseEntity<String> dayformatDelete(@RequestBody int travelId){
+    public ResponseEntity<String> dayFormatDelete(@RequestParam(value = "id")String id){
 
-        dayFormatService.dayFormatDelete(travelId);
+        dayFormatService.dayFormatDelete(id);
 
         return ResponseEntity.ok().body("delete");
     }

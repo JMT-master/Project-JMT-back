@@ -39,9 +39,9 @@ public class TravelScheduleEntity extends BaseTimeEntity{
     private LocalDateTime travelEndDate;
 
     @Column(name="travle_startTime")
-    private LocalDateTime travelStartTime;
+    private String travelStartTime;
 
     @Column(name="travle_endTime")
-    private LocalDateTime travleEndTime;
+    private String travleEndTime;
 
 }
