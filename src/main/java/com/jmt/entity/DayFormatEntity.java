@@ -44,5 +44,13 @@ public class DayFormatEntity {
     @Column(name="day_Image")   //이미지 경로
     private String dayImage;
 
+    @Column(name="day_latitude") //위도
+    private String dayLatitude;
+
+    @Column(name="day_longitude") //경도
+    private String dayLongitude;
+
+
+
 
 }

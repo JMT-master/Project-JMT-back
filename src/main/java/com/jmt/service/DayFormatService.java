@@ -1,8 +1,5 @@
 package com.jmt.service;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jmt.dto.DayForm;
 import com.jmt.dto.DayFormatDto;
-import com.jmt.dto.TravelScheduleDto;
 import com.jmt.entity.DayFormatEntity;
 import com.jmt.entity.TravelScheduleEntity;
 import com.jmt.repository.DayFormatRepository;
@@ -11,11 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service

@@ -19,8 +19,6 @@ public class DayFormatDto {
 
     private String dayTravelId;
 
-//    private List<DayForm> dayForm;
-
     private int dayCount;
 
     private String dayTitle;
@@ -32,6 +30,10 @@ public class DayFormatDto {
     private int dayIndex;
 
     private String dayImage;
+
+    private String dayLatitude;
+
+    private String dayLongitude;
 
     public static DayFormatEntity toEntity(final DayFormatDto dto, TravelScheduleEntity travelId){
 
@@ -45,6 +47,8 @@ public class DayFormatDto {
                     .dayTitle(dto.getDayTitle())
                     .dayRegion1(dto.getDayRegion1())
                     .dayRegion2(dto.getDayRegion2())
+                    .dayLatitude(dto.getDayLatitude())
+                    .dayLongitude(dto.getDayLongitude())
                     .build();
         }catch (Exception e){
             throw new RuntimeException(e.getMessage());
@@ -62,6 +66,8 @@ public class DayFormatDto {
                     .dayTitle(entity.getDayTitle())
                     .dayRegion1(entity.getDayRegion1())
                     .dayRegion2(entity.getDayRegion2())
+                    .dayLatitude(entity.getDayLatitude())
+                    .dayLongitude(entity.getDayLongitude())
                     .build();
         }catch (Exception e){
             throw new RuntimeException(e.getMessage());
