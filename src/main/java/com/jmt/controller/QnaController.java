@@ -55,7 +55,8 @@ public class QnaController {
     }
 
     @PostMapping("/admin/{qnaNum}")
-    public ResponseEntity<?> updateQna(@RequestBody QnaDto qnaDto,
+    public ResponseEntity<?> updateQna(@RequestPart(value = "file", required = false) List<MultipartFile> multipartFiles,
+                                       @RequestPart(value = "data") QnaDto qnaDto,
                                       @PathVariable Long qnaNum
                                       ,@AuthenticationPrincipal String userId){
         try {
@@ -108,6 +109,8 @@ public class QnaController {
             return ResponseEntity.badRequest().body(responseDto);
         }
     }
+
+
 
     //업데이트를 위한 getMapping
     //특정 qna 읽어오는 mapping

@@ -5,9 +5,11 @@ import com.jmt.common.PagingUtil;
 import com.jmt.constant.Board;
 import com.jmt.dto.QnaDetailDto;
 import com.jmt.dto.QnaDto;
+import com.jmt.entity.Member;
 import com.jmt.entity.MemberFile;
 import com.jmt.entity.Qna;
 import com.jmt.repository.MemberFileRepository;
+import com.jmt.repository.MemberRepository;
 import com.jmt.repository.QnaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +33,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class QnaService {
 
+    private final MemberRepository memberRepository;
     private final QnaRepository qnaRepository;
     private final MemberFileRepository memberFileRepository;
     private final FileService fileService;
@@ -57,13 +61,14 @@ public class QnaService {
     }
 
     public void createQna(List<MultipartFile> multipartFiles, QnaDto qnaDto, String userId){
+        Member member = memberRepository.findByEmail(userId).orElseThrow(EntityNotFoundException::new);
         Qna qna = QnaDto.toEntity(qnaDto);
         Optional<Long> longNum = qnaRepository.countByQnaNum();
         Long qnaNum = 0L;
         if (longNum.isPresent()) qnaNum = longNum.get();
         qnaNum += 1;
         qna.setQnaNum(qnaNum);
-
+        qna.setMember(member);
         if (multipartFiles != null){
             String fileKey = fileService.fileUpload(multipartFiles, userId, Board.QNA, qnaNum.intValue());
             qna.setQnaFileKey(fileKey);
@@ -90,9 +95,11 @@ public class QnaService {
 
     public List<QnaDetailDto> readAndViewCount(Long qnaNum){
         Qna qna = qnaRepository.findQnaByQnaNum(qnaNum);
-
+        System.out.println("qna.getMember() = " + qna.getMember());
         List<QnaDetailDto> qnaDetailDtos = new ArrayList<>();
+
         qna.setQnaView(qna.getQnaView()+1);
+        
         if (qna.getQnaFileKey() != null){
             List<MemberFile> memberFiles = memberFileRepository.findByFileInfo(qna.getQnaFileKey());
             memberFiles.stream().forEach(memberFile -> {
@@ -131,7 +138,7 @@ public class QnaService {
         qnaEntity.setQnaTitle(qnaDto.getQnaTitle());
         qnaEntity.setQnaContent(qnaDto.getQnaContent());
         qnaEntity.updateModDate();
-        qnaEntity.setQnaFileKey(qnaEntity.getQnaFileKey());
+        qnaEntity.setQnaFileKey(qnaDto.getQnaFileKey());
         qnaRepository.save(qnaEntity);
 
         return qnaEntity;
@@ -143,6 +150,8 @@ public class QnaService {
     public List<Qna> delete(final Qna qna){
         validate(qna);
         try {
+            List<MemberFile> memberFiles = memberFileRepository.findByFileInfo(qna.getQnaFileKey());
+            memberFileRepository.deleteAll();
             qnaRepository.delete(qna);
         }catch (Exception e){
             log.error("delete 도중 error 발생...", qna.getId(), e);
