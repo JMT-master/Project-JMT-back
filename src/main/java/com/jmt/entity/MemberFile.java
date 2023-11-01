@@ -32,5 +32,9 @@ public class MemberFile {
 
     @Comment("파일이 포함된 게시글 아이디")
     @Column(nullable = false)
-    private String fileCommonId; // ID
+    private String fileUserId; // ID
+
+    @Comment("KN/QNA/Notice 각 키")
+    @Column(nullable = false)
+    private String fileInfo; // info
 }

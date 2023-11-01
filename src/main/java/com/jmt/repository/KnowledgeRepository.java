@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface KnowledgeRepository extends JpaRepository<KnowledgeEntity, Long> {
-    List<KnowledgeEntity> findByCategory(String category);
+    List<KnowledgeEntity> findByCategoryOrderByNumDesc(String category);
 
     List<KnowledgeEntity> findByNum(Long num);
 
-    List<KnowledgeEntity> findByUseridAndNum(Member userid, Long num);
+    Optional<KnowledgeEntity> findByUseridAndNum(Member userid, Long num);
 
     List<KnowledgeEntity> findByTitleContaining(String title);
     List<KnowledgeEntity> findByContentContaining(String content);
@@ -26,7 +26,7 @@ public interface KnowledgeRepository extends JpaRepository<KnowledgeEntity, Long
     @Query("select distinct num from KnowledgeEntity order by num desc")
     List<Long> distinctBynum();
 
-    @Query("select count(distinct num) from KnowledgeEntity")
+    @Query("select max(num) from KnowledgeEntity")
     Long countByNum();
 
 }

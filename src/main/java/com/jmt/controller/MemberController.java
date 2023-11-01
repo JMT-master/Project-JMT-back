@@ -38,6 +38,7 @@ public class MemberController {
     @PostMapping("joinUser")
     public ResponseEntity<MemberDto> createMember(@RequestBody MemberDto dto){
         MemberDto memberDto = null;
+        System.out.println("memberDto = " + dto);
 
         try{
             memberDto = service.create(dto);
