@@ -66,44 +66,14 @@ public class QnaController {
         return ResponseEntity.ok().body(qnaPaging);
     }
 
-//    @GetMapping
-//    public ResponseEntity<?> readQna(String userId){
-//        try {
-//            List<Qna> qnaEntities = qnaService.read();
-//            List<QnaDto> qnaDtos = qnaEntities.stream().map(QnaDto::new)
-//                    .collect(Collectors.toList());
-//            ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
-//                    .data(qnaDtos)
-//                    .build();
-//            return ResponseEntity.ok().body(responseDto);
-//        }catch (Exception e){
-//            String error = e.getMessage();
-//            System.out.println("error = " + error);
-//            ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
-//                    .error(error)
-//                    .build();
-//            return ResponseEntity.badRequest().body(responseDto);
-//        }
-//    }
-
     @PostMapping("/admin/{qnaNum}")
     public ResponseEntity<?> updateQna(@RequestBody QnaDto qnaDto,
                                       @PathVariable Long qnaNum
                                       ,@AuthenticationPrincipal String userId){
         try {
-            Qna qna = qnaService.readByQnaNum(qnaNum);
-            qna.setQnaCategory(qnaDto.getQnaCategory());
-            qna.setQnaTitle(qnaDto.getQnaTitle());
-            qna.setQnaContent(qnaDto.getQnaContent());
-            qna.setMember(memberService.getMember(userId));
-            qna.updateModDate();
-            log.info("qna : {} ",qna);
-            List<Qna> qnaEntities = qnaService.update(qna);
-            List<QnaDto> qnaDtos = qnaEntities.stream().map(QnaDto::new).collect(Collectors.toList());
-            ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
-                    .data(qnaDtos)
-                    .build();
-            return ResponseEntity.ok().body(responseDto);
+            Qna update = qnaService.update(qnaNum, qnaDto);
+            QnaDto updateDto = new QnaDto(update);
+            return ResponseEntity.ok().body(updateDto);
         }catch (Exception e){
             String error = e.getMessage();
             ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
@@ -140,15 +110,9 @@ public class QnaController {
     public ResponseEntity<?> readByQnaColNum(@PathVariable Long id) {
         try {
             // qnaColNum을 사용하여 데이터베이스에서 해당 Qna를 검색
-            List<Qna> qnas = qnaService.readByQnaListColNum(id);
-            log.info("qnas : {}", qnas);
-            List<QnaDto> qnaDtos = qnas.stream().map(QnaDto::new)
-                    .collect(Collectors.toList());
-            log.info("qnaDtos {} : ",qnaDtos);
-            ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
-                    .data(qnaDtos)
-                    .build();
-            return ResponseEntity.ok().body(responseDto);
+            Qna qna = qnaService.readAndViewCount(id);
+            QnaDto qnaDto = new QnaDto(qna);
+            return ResponseEntity.ok().body(qnaDto);
         } catch (Exception e) {
             String error = e.getMessage();
             ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
@@ -165,13 +129,9 @@ public class QnaController {
                                            @AuthenticationPrincipal String userid) {
         try {
             // qnaColNum을 사용하여 데이터베이스에서 해당 Qna를 검색
-            List<Qna> qnas = qnaService.readByQnaListColNum(id);
-            List<QnaDto> qnaDtos = qnas.stream().map(QnaDto::new)
-                    .collect(Collectors.toList());
-            ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
-                    .data(qnaDtos)
-                    .build();
-            return ResponseEntity.ok().body(responseDto);
+            Qna qna = qnaService.readByQnaNum(id);
+            QnaDto qnaDto = new QnaDto(qna);
+            return ResponseEntity.ok().body(qnaDto);
         } catch (Exception e) {
             String error = e.getMessage();
             ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()

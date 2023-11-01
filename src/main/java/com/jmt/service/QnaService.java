@@ -108,6 +108,12 @@ public class QnaService {
         return qnaRepository.findQnaByQnaNum(qnaNum);
     }
 
+    public Qna readAndViewCount(Long qnaNum){
+        Qna qna = qnaRepository.findQnaByQnaNum(qnaNum);
+        qna.setQnaView(qna.getQnaView()+1);
+        return qna;
+    }
+
     //일반 유저용 read
     public List<Qna> read(){
         return qnaRepository.findAll();
@@ -119,24 +125,17 @@ public class QnaService {
     }
 
     //update 문
-    public List<Qna> update(final Qna qnaEntity){
+    public Qna update(Long qnaNum , QnaDto qnaDto){
+        Qna qnaEntity = qnaRepository.findQnaByQnaNum(qnaNum);
         validate(qnaEntity);
+        qnaEntity.setQnaCategory(qnaDto.getQnaCategory());
+        qnaEntity.setQnaTitle(qnaDto.getQnaTitle());
+        qnaEntity.setQnaContent(qnaDto.getQnaContent());
+        qnaEntity.updateModDate();
+        qnaEntity.setQnaFileKey(qnaEntity.getQnaFileKey());
+        qnaRepository.save(qnaEntity);
 
-        final Optional<Qna> original = qnaRepository.findById(qnaEntity.getId());
-
-//        original.set(akl)
-        original.ifPresent(qna -> {
-            qna.setQnaTitle(qnaEntity.getQnaTitle());
-            qna.setQnaContent(qnaEntity.getQnaContent());
-            qna.setModDate(LocalDateTime.now());
-            qna.setQnaCategory(qnaEntity.getQnaCategory());
-            qna.setQnaFileKey(qnaEntity.getQnaFileKey());
-            //qna를 수정하는 건 view count를 올릴 필요가 없어서 가져오기만 해도 될듯..?
-            qna.setQnaView(qnaEntity.getQnaView());
-            qnaRepository.save(qna);
-        });
-
-        return readByUserId(qnaEntity.getMember().getUserid());
+        return qnaEntity;
     }
 
 
