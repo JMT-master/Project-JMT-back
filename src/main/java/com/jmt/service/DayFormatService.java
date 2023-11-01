@@ -28,11 +28,12 @@ public class DayFormatService {
     private final DayFormatRepository dayFormatRepository;
 
     public List<DayFormatDto> dayFormatSelect1(String userid,String id){
-
+        System.out.println("userid = " + userid);
+        System.out.println("id = " + id);
         List<DayFormatEntity> select = dayFormatRepository.dayFormatSelect1(userid,id);
-
+        System.out.println("select = " + select);
         List<DayFormatDto> result = select.stream().map(data -> DayFormatDto.toDto(data,id)).collect(Collectors.toList());
-
+        System.out.println("result = " + result);
         return result;
     }
 
