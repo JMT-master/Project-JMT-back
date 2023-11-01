@@ -72,7 +72,7 @@ public class TravelPdfService {
         String timeIndex;
         for (DayFormatDto dayFormatDto : dayFormatDtoList1) {
                 ImageData imageData = ImageDataFactory.create(dayFormatDto.getDayImage());
-                Image image = new Image(imageData).scaleAbsolute(150,150);
+                Image image = new Image(imageData).scaleAbsolute(100,100);
                 if (dayFormatDto.getDayIndex() / 12 > 0){
                     timeIndex = " 오후 " + dayFormatDto.getDayIndex() % 12 + "시";
                 }else{
