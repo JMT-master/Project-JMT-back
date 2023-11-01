@@ -61,8 +61,8 @@ public class QnaService {
         qna.setQnaNum(qnaNum);
 
         if (multipartFiles != null){
-            List<String> fileKeys = fileService.fileUpload(multipartFiles, userId, Board.QNA, qnaNum.intValue());
-            qnaDto.setQnaFileKey(fileKeys);
+//            List<String> fileKeys = fileService.fileUpload(multipartFiles, userId, Board.QNA, qnaNum.intValue());
+//            qnaDto.setQnaFileKey(fileKeys);
         }
 
         if (qnaDto.getQnaFileKey() == null) {

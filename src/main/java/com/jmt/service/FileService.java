@@ -29,7 +29,8 @@ public class FileService {
     private final MemberFileRepository memberFileRepository;
 
     // 파일, user, KN/QNA/NOTICE, 글번호
-    public List<String> fileUpload(List<MultipartFile> multipartFiles, String userid, Board fileIdName, int count) {
+    public String fileUpload(List<MultipartFile> multipartFiles, String userid, Board fileIdName, int count) {
+        String fileInfo = "";
         String divideBoard = "";
         String fileKey = "";
         List<String> fileKeys = new ArrayList<>();
@@ -40,11 +41,14 @@ public class FileService {
         if(!folder.exists()) folder.mkdirs();
 
         if(fileIdName == Board.KN) {
-            divideBoard = "kn_" + (count + 1) + "_";
-        }else if(fileIdName == Board.QNA){
-            divideBoard = "qna_" + (count + 1) + "_";
-        }else if (fileIdName == Board.NOTICE) {
-            divideBoard = "notice_" + (count + 1) + "_";
+            divideBoard = "KN_" + count  + "_";
+            fileInfo = "KN_" + count;
+        }else if (fileIdName == Board.QNA){
+            divideBoard = "QNA_" + count  + "_";
+            fileInfo = "QNA_" + count;
+        }else {
+            divideBoard = "NOTICE_" + count  + "_";
+            fileInfo = "NOTICE_" + count;
         }
 
         for(int i=0; i < multipartFiles.size(); i++) {
@@ -76,12 +80,13 @@ public class FileService {
                     .fileSize(multipartFiles.get(i).getSize())
                     .fileServerPath(fileUploadFullUrl)
                     .fileCategory(fileIdName.toString())
-                    .fileCommonId(userid)
+                    .fileUserId(userid)
+                    .fileInfo(fileInfo)
                     .build());
         }
 
         memberFileRepository.saveAll(memberFiles);
 
-        return fileKeys;
+        return fileInfo;
     }
 }

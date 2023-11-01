@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class KnowledgeSendDto {
+    // KnowledgeDetail 관련
     private Long num;
     private String userid;
     private String category;
