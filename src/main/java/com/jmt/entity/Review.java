@@ -12,7 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DetailReview extends BaseTimeEntity{
+public class Review extends BaseTimeEntity{
     @Id
     @Column(name = "review_id")
     @GeneratedValue(generator = "system-uuid")

@@ -39,10 +39,10 @@ public class NoticeController {
     @GetMapping("/{idx}")
     public ResponseEntity<NoticeDto> read(@PathVariable Long idx){
         log.debug("noticeReadIdx : " + idx);
-        NoticeDto noticeDto = NoticeDto.toDto(noticeService.readNoticeIdx(idx));
+        NoticeDto noticeDto = NoticeDto.toDto(noticeService.readNotice(noticeService.readNoticeIdx(idx).getNoticeId()));
         return ResponseEntity.ok().body(noticeDto);
     }
-    @PostMapping("/write")
+    @PostMapping("/admin")
     public ResponseEntity<NoticeDto> writeNotice(@AuthenticationPrincipal String userid, @RequestBody NoticeDto dto) {
         Notice entity = NoticeDto.toEntity(dto);
         log.debug("form에서 받은 dto : " + dto);
@@ -60,22 +60,21 @@ public class NoticeController {
         }
     }
 
-    @PostMapping("/update")
-    public ResponseEntity<Notice> updateNotice(Long idx, @RequestBody NoticeDto dto){
-        Notice notice = noticeService.readNoticeIdx(idx);
-        notice.setNoticeCategory(dto.getCategory());
-        notice.setNoticeTitle(dto.getTitle());
-        notice.setNoticeContent(dto.getTitle());
-        return ResponseEntity.ok().body(notice);
+    @PutMapping("/admin")
+    public ResponseEntity<NoticeDto> updateNotice(@RequestBody NoticeDto dto){
+        log.debug("updateNotice : " + dto);
+        Notice notice = noticeService.updateNotice(dto);
+        return ResponseEntity.ok().body(NoticeDto.toDto(notice));
     }
 
-    @DeleteMapping
-    public ResponseEntity<List<NoticeDto>> deleteNotice(@RequestBody NoticeDto dto){
+    @DeleteMapping("/admin")
+    public ResponseEntity<NoticeDto> deleteNotice(@RequestBody NoticeDto dto){
         log.debug("Notice Delete idx : " + dto.getIdx());
         Notice targetNotice =  noticeService.readNotice(noticeService.readNoticeIdx(dto.getIdx()).getNoticeId());
         log.debug("Notice Delete : " + targetNotice);
         noticeService.deleteNotice(targetNotice);
-        return readAll();
+        NoticeDto noticeDto = NoticeDto.toDto(targetNotice);
+        return ResponseEntity.ok().body(noticeDto);
 
     }
 }
