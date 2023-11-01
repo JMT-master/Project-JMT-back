@@ -78,21 +78,37 @@ public class DayFormatController {
                 .build());
     }
     @PostMapping("/dayFormatSave")
-    public ResponseEntity<String> dayFormatSave(@RequestBody List<DayFormatDto> dtoList, @RequestParam(value = "id")String id){
+    public ResponseEntity<ResponseDto> dayFormatSave(@RequestBody List<DayFormatDto> dtoList, @RequestParam(value = "id")String id){
 
-        System.out.println("dtoList = " + dtoList);
-        System.out.println("id = " + id);
-        dayFormatService.dayFormatSave(dtoList,id);
+        if (id != null && id != "") {
+            dayFormatService.dayFormatSave(dtoList,id);
+        }
+        else {
+            return ResponseEntity.badRequest().body(ResponseDto.builder()
+                    .error("error")
+                    .build());
+        }
 
-        return ResponseEntity.ok().body("ok");
+        return ResponseEntity.ok().body(ResponseDto.<DayFormatDto>builder()
+                .error("success")
+                .build());
     }
 
     @PostMapping("/dayFormatDelete")
-    public ResponseEntity<String> dayFormatDelete(@RequestParam(value = "id")String id){
+    public ResponseEntity<ResponseDto> dayFormatDelete(@RequestBody List<DayFormatDto> dayIdList){
 
-        dayFormatService.dayFormatDelete(id);
+        if (dayIdList != null) {
+            dayFormatService.dayFormatDelete(dayIdList);
+        }
+        else {
+            return ResponseEntity.badRequest().body(ResponseDto.builder()
+                    .error("error")
+                    .build());
+        }
 
-        return ResponseEntity.ok().body("ok");
+        return ResponseEntity.ok().body(ResponseDto.<DayFormatDto>builder()
+                .error("success")
+                .build());
     }
 
 }

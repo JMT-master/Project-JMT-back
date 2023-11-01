@@ -8,6 +8,10 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface DayFormatRepository extends JpaRepository<DayFormatEntity,String> {
+
+    DayFormatEntity findByDayTravelId(String travelId);
+
+    DayFormatEntity findByDayId(String dayId);
     @Query(value = "select b.day_id," +
             "      b.day_travelid," +
             "      b.day_count," +
@@ -26,7 +30,6 @@ public interface DayFormatRepository extends JpaRepository<DayFormatEntity,Strin
             "  and b.day_index is not null",nativeQuery = true)
     List<DayFormatEntity> dayFormatSelect1(String userid, String travelId);
 
-    DayFormatEntity findByDayTravelId(String travelId);
     @Query(value = "select b.day_id," +
             "      b.day_travelid," +
             "      b.day_count," +

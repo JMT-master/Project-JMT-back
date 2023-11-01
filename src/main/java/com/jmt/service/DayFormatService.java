@@ -61,10 +61,14 @@ public class DayFormatService {
         return result;
     }
 
-    public int dayFormatDelete(String travelId){
+    public int dayFormatDelete(List<DayFormatDto> dayIdList){
         int result = 1;
         try {
-            dayFormatRepository.delete(dayFormatRepository.findByDayTravelId(travelId));
+            String dayId ="";
+            for(int i=0; i<dayIdList.size(); i++){
+                dayId = dayIdList.get(i).getDayId();
+                dayFormatRepository.delete(dayFormatRepository.findByDayId(dayId));
+            }
         } catch (Exception e) {
             e.printStackTrace();
             result = 0;
