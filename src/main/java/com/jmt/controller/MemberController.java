@@ -3,6 +3,7 @@ package com.jmt.controller;
 import com.jmt.dto.LoginDto;
 import com.jmt.dto.MemberDto;
 import com.jmt.dto.ResponseDto;
+import com.jmt.dto.UserChkDto;
 import com.jmt.entity.Member;
 import com.jmt.service.EmailService;
 import com.jmt.service.KaKaoLoginService;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -38,6 +40,7 @@ public class MemberController {
     @PostMapping("joinUser")
     public ResponseEntity<MemberDto> createMember(@RequestBody MemberDto dto){
         MemberDto memberDto = null;
+        System.out.println("memberDto = " + dto);
 
         try{
             memberDto = service.create(dto);
@@ -92,6 +95,7 @@ public class MemberController {
         LoginDto login = null;
         try{
             login = service.login(loginDto);
+            response.addCookie(login.getAdminChk());
             System.out.println("login = " + login);
             response.addCookie(login.getAccessToken());
             System.out.println("login = " + login);
@@ -109,4 +113,70 @@ public class MemberController {
 
         return null;
     }
+
+    //회원 정보 수정
+    @GetMapping("member/update")
+    public ResponseEntity<?> updateMember(@AuthenticationPrincipal String userId){
+        try {
+            log.info("update userId : "+userId);
+            Member member = service.getMember(userId);
+            MemberDto memberDto = MemberDto.toDto(member);
+            memberDto.setPassword(null);
+            memberDto.setPasswordChk(null);
+            log.info("memberDto : {}", memberDto);
+            return ResponseEntity.ok().body(memberDto);
+        }catch (Exception e){
+            String error = e.getMessage();
+            ResponseDto<String> responseDto = ResponseDto.<String>builder()
+                    .error(error)
+                    .build();
+            return ResponseEntity.badRequest().body(responseDto);
+        }
+    }
+
+    @PostMapping("member/update")
+    public ResponseEntity<?> update(@AuthenticationPrincipal String userId,
+                                    @RequestBody MemberDto memberDto){
+        log.info("memberDro : {}", memberDto);
+       String email =  service.update(memberDto);
+       log.info("email : "+email);
+       Member member = service.getMember(email);
+       MemberDto dto = MemberDto.toDto(member);
+        return ResponseEntity.ok().body(dto);
+    }
+
+    //특정 userId의 userDto 값 가져오기
+    @GetMapping("mypage")
+    public ResponseEntity<?> getMember(@AuthenticationPrincipal String userId){
+        try {
+            log.info("update userId : "+userId);
+            Member member = service.getMember(userId);
+            MemberDto memberDto = MemberDto.toDto(member);
+            memberDto.setPassword(null);
+            memberDto.setPasswordChk(null);
+            log.info("memberDto : {}", memberDto);
+            return ResponseEntity.ok().body(memberDto);
+        }catch (Exception e){
+            String error = e.getMessage();
+            ResponseDto<String> responseDto = ResponseDto.<String>builder()
+                    .error(error)
+                    .build();
+            return ResponseEntity.badRequest().body(responseDto);
+        }
+    }
+//    @PostMapping("checkUser")
+//    public ResponseEntity<UserChkDto> checkUser(@AuthenticationPrincipal String userid, @RequestBody MemberDto dto) {
+//        UserChkDto chkDto = new UserChkDto();
+//        log.debug("유저 아이디 : " + userid);
+//        log.debug("유저 dto : " + dto);
+//        Member member = service.getMember(userid);
+//        if(dto!=null) {
+//            chkDto.setIsSameUser(dto.getUserid().equals(userid));
+//        }else{
+//            chkDto.setIsSameUser(false);
+//        }
+//        chkDto.setIsAdmin(member.getAdminYn().equalsIgnoreCase("y"));
+//        log.debug("chk dto : " + chkDto);
+//        return ResponseEntity.ok().body(chkDto);
+//    }
 }

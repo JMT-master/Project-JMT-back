@@ -1,15 +1,21 @@
 package com.jmt.service;
 
 import com.jmt.constant.Board;
+import com.jmt.dto.KnowledgeAnswerDto;
 import com.jmt.dto.KnowledgeDto;
 import com.jmt.dto.KnowledgeSendDto;
+import com.jmt.entity.KnowledgeAnswerEntity;
 import com.jmt.entity.KnowledgeEntity;
 import com.jmt.entity.Member;
+import com.jmt.entity.MemberFile;
+import com.jmt.repository.KnowledgeAnswerRepository;
 import com.jmt.repository.KnowledgeRepository;
+import com.jmt.repository.MemberFileRepository;
 import com.jmt.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
@@ -19,35 +25,111 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class KnowledgeService {
     private final MemberRepository memberRepository;
     private final KnowledgeRepository knowledgeRepository;
+    private final MemberFileRepository memberFileRepository;
+    private final KnowledgeAnswerRepository knowledgeAnswerRepository;
     private final FileService fileService;
 
+    // 중복 제거 계산
+    private List<KnowledgeEntity> distinctNumList(List<KnowledgeEntity> revList) {
+        int flag = 0;
+        List<KnowledgeEntity> sendList = new ArrayList<>();
+
+        sendList.add(revList.get(revList.size()-1));
+        for(int i=revList.size()-1; i >= 0; i--) {
+            flag = 0;
+            for(KnowledgeEntity data : sendList) {
+                if(revList.get(i).getNum().equals(data.getNum())) {
+                    continue;
+                }
+                flag++;
+            }
+
+            if(flag == sendList.size()) sendList.add(revList.get(i));
+        }
+
+        return sendList;
+    }
 
     // 전체 지식in List 중복 제거 후 뽑기
     public List<KnowledgeDto> allKnowledgeList() {
-        List<Long> entities = knowledgeRepository.distinctBynum();
 
-        System.out.println("entities = " + entities);
+        List<KnowledgeEntity> entities = knowledgeRepository.findAll(Sort.by(Sort.Direction.DESC, "num"));
 
-        List<KnowledgeDto> result = entities.stream()
-                                            .map(data -> KnowledgeDto.toDto(knowledgeRepository.findByNum(data).get(0)))
-                                            .collect(Collectors.toList());
-        System.out.println("result = " + result);
-        return result;
+        return entities.stream().map(KnowledgeDto::toDto).collect(Collectors.toList());
+    }
+
+    // 지식in 전체/관광지/음식/숙박 category
+    public List<KnowledgeDto> categoryKnowledgeList(String category) {
+        int flag = 0;
+        List<KnowledgeEntity> byCategory = new ArrayList<>();
+        if(category.equals("관광지") || category.equals("음식") || category.equals("숙박")) {
+            byCategory = knowledgeRepository.findByCategoryOrderByNumDesc(category);
+
+            // 카테고리 결과가 없을 경우
+            if(byCategory.isEmpty()){
+                List<KnowledgeDto> result = new ArrayList<>();
+                return result;
+            }
+        } else if(category.equals("전체")) {
+            byCategory = knowledgeRepository.findAll(Sort.by(Sort.Direction.DESC, "num"));
+        } else {
+            return null;
+        }
+
+        return byCategory.stream().map(KnowledgeDto::toDto).collect(Collectors.toList());
+    }
+
+    // 제목, 내용별 검색 결과 반환
+    // select : 제목/내용, searchResult : 입력한 검색어
+    public List<KnowledgeDto> search(String select, String searchResult) {
+        List<KnowledgeEntity> result = new ArrayList<>();
+
+        if(select.equals("title")) result = knowledgeRepository.findByTitleContaining(searchResult);
+        else                       result = knowledgeRepository.findByContentContaining(searchResult);
+
+        if(result.isEmpty()) {
+            List<KnowledgeDto> emptyResult = new ArrayList<>();
+            return emptyResult;
+        }
+
+        return result.stream().map(KnowledgeDto::toDto).collect(Collectors.toList());
     }
 
 
     // 지식in Detail List
-    public List<KnowledgeSendDto> writeNumKnowledgeList(KnowledgeDto knowledgeDto, Long num) {
+    public List<KnowledgeSendDto> detailForm(KnowledgeDto knowledgeDto, Long num) {
         Member member = memberRepository.findByEmail(knowledgeDto.getUserid()).get();
-        List<KnowledgeEntity> entities = knowledgeRepository.findByUseridAndNum(member, num);
+        // 작성한 글 가져오기
+        KnowledgeEntity knowledgeEntity = knowledgeRepository.findByUseridAndNum(member, num)
+                                                            .orElseThrow(EntityNotFoundException::new);
 
-        List<KnowledgeSendDto> result = entities.stream().map(KnowledgeSendDto::toDto).collect(Collectors.toList());
+        List<KnowledgeSendDto> result = new ArrayList<>();
 
-        System.out.println("result = " + result);
+        // 조회수 1 추가
+        knowledgeEntity.setView(knowledgeEntity.getView() + 1);
+
+        // 파일이 있을 경우
+        if(knowledgeEntity.getFileKey() != null) {
+            List<MemberFile> memberFiles = memberFileRepository.findByFileInfo(knowledgeEntity.getFileKey());
+            memberFiles.stream().forEach(memberFile -> {
+                KnowledgeSendDto dto = KnowledgeSendDto.toDto(knowledgeEntity);
+                dto.setServerPath(memberFile.getFileServerPath());
+                dto.setOriginalName(memberFile.getFileName());
+                dto.setView(knowledgeEntity.getView());
+                result.add(dto);
+            });
+        } else {
+            KnowledgeSendDto dto = KnowledgeSendDto.toDto(knowledgeEntity);
+            dto.setView(knowledgeEntity.getView());
+            result.add(dto);
+        }
+
+        knowledgeRepository.save(knowledgeEntity);
 
         return result;
     }
@@ -56,43 +138,110 @@ public class KnowledgeService {
     public void create(List<MultipartFile> multipartFiles, KnowledgeDto knowledgeDto, String userid) {
         Member member = memberRepository.findByEmail(userid).orElseThrow(EntityNotFoundException::new);
         KnowledgeEntity knowledgeEntity = KnowledgeEntity.createKnowledgeEntity(member, knowledgeDto);
-
-        Long num = knowledgeRepository.countByNum();
+        Long num = 0L;
+        if (knowledgeRepository.countByNum().isPresent()) {
+            num = knowledgeRepository.countByNum().get();
+        }
         num += 1;
         knowledgeEntity.setNum(num); // 글번호 Entity에 등록
 
-
         if(multipartFiles != null) {
-
-            List<String> fileKeys = fileService.fileUpload(multipartFiles, userid, Board.KN, num.intValue());
-            knowledgeDto.setFileKey(fileKeys);
-            System.out.println("strings = " + fileKeys);
+            String fileKey = fileService.fileUpload(multipartFiles, userid, Board.KN, num.intValue());
+            knowledgeEntity.setFileKey(fileKey);
         }
 
-        if(knowledgeDto.getFileKey() == null) {
-            knowledgeRepository.save(knowledgeEntity);
-        } else {
-            List<KnowledgeEntity> knowledgeEntityList = new ArrayList<>();
-            knowledgeDto.getFileKey().forEach(data -> {
-                knowledgeEntity.setFileKey(data);
+        knowledgeRepository.save(knowledgeEntity);
+    }
 
-                KnowledgeEntity knowledge = KnowledgeEntity.builder()
-                        .id(knowledgeEntity.getId())
-                        .userid(knowledgeEntity.getUserid())
-                        .num(knowledgeEntity.getNum())
-                        .title(knowledgeEntity.getTitle())
-                        .content(knowledgeEntity.getContent())
-                        .category(knowledgeEntity.getCategory())
-                        .view(knowledgeEntity.getView())
-                        .fileKey(knowledgeEntity.getFileKey())
-                        .build();
+    // 지식인 글 삭제
+    public void deleteKnowledge(KnowledgeSendDto knowledgeSendDto, String userid) {
+        Member member = memberRepository.findByEmail(userid).orElseThrow(EntityNotFoundException::new);
+        KnowledgeEntity knowledgeEntity = knowledgeRepository.findByUseridAndNum(member, knowledgeSendDto.getNum())
+                                                            .orElseThrow(EntityNotFoundException::new);
 
-                knowledgeEntityList.add(knowledge);
-            });
+        List<KnowledgeAnswerEntity> answerEntities = knowledgeAnswerRepository.findByKnNum(knowledgeEntity.getNum());
 
-            System.out.println("knowledgeEntityList = " + knowledgeEntityList);
-            knowledgeRepository.saveAll(knowledgeEntityList);
+        // 답글 확인
+        if(!answerEntities.isEmpty()) {
+            knowledgeAnswerRepository.deleteAll(answerEntities);
         }
+
+        // 첨부 파일 확인
+        if(knowledgeEntity.getFileKey() != null) {
+            List<MemberFile> memberFiles = memberFileRepository.findByFileInfo(knowledgeEntity.getFileKey());
+            memberFileRepository.deleteAll(memberFiles);
+        }
+
+        knowledgeRepository.delete(knowledgeEntity);
+    }
+
+
+    // =========================================================
+    // ========================== 답글 ==========================
+    // =========================================================
+    // 지식인 답글 리스트
+    public List<KnowledgeAnswerDto> readAnswer(Long num) {
+        List<KnowledgeAnswerEntity> resultEntity = knowledgeAnswerRepository.findByKnNumOrderByModDateDesc(num);
+
+        return resultEntity.stream().map(KnowledgeAnswerDto::toDto).collect(Collectors.toList());
+    }
+
+    // 지식인 답글 작성
+    public List<KnowledgeAnswerDto> createAnswer(KnowledgeAnswerDto knowledgeAnswerDto, String userid) {
+        KnowledgeAnswerEntity entity = KnowledgeAnswerDto.toEntity(knowledgeAnswerDto);
+        entity.setAnswerWriter(userid);
+
+        try {
+            if ((entity.getAnswerWriter() == null) || entity.getAnswerWriter().equals("anonymousUser") ||
+                    entity.getContent() == null || entity.getContent().replaceAll(" ","").isEmpty()) {
+                return null;
+
+            }
+        } catch (NullPointerException e) {
+            throw new RuntimeException("null 에러");
+        }
+
+        KnowledgeAnswerEntity save = knowledgeAnswerRepository.save(entity);
+        List<KnowledgeAnswerEntity> byKnNum = knowledgeAnswerRepository.findByKnNumOrderByModDateDesc(save.getKnNum());
+
+        return byKnNum.stream().map(KnowledgeAnswerDto::toDto).collect(Collectors.toList());
+
+    }
+
+    // 지식인 답글 좋아요 1 증가
+    public List<KnowledgeAnswerDto> likeAddAnswer(KnowledgeAnswerDto knowledgeAnswerDto) {
+        KnowledgeAnswerEntity knowledgeAnswerEntity = knowledgeAnswerRepository.findByKnNumAndAnswerWriterAndContentAndModDate(
+                knowledgeAnswerDto.getKnNum(),
+                knowledgeAnswerDto.getAnswerWriter(),
+                knowledgeAnswerDto.getContent(),
+                knowledgeAnswerDto.getModDate()
+        ).orElseThrow(EntityNotFoundException::new);
+
+        int answerLike = knowledgeAnswerEntity.getAnswerLike();
+        knowledgeAnswerEntity.setAnswerLike(answerLike+1);
+
+        KnowledgeAnswerEntity save = knowledgeAnswerRepository.save(knowledgeAnswerEntity);
+
+        List<KnowledgeAnswerEntity> resultEntity = knowledgeAnswerRepository.findByKnNumOrderByModDateDesc(save.getKnNum());
+
+        return resultEntity.stream().map(KnowledgeAnswerDto::toDto).collect(Collectors.toList());
+    }
+
+    // 지식인 답글 삭제
+    public List<KnowledgeAnswerDto> deleteAnswer(KnowledgeAnswerDto knowledgeAnswerDto, String userid) {
+        System.out.println("userid = " + userid);
+        KnowledgeAnswerEntity knowledgeAnswerEntity = knowledgeAnswerRepository.findByKnNumAndAnswerWriterAndContentAndModDate(
+                knowledgeAnswerDto.getKnNum(),
+                userid,
+                knowledgeAnswerDto.getContent(),
+                knowledgeAnswerDto.getModDate()
+        ).orElseThrow(EntityNotFoundException::new);
+
+        knowledgeAnswerRepository.delete(knowledgeAnswerEntity);
+
+        List<KnowledgeAnswerEntity> result = knowledgeAnswerRepository.findByKnNumOrderByModDateDesc(knowledgeAnswerDto.getKnNum());
+
+        return result.stream().map(KnowledgeAnswerDto::toDto).collect(Collectors.toList());
     }
 
 }

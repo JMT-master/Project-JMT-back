@@ -6,6 +6,7 @@ import lombok.*;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Getter @Setter
 @ToString
@@ -26,7 +27,7 @@ public class QnaDto {
 
     private String qnaCategory;
 
-    private String qnaFileKey;
+    private List<String> qnaFileKey;
 
     private LocalDateTime regDate;
 
@@ -37,7 +38,6 @@ public class QnaDto {
         this.qnaContent = qna.getQnaContent();
         this.qnaCategory = qna.getQnaCategory();
         this.qnaView = qna.getQnaView();
-        this.qnaFileKey = qna.getQnaFileKey();
         this.qnaNum = qna.getQnaNum();
         this.regDate = qna.getRegDate();
         this.modDate = qna.getModDate();
@@ -50,7 +50,6 @@ public class QnaDto {
                 .qnaContent(qnaDto.getQnaContent())
                 .qnaCategory(qnaDto.getQnaCategory())
                 .qnaView(qnaDto.getQnaView())
-                .qnaFileKey(qnaDto.getQnaFileKey())
                 .qnaNum(qnaDto.getQnaNum())
                 .build();
     }
