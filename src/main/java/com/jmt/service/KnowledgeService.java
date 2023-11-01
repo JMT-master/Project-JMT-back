@@ -138,8 +138,10 @@ public class KnowledgeService {
     public void create(List<MultipartFile> multipartFiles, KnowledgeDto knowledgeDto, String userid) {
         Member member = memberRepository.findByEmail(userid).orElseThrow(EntityNotFoundException::new);
         KnowledgeEntity knowledgeEntity = KnowledgeEntity.createKnowledgeEntity(member, knowledgeDto);
-
-        Long num = knowledgeRepository.countByNum();
+        Long num = 0L;
+        if (knowledgeRepository.countByNum().isPresent()) {
+            num = knowledgeRepository.countByNum().get();
+        }
         num += 1;
         knowledgeEntity.setNum(num); // 글번호 Entity에 등록
 
