@@ -27,7 +27,7 @@ public class QnaDto {
 
     private String qnaCategory;
 
-    private List<String> qnaFileKey;
+    private String qnaFileKey;
 
     private LocalDateTime regDate;
 

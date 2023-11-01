@@ -1,8 +1,5 @@
 package com.jmt.service;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jmt.dto.DayForm;
 import com.jmt.dto.DayFormatDto;
-import com.jmt.dto.TravelScheduleDto;
 import com.jmt.entity.DayFormatEntity;
 import com.jmt.entity.TravelScheduleEntity;
 import com.jmt.repository.DayFormatRepository;
@@ -11,11 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,11 +21,12 @@ public class DayFormatService {
     private final DayFormatRepository dayFormatRepository;
 
     public List<DayFormatDto> dayFormatSelect1(String userid,String id){
-
+        System.out.println("userid = " + userid);
+        System.out.println("id = " + id);
         List<DayFormatEntity> select = dayFormatRepository.dayFormatSelect1(userid,id);
-
+        System.out.println("select = " + select);
         List<DayFormatDto> result = select.stream().map(data -> DayFormatDto.toDto(data,id)).collect(Collectors.toList());
-
+        System.out.println("result = " + result);
         return result;
     }
 

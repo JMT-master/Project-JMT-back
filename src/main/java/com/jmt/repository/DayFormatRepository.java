@@ -15,13 +15,16 @@ public interface DayFormatRepository extends JpaRepository<DayFormatEntity,Strin
             "      b.day_title," +
             "      b.day_region1,"+
             "      b.day_region2," +
-            "      b.day_Image" +
+            "      b.day_Image," +
+            "      b.day_latitude," +
+            "      b.day_longitude" +
             " from travel_schedule a inner join day_format b" +
             "   on a.travel_id = b.day_travelid" +
             " where a.travel_user_id = ? " +
             "  and b.day_travelid = ?" +
             "  and b.day_count = 1" +
-            "  and b.day_index is not null",nativeQuery = true)
+            "  and b.day_index is not null "+
+            "order by b.day_index asc",nativeQuery = true)
     List<DayFormatEntity> dayFormatSelect1(String userid, String travelId);
 
     DayFormatEntity findByDayTravelId(String travelId);
@@ -32,13 +35,16 @@ public interface DayFormatRepository extends JpaRepository<DayFormatEntity,Strin
             "      b.day_title," +
             "      b.day_region1,"+
             "      b.day_region2," +
-            "      b.day_Image" +
+            "      b.day_Image," +
+            "      b.day_latitude," +
+            "      b.day_longitude" +
             " from travel_schedule a inner join day_format b" +
             "   on a.travel_id = b.day_travelid" +
             " where a.travel_user_id = ? " +
             "  and b.day_travelid = ?" +
             "  and b.day_count = 2" +
-            "  and b.day_index is not null",nativeQuery = true)
+            "  and b.day_index is not null "+
+            "ORDER BY b.day_index ASC",nativeQuery = true)
     List<DayFormatEntity> dayFormatSelect2(String userid, String travelId);
 
     @Query(value = "select b.day_id," +
@@ -48,13 +54,16 @@ public interface DayFormatRepository extends JpaRepository<DayFormatEntity,Strin
             "      b.day_title," +
             "      b.day_region1,"+
             "      b.day_region2," +
-            "      b.day_Image" +
+            "      b.day_Image," +
+            "      b.day_latitude," +
+            "      b.day_longitude" +
             " from travel_schedule a inner join day_format b" +
             "   on a.travel_id = b.day_travelid" +
             " where a.travel_user_id = ? " +
             "  and b.day_travelid = ?" +
             "  and b.day_count = 3" +
-            "  and b.day_index is not null",nativeQuery = true)
+            "  and b.day_index is not null "+
+            "ORDER BY b.day_index ASC",nativeQuery = true)
     List<DayFormatEntity> dayFormatSelect3(String userid, String travelId);
 
 

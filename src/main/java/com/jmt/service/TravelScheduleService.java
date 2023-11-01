@@ -31,4 +31,13 @@ public class TravelScheduleService {
         return TravelScheduleDto.toDto(select);
     }
 
+
+    //pdf 만들기 위한 travelId로 가져오기
+    public TravelScheduleDto selectByTravelId(String travelId){
+
+        TravelScheduleEntity travelScheduleEntity = travelScheduleRepository.findByTravelId(travelId);
+
+        return TravelScheduleDto.toDto(travelScheduleEntity);
+    }
+
 }

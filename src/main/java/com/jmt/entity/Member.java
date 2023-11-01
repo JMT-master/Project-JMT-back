@@ -44,7 +44,7 @@ public class Member {
     @Column(length = 150, nullable = false)
     private String address;
 
-    @Column(length = 150, nullable = false)
+    @Column(length = 150)
     private String addressDetail;
 
     @Column(length = 20, unique = true, nullable = false)

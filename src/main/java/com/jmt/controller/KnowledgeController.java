@@ -17,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -87,7 +88,7 @@ public class KnowledgeController {
     @PostMapping("knowledgeDetail")
     public ResponseEntity<List<KnowledgeSendDto>> createKnowledgeDetail(@RequestBody KnowledgeDto knowledgeDto, @RequestParam("id") Long id) {
         System.out.println("knowledgeDto = " + knowledgeDto);
-        List<KnowledgeSendDto> knowledgeSendDtos = knowledgeService.writeNumKnowledgeList(knowledgeDto, id);
+        List<KnowledgeSendDto> knowledgeSendDtos = knowledgeService.detailForm(knowledgeDto, id);
 
         System.out.println("id = " + id);
         System.out.println("knowledgeSendDtos = " + knowledgeSendDtos);
@@ -116,6 +117,25 @@ public class KnowledgeController {
         return new ResponseEntity<>(resource,headers, HttpStatus.OK);
     }
 
+    // 지식인 삭제
+    @PostMapping("knowledgeDetail/delete")
+    public ResponseEntity<ResponseDto> deleteKnowledgeDetail(@RequestBody KnowledgeSendDto knowledgeSendDto, @AuthenticationPrincipal String userid) {
+        try {
+            knowledgeService.deleteKnowledge(knowledgeSendDto,userid);
+            return ResponseEntity.ok().body(ResponseDto.builder()
+                            .error("success")
+                    .build());
+        } catch (Exception e) {
+            return ResponseEntity.ok().body(ResponseDto.builder()
+                    .error("error")
+                    .build());
+        }
+    }
+
+
+    // =========================================================
+    // ========================== 답글 ==========================
+    // =========================================================
     // 지식인 답글 리스트
     @GetMapping("/knowledgeDetail/answer")
     public ResponseEntity<List<KnowledgeAnswerDto>> readAnswer(@RequestParam(name = "num") Long num) {
@@ -150,5 +170,26 @@ public class KnowledgeController {
         List<KnowledgeAnswerDto> answer = knowledgeService.likeAddAnswer(knowledgeAnswerDto);
 
         return ResponseEntity.ok().body(answer);
+    }
+
+    // 지식인 답글 삭제
+    @PostMapping("/knowledgeDetail/answer/delete")
+    public ResponseEntity<ResponseDto> deleteAnswer(@RequestBody KnowledgeAnswerDto knowledgeAnswerDto,
+                                                    @AuthenticationPrincipal String userid) {
+
+        try {
+            List<KnowledgeAnswerDto> answer = knowledgeService.deleteAnswer(knowledgeAnswerDto, userid);
+
+            return ResponseEntity.ok().body(ResponseDto.<KnowledgeAnswerDto>builder()
+                    .error("success")
+                    .data(answer)
+                    .build());
+        } catch (EntityNotFoundException e) {
+            e.getMessage();
+
+            return ResponseEntity.badRequest().body(ResponseDto.builder()
+                            .error("error")
+                    .build());
+        }
     }
 }
