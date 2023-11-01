@@ -30,9 +30,7 @@ public class NoticeController {
         List<Notice> notices = noticeService.readAllNotice();
         List<NoticeDto> noticeDtos = new ArrayList<>();
 
-        notices.forEach((notice -> {
-            noticeDtos.add(NoticeDto.toDto(notice));
-        }));
+        notices.forEach((notice -> noticeDtos.add(NoticeDto.toDto(notice))));
         return ResponseEntity.ok().body(noticeDtos);
     }
 
