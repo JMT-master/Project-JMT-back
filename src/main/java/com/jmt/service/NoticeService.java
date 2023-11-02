@@ -1,5 +1,6 @@
 package com.jmt.service;
 
+import com.jmt.dto.NoticeDto;
 import com.jmt.entity.Notice;
 import com.jmt.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class NoticeService {
         return repository.findByNoticeIdx(idx);
     }
 
+    @Transactional
     public Notice readNotice(String noticeId){
         return repository.findById(noticeId).get();
     }
@@ -38,6 +40,17 @@ public class NoticeService {
     @Transactional
     public List<Notice> readAllNotice(){
         return repository.findAllByOrderByNoticeIdxDesc();
+    }
+
+    @Transactional
+    public Notice updateNotice(NoticeDto dto){
+        Notice notice = repository.findByNoticeIdx(dto.getIdx());
+        notice.setNoticeCategory(dto.getCategory());
+        notice.setNoticeTitle(dto.getTitle());
+        notice.setNoticeContent(dto.getContent());
+        notice.setRegDate(dto.getRegDate());
+        repository.save(notice);
+        return notice;
     }
 
     @Transactional
