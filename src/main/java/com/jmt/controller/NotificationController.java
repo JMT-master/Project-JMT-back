@@ -46,16 +46,14 @@ public class NotificationController {
     }
     @PostMapping("/send")
     public ResponseEntity<NotificationDto> sendData(
-            @AuthenticationPrincipal String userid,
             @RequestBody NotificationDto dto) {
-        String email = "1234";
         Notification notification = NotificationDto.toEntity(dto);
-        log.debug("MemberTest Userid : " + email);
-        Member member = memberService.getMember(email);
+        log.debug("senddto" + dto);
+        Member member = memberService.getMember(dto.getUserid());
         notification.setMember(member);
         notificationService.addNotification(notification);
 
-        emitterService.send(email,dto);
+        emitterService.send(member.getEmail(),dto);
 
         NotificationDto notificationDto = NotificationDto.toDto(notification);
         return ResponseEntity.ok().body(notificationDto);
@@ -80,11 +78,11 @@ public class NotificationController {
     }
 
     @PutMapping("/isRead")
-    public ResponseEntity<List<NotificationDto>> isReadNotify(@RequestBody NotificationDto dto, @AuthenticationPrincipal String email) {
+    public ResponseEntity<List<NotificationDto>> isReadNotify(@RequestBody NotificationDto dto, @AuthenticationPrincipal String userid) {
         log.debug("read : " + dto);
         notificationService.updateRead(dto.getId());
 
-        List<Notification> entities = notificationService.showNotification(email);
+        List<Notification> entities = notificationService.showNotification(userid);
 
         List<NotificationDto> entity = new ArrayList<>();
         for (Notification notification : entities) {
@@ -124,7 +122,7 @@ public class NotificationController {
 
     @DeleteMapping
     public ResponseEntity<List<NotificationDto>> removeNotification(@RequestBody NotificationDto dto, @AuthenticationPrincipal String userid){
-        notificationService.deleteNotification(dto.getId());
+        notificationService.deleteNotification(dto.getUserid());
         List<Notification> entities = notificationService.showNotification(userid);
 
         List<NotificationDto> entity = new ArrayList<>();

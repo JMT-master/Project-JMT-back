@@ -86,9 +86,8 @@ public class KnowledgeController {
 
     // 글 자세히 보기
     @PostMapping("knowledgeDetail")
-    public ResponseEntity<List<KnowledgeSendDto>> createKnowledgeDetail(@RequestBody KnowledgeDto knowledgeDto, @RequestParam("id") Long id) {
-        System.out.println("knowledgeDto = " + knowledgeDto);
-        List<KnowledgeSendDto> knowledgeSendDtos = knowledgeService.detailForm(knowledgeDto, id);
+    public ResponseEntity<List<KnowledgeSendDto>> createKnowledgeDetail(@RequestParam("id") Long id) {
+        List<KnowledgeSendDto> knowledgeSendDtos = knowledgeService.detailForm(id);
 
         System.out.println("id = " + id);
         System.out.println("knowledgeSendDtos = " + knowledgeSendDtos);

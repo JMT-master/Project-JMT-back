@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface KnowledgeRepository extends JpaRepository<KnowledgeEntity, Long> {
     List<KnowledgeEntity> findByCategoryOrderByNumDesc(String category);
 
-    List<KnowledgeEntity> findByNum(Long num);
+    KnowledgeEntity findByNum(Long num);
 
     Optional<KnowledgeEntity> findByUseridAndNum(Member userid, Long num);
 
