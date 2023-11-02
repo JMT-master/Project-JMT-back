@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.servlet.http.Cookie;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -17,4 +18,5 @@ public class LoginDto {
     private String password; // 비밀번호
     private Cookie accessToken;    // access Token
     private String refreshToken;    // refresh Token
+    private LocalDateTime loginTime; // login 시간 확인
 }

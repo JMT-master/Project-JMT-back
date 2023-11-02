@@ -4,6 +4,7 @@ import com.jmt.constant.Board;
 import com.jmt.dto.KnowledgeAnswerDto;
 import com.jmt.dto.KnowledgeDto;
 import com.jmt.dto.KnowledgeSendDto;
+import com.jmt.dto.KnowledgeUpdateDto;
 import com.jmt.entity.KnowledgeAnswerEntity;
 import com.jmt.entity.KnowledgeEntity;
 import com.jmt.entity.Member;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -151,6 +153,27 @@ public class KnowledgeService {
         knowledgeRepository.save(knowledgeEntity);
     }
 
+    // 지식인 글 수정
+    public void updateKnowledge(KnowledgeUpdateDto knowledgeUpdateDto, String userid) {
+        Member member = memberRepository.findByEmail(userid).orElseThrow(EntityNotFoundException::new);
+        KnowledgeEntity knowledgeEntity = knowledgeRepository.findByUseridAndNum(member, knowledgeUpdateDto.getNum())
+                .orElseThrow(EntityNotFoundException::new);
+
+        if(!knowledgeEntity.getFileKey().isEmpty()) {
+            List<MemberFile> memberFiles = memberFileRepository.findByFileInfo(knowledgeEntity.getFileKey());
+
+            List<MemberFile> deleteFiles = memberFiles.stream().filter(data -> !knowledgeUpdateDto.getFiles().contains(data.getFileName()))
+                    .collect(Collectors.toList());
+
+            memberFileRepository.deleteAll(deleteFiles);
+        }
+
+        knowledgeEntity.setCategory(knowledgeUpdateDto.getCategory());
+        knowledgeEntity.setTitle(knowledgeUpdateDto.getTitle());
+        knowledgeEntity.setContent(knowledgeUpdateDto.getContent());
+        knowledgeEntity.setModDate(LocalDateTime.now());
+    }
+
     // 지식인 글 삭제
     public void deleteKnowledge(KnowledgeSendDto knowledgeSendDto, String userid) {
         Member member = memberRepository.findByEmail(userid).orElseThrow(EntityNotFoundException::new);
@@ -179,7 +202,8 @@ public class KnowledgeService {
     // =========================================================
     // 지식인 답글 리스트
     public List<KnowledgeAnswerDto> readAnswer(Long num) {
-        List<KnowledgeAnswerEntity> resultEntity = knowledgeAnswerRepository.findByKnNumOrderByModDateDesc(num);
+        List<KnowledgeAnswerEntity> resultEntity = knowledgeAnswerRepository.findByKnNumOrderByRegDateDesc(num);
+
 
         return resultEntity.stream().map(KnowledgeAnswerDto::toDto).collect(Collectors.toList());
     }
@@ -200,7 +224,7 @@ public class KnowledgeService {
         }
 
         KnowledgeAnswerEntity save = knowledgeAnswerRepository.save(entity);
-        List<KnowledgeAnswerEntity> byKnNum = knowledgeAnswerRepository.findByKnNumOrderByModDateDesc(save.getKnNum());
+        List<KnowledgeAnswerEntity> byKnNum = knowledgeAnswerRepository.findByKnNumOrderByRegDateDesc(save.getKnNum());
 
         return byKnNum.stream().map(KnowledgeAnswerDto::toDto).collect(Collectors.toList());
 
@@ -220,9 +244,27 @@ public class KnowledgeService {
 
         KnowledgeAnswerEntity save = knowledgeAnswerRepository.save(knowledgeAnswerEntity);
 
-        List<KnowledgeAnswerEntity> resultEntity = knowledgeAnswerRepository.findByKnNumOrderByModDateDesc(save.getKnNum());
+        List<KnowledgeAnswerEntity> resultEntity = knowledgeAnswerRepository.findByKnNumOrderByRegDateDesc(save.getKnNum());
 
         return resultEntity.stream().map(KnowledgeAnswerDto::toDto).collect(Collectors.toList());
+    }
+
+    // 지식인 답글 수정
+    public List<KnowledgeAnswerDto> updateAnswer(KnowledgeAnswerDto knowledgeAnswerDto, String userid) {
+        System.out.println("userid = " + userid);
+        KnowledgeAnswerEntity knowledgeAnswerEntity = knowledgeAnswerRepository
+                .findByIdAndAnswerWriter(knowledgeAnswerDto.getAnswerId(),knowledgeAnswerDto.getAnswerWriter())
+                .orElseThrow(EntityNotFoundException::new);
+
+        knowledgeAnswerEntity.setContent(knowledgeAnswerDto.getContent());
+        knowledgeAnswerEntity.setModDate(LocalDateTime.now());
+
+        System.out.println("knowledgeAnswerEntity = " + knowledgeAnswerEntity);
+//        knowledgeAnswerRepository.save(knowledgeAnswerEntity);
+
+        List<KnowledgeAnswerEntity> result = knowledgeAnswerRepository.findByKnNumOrderByRegDateDesc(knowledgeAnswerDto.getKnNum());
+
+        return result.stream().map(KnowledgeAnswerDto::toDto).collect(Collectors.toList());
     }
 
     // 지식인 답글 삭제
@@ -237,7 +279,7 @@ public class KnowledgeService {
 
         knowledgeAnswerRepository.delete(knowledgeAnswerEntity);
 
-        List<KnowledgeAnswerEntity> result = knowledgeAnswerRepository.findByKnNumOrderByModDateDesc(knowledgeAnswerDto.getKnNum());
+        List<KnowledgeAnswerEntity> result = knowledgeAnswerRepository.findByKnNumOrderByRegDateDesc(knowledgeAnswerDto.getKnNum());
 
         return result.stream().map(KnowledgeAnswerDto::toDto).collect(Collectors.toList());
     }

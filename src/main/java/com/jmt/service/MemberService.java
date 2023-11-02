@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.Cookie;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -125,6 +126,46 @@ public class MemberService {
         // Id가 Repository에 있으면
         if(member.isPresent() && passwordEncoder.matches(loginDto.getPassword(), member.get().getPassword())) {
             System.out.println("???????????????");
+            Member resultMember = member.get();
+
+            String accessToken = tokenProvidor.createAcessToken(resultMember.getEmail());
+            String refreshToken = tokenProvidor.createRefreshToken(resultMember.getEmail());
+
+            Cookie accessCookie = tokenProvidor.createCookie("ACCESS_TOKEN", accessToken);
+
+            return LoginDto.builder()
+                    .userid(resultMember.getEmail())
+                    .accessToken(accessCookie)
+                    .refreshToken(refreshToken)
+                    .build();
+        } else {
+            System.out.println("여기??");
+            return null;
+        }
+
+    }
+
+    // 로그인 정보 제공
+    @Transactional
+    public LocalDateTime loginInfo(LoginDto loginDto) {
+        Optional<Member> member = memberRepository.findByEmail(loginDto.getEmail());
+
+        if(member.isPresent()) {
+            return LocalDateTime.now();
+        } else {
+            return null;
+        }
+    }
+
+    // 로그인 시간 연장
+
+    // 로그인
+    @Transactional
+    public LoginDto loginExtension(String userId) {
+        Optional<Member> member = memberRepository.findByEmail(userId);
+
+        // Id가 Repository에 있으면
+        if(member.isPresent()) {
             Member resultMember = member.get();
 
             String accessToken = tokenProvidor.createAcessToken(resultMember.getEmail());
