@@ -45,15 +45,16 @@ public class EmitterService {
         return emitter;
     }
 
+
     /*
     @param userid = 유저 아이디
     @return SseEmitter 생성된 이미터
 
     사용을 위해 만든 메소드, 다른 서비스 로직에서 sendToClient 메소드를 이용해 유저에게 데이터를 전송
      */
-    public void send(@AuthenticationPrincipal String userid, Object data) {
+    public void send(String userid, Object data) {
         Map<String, SseEmitter> sseEmitters = null;
-        if(!Objects.equals(userid, "anonymousUser")) {
+        if (!Objects.equals(userid, "anonymousUser")) {
             sseEmitters = emitterRepository.findAllEmitterByMemberId(userid);
             log.debug("send sseEmitters" + sseEmitters);
         }
@@ -83,9 +84,12 @@ public class EmitterService {
         emitter.onCompletion(() -> emitterRepository.deleteById(userid));
         // Emitter가 타임아웃 되었을 때(지정된 시간동안 어떠한 이벤트도 전송되지 않았을 때) Emitter를 삭제한다.
         emitter.onTimeout(() -> emitterRepository.deleteById(userid));
-        sendToClient(userid,"sse","Emitter Created. Userid = " + userid);
+        // Emitter 에러 발생시 삭제
+        emitter.onError((callback) -> emitterRepository.deleteById(userid));
+        sendToClient(userid, "sse", "Emitter Created. Userid = " + userid);
         return emitter;
     }
+
 
     /*
     @param userid = 데이터를 받을 유저 아이디

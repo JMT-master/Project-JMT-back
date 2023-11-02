@@ -25,7 +25,7 @@ public class ReviewDto {
                 .reviewContentid(dto.getReviewContentId())
                 .reviewIdx(dto.getReviewIdx())
                 .reviewImage(dto.getReviewImg())
-                .reviewLike(dto.reviewLike)
+                .reviewLike(dto.getReviewLike())
                 .build();
     }
     public static ReviewDto toDto(Review entity){

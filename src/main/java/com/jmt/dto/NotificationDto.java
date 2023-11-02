@@ -12,6 +12,7 @@ import lombok.ToString;
 @ToString
 public class NotificationDto {
     String id;
+    String userid;
     String content;
     String url;
     String yn;
@@ -19,7 +20,6 @@ public class NotificationDto {
     public static Notification toEntity(final NotificationDto dto) {
         try {
             return Notification.builder()
-                    .notificationId(dto.getId())
                     .notificationContent(dto.getContent())
                     .notificationUrl(dto.getUrl())
                     .notificationYn(dto.getYn())
