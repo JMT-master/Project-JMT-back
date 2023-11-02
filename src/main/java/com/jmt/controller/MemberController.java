@@ -211,10 +211,39 @@ public class MemberController {
 
     @PostMapping("sendEmailCode")
     public ResponseEntity<?> sendEmailCode(@RequestBody String username, String email){
-        emailService.createEmailCode();
+        emailService.sendNewPwdMail(email);
+        return ResponseEntity.ok().body("success");
+    }
+
+    @PostMapping("checkNewPwd")
+    public ResponseEntity<?> changePwd(){
+
+
 
         return null;
     }
+    // 메일 인증받기 클릭 시
+//    @PostMapping("joinUser/email/validateSend")
+//    public ResponseEntity<ResponseDto> sendEmailValidate(@RequestBody MemberDto memberDto) {
+//        ResponseDto responseDto = new ResponseDto();
+//        try {
+//            emailService.sendMail(memberDto.getEmail());
+//            responseDto.setError("success");
+//            return ResponseEntity.ok().body(responseDto);
+//        } catch (Exception e) {
+//            responseDto.setError("error");
+//            return ResponseEntity.badRequest().body(responseDto);
+//        }
+//    }
+//
+//    // 메일 인증받기 인증확인 눌렀을 때
+//    @PostMapping("joinUser/email/validateCheck")
+//    public ResponseEntity<ResponseDto> validateEmail(@RequestBody MemberDto memberDto) {
+//        ResponseDto responseDto = new ResponseDto();
+//
+//        responseDto.setError("success");
+//        return ResponseEntity.ok().body(responseDto);
+//    }
 //    @PostMapping("checkUser")
 //    public ResponseEntity<UserChkDto> checkUser(@AuthenticationPrincipal String userid, @RequestBody MemberDto dto) {
 //        UserChkDto chkDto = new UserChkDto();

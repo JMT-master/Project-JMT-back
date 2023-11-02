@@ -41,6 +41,41 @@ public class EmailService {
         System.out.println("랜덤한 문자열: " + key.toString());
     }
 
+    public void sendNewPwdMail(String email){
+        createEmailCode();
+        sendEmailID=email;
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, "utf-8");
+        StringBuffer sendMsg = pwdMessage();
+
+        try {
+            helper.setFrom("JMT@JMT.com");
+            helper.setTo(email);
+            helper.setSubject("JMT에서 새로운 비밀번호를 보내드립니다");
+            helper.setText(sendMsg.toString(), true);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            throw new RuntimeException("이메일 형식이 맞지 않습니다.");
+        }
+
+        javaMailSender.send(message);
+    }
+
+    public StringBuffer pwdMessage() {
+        StringBuffer sendEmail = new StringBuffer();
+        String emailAddress = "http://localhost:3000/checkNewPwd" + sendEmailID;
+
+        sendEmail.append(
+                        "<div>"+
+                        "<h3>JMT 새 비밀번호 입니다.</h3>" +
+                        "<p>아래 링크에서 비밀번호 변경을 진행하세요.</p>" +
+                        "<a href = \"" + emailAddress + "\">비밀번호 변경</a>" +
+                        "</div>"
+        );
+
+        return sendEmail;
+    }
+
     public void sendMail(String send) {
         createKey();
         sendEmailID = send;
