@@ -12,7 +12,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
 @Table
 public class Member {
 
@@ -42,7 +44,7 @@ public class Member {
     @Column(length = 150, nullable = false)
     private String address;
 
-    @Column(length = 150, nullable = false)
+    @Column(length = 150)
     private String addressDetail;
 
     @Column(length = 20, unique = true, nullable = false)
@@ -55,7 +57,6 @@ public class Member {
     private String socialYn;
 
     public void changeMember(Member member) {
-        userid = member.getUserid();
         username = member.getUsername();
         password = member.getPassword();
         passwordChk = member.getPasswordChk();

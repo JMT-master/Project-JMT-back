@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.Cookie;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -27,9 +28,9 @@ public class MemberService {
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     @Transactional
-    public Member getMember(String userid){
-        log.info("userid : {}", userid);
-        return memberRepository.findByEmail(userid).get();
+    public Member getMember(String email){
+        log.info("email : {}", email);
+        return memberRepository.findByEmail(email).get();
     }
 
     // 회원가입 인증
@@ -83,7 +84,7 @@ public class MemberService {
         // password 암호화
         String encodePwd = passwordEncoder.encode(member.getPassword());
         String encodePwdChk = passwordEncoder.encode(member.getPasswordChk());
-
+        System.out.println("다음22222");
         member.setPassword(encodePwd);
         member.setPasswordChk(encodePwdChk);
 
@@ -98,9 +99,13 @@ public class MemberService {
 
         validate(member, true);
 
+        log.info("member in service : {}", member);
+
         // Dirty Checking(변경감지)로 인하여 update문이 따로 필요 없이 준속성에 의하여 조회 후 변경하면 자동 변경
         Optional<Member> id = memberRepository.findByEmail(member.getEmail());
         Member result = id.orElseThrow(EntityNotFoundException::new);
+
+        log.info("result : {}", result);
 
         // password 암호화
         String encodePwd = passwordEncoder.encode(member.getPassword());
@@ -132,6 +137,49 @@ public class MemberService {
 
             Cookie accessCookie = tokenProvidor.createCookie("ACCESS_TOKEN", accessToken);
 
+            Cookie adminChk = tokenProvidor.createCookie("adminChk", memberRepository.findByEmail(loginDto.getEmail()).get().getAdminYn());
+
+            return LoginDto.builder()
+                    .userid(resultMember.getEmail())
+                    .accessToken(accessCookie)
+                    .refreshToken(refreshToken)
+                    .adminChk(adminChk)
+                    .build();
+        } else {
+            System.out.println("여기??");
+            return null;
+        }
+
+    }
+
+    // 로그인 정보 제공
+    @Transactional
+    public LocalDateTime loginInfo(LoginDto loginDto) {
+        Optional<Member> member = memberRepository.findByEmail(loginDto.getEmail());
+
+        if(member.isPresent()) {
+            return LocalDateTime.now();
+        } else {
+            return null;
+        }
+    }
+
+    // 로그인 시간 연장
+
+    // 로그인
+    @Transactional
+    public LoginDto loginExtension(String userId) {
+        Optional<Member> member = memberRepository.findByEmail(userId);
+
+        // Id가 Repository에 있으면
+        if(member.isPresent()) {
+            Member resultMember = member.get();
+
+            String accessToken = tokenProvidor.createAcessToken(resultMember.getEmail());
+            String refreshToken = tokenProvidor.createRefreshToken(resultMember.getEmail());
+
+            Cookie accessCookie = tokenProvidor.createCookie("ACCESS_TOKEN", accessToken);
+
             return LoginDto.builder()
                     .userid(resultMember.getEmail())
                     .accessToken(accessCookie)
@@ -152,7 +200,7 @@ public class MemberService {
         if(member != null) {
             return member.getEmail();
         }
-        return null;
+        return "없음";
     }
 
     // 비밀번호 찾기

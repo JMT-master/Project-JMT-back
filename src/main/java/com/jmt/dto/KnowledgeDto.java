@@ -15,13 +15,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class KnowledgeDto {
-    private Long   num;
-    private String userid;
-    private String category;
-    private String title;
-    private String content;
-    private int view;
-    private List<String> fileKey;
+    private Long          num;
+    private String        userid;
+    private String        category;
+    private String        title;
+    private String        content;
+    private int           view;
+    private String        fileKey;
     private LocalDateTime regDate;
     private LocalDateTime modDate;
 
@@ -33,6 +33,7 @@ public class KnowledgeDto {
                 .title(knowledgeEntity.getTitle())
                 .content(knowledgeEntity.getContent())
                 .view(knowledgeEntity.getView())
+                .fileKey(knowledgeEntity.getFileKey())
                 .regDate(knowledgeEntity.getRegDate())
                 .modDate(knowledgeEntity.getModDate())
                 .build() ;
@@ -45,6 +46,7 @@ public class KnowledgeDto {
                 .content(knowledgeDto.getContent())
                 .category(knowledgeDto.getCategory())
                 .view(knowledgeDto.getView())
+                .fileKey(knowledgeDto.getFileKey())
                 .build();
     }
 }

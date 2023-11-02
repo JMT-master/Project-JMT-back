@@ -54,7 +54,7 @@ public class KaKaoLoginService {
     }
 
     // accessToken 이용 User 정보 추출
-    public String getKaKaoTokenInfo(String code) {
+    public String getKaKaoTokenInfo(String token) {
         String revInfo = "https://kapi.kakao.com/v2/user/me";
         String email = "";
 
@@ -62,7 +62,7 @@ public class KaKaoLoginService {
 
         // Set Headers
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + code);
+        headers.set("Authorization", "Bearer " + token);
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         HttpEntity<MultiValueMap<String,String>> entity = new HttpEntity<>(headers);

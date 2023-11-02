@@ -24,4 +24,12 @@ public interface QnaRepository extends JpaRepository<Qna, String> {
     List<Qna> findByQnaNum(Long qnaNum);
 
     Qna findQnaByQnaNum(Long qnaNum);
+
+    //qnaNum 중복 조사
+    @Query("select distinct qnaNum from Qna order by qnaNum desc")
+    List<Long> distinctByQnaNum();
+
+    //qnaNum count 하기
+    @Query("select max(qnaNum) from Qna ")
+    Optional<Long> countByQnaNum();
 }

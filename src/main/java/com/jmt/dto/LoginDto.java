@@ -1,11 +1,9 @@
 package com.jmt.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.servlet.http.Cookie;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -17,4 +15,6 @@ public class LoginDto {
     private String password; // 비밀번호
     private Cookie accessToken;    // access Token
     private String refreshToken;    // refresh Token
+    private Cookie adminChk;
+    private LocalDateTime loginTime; // login 시간 확인
 }

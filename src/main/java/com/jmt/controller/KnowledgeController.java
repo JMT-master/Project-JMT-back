@@ -1,9 +1,6 @@
 package com.jmt.controller;
 
-import com.jmt.dto.KnowledgeAnswerDto;
-import com.jmt.dto.KnowledgeDto;
-import com.jmt.dto.KnowledgeSendDto;
-import com.jmt.dto.ResponseDto;
+import com.jmt.dto.*;
 import com.jmt.service.KnowledgeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
@@ -17,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -85,9 +83,8 @@ public class KnowledgeController {
 
     // 글 자세히 보기
     @PostMapping("knowledgeDetail")
-    public ResponseEntity<List<KnowledgeSendDto>> createKnowledgeDetail(@RequestBody KnowledgeDto knowledgeDto, @RequestParam("id") Long id) {
-        System.out.println("knowledgeDto = " + knowledgeDto);
-        List<KnowledgeSendDto> knowledgeSendDtos = knowledgeService.writeNumKnowledgeList(knowledgeDto, id);
+    public ResponseEntity<List<KnowledgeSendDto>> createKnowledgeDetail(@RequestParam("id") Long id) {
+        List<KnowledgeSendDto> knowledgeSendDtos = knowledgeService.detailForm(id);
 
         System.out.println("id = " + id);
         System.out.println("knowledgeSendDtos = " + knowledgeSendDtos);
@@ -116,6 +113,42 @@ public class KnowledgeController {
         return new ResponseEntity<>(resource,headers, HttpStatus.OK);
     }
 
+    // 글 수정
+    @PostMapping("knowledgeWrite/update")
+    public ResponseEntity<?> updateKnowledge(
+            @RequestBody KnowledgeUpdateDto knowledgeUpdateDto,
+            @AuthenticationPrincipal String userid
+    ) {
+        try {
+            knowledgeService.updateKnowledge(knowledgeUpdateDto,userid);
+            return ResponseEntity.ok().body("success");
+        } catch (Exception e) {
+            e.getMessage();
+            return ResponseEntity.ok().body("error");
+        }
+
+
+    }
+
+    // 지식인 삭제
+    @PostMapping("knowledgeDetail/delete")
+    public ResponseEntity<ResponseDto> deleteKnowledgeDetail(@RequestBody KnowledgeSendDto knowledgeSendDto, @AuthenticationPrincipal String userid) {
+        try {
+            knowledgeService.deleteKnowledge(knowledgeSendDto,userid);
+            return ResponseEntity.ok().body(ResponseDto.builder()
+                            .error("success")
+                    .build());
+        } catch (Exception e) {
+            return ResponseEntity.ok().body(ResponseDto.builder()
+                    .error("error")
+                    .build());
+        }
+    }
+
+
+    // =========================================================
+    // ========================== 답글 ==========================
+    // =========================================================
     // 지식인 답글 리스트
     @GetMapping("/knowledgeDetail/answer")
     public ResponseEntity<List<KnowledgeAnswerDto>> readAnswer(@RequestParam(name = "num") Long num) {
@@ -150,5 +183,44 @@ public class KnowledgeController {
         List<KnowledgeAnswerDto> answer = knowledgeService.likeAddAnswer(knowledgeAnswerDto);
 
         return ResponseEntity.ok().body(answer);
+    }
+
+    // 지식인 답글 수정
+    @PostMapping("/knowledgeDetail/answer/update")
+    public ResponseEntity<ResponseDto> updateAnswer(@RequestBody KnowledgeAnswerDto knowledgeAnswerDto,
+                                                    @AuthenticationPrincipal String userid) {
+        try {
+            List<KnowledgeAnswerDto> answer = knowledgeService.updateAnswer(knowledgeAnswerDto, userid);
+
+            return ResponseEntity.ok().body(ResponseDto.<KnowledgeAnswerDto>builder()
+                            .error("success")
+                            .data(answer)
+                    .build());
+        } catch (Exception e) {
+            return ResponseEntity.ok().body(ResponseDto.<KnowledgeAnswerDto>builder()
+                    .error("error")
+                    .build());
+        }
+    }
+
+    // 지식인 답글 삭제
+    @PostMapping("/knowledgeDetail/answer/delete")
+    public ResponseEntity<ResponseDto> deleteAnswer(@RequestBody KnowledgeAnswerDto knowledgeAnswerDto,
+                                                    @AuthenticationPrincipal String userid) {
+
+        try {
+            List<KnowledgeAnswerDto> answer = knowledgeService.deleteAnswer(knowledgeAnswerDto, userid);
+
+            return ResponseEntity.ok().body(ResponseDto.<KnowledgeAnswerDto>builder()
+                    .error("success")
+                    .data(answer)
+                    .build());
+        } catch (EntityNotFoundException e) {
+            e.getMessage();
+
+            return ResponseEntity.badRequest().body(ResponseDto.builder()
+                            .error("error")
+                    .build());
+        }
     }
 }

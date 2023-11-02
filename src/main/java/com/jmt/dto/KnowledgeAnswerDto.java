@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class KnowledgeAnswerDto {
+    private Long answerId;         // 글 아이디
     private Long knNum;            // 글번호
     private String answerWriter;   // 작성자
     private String content;        // 내용
@@ -22,6 +23,7 @@ public class KnowledgeAnswerDto {
 
     public static KnowledgeAnswerDto toDto(KnowledgeAnswerEntity answerEntity) {
         return KnowledgeAnswerDto.builder()
+                .answerId(answerEntity.getId())
                 .knNum(answerEntity.getKnNum())
                 .answerWriter(answerEntity.getAnswerWriter())
                 .content(answerEntity.getContent())

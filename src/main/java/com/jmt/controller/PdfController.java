@@ -1,16 +1,12 @@
 package com.jmt.controller;
 
-import com.jmt.entity.Travel;
-import com.jmt.entity.TravelPlan;
-import com.jmt.service.PdfService;
 import com.jmt.service.TravelPdfService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 
 @RestController
@@ -23,13 +19,9 @@ public class PdfController {
     private final TravelPdfService travelPdfService;
 
     @PostMapping("/generate-pdf")
-    public ResponseEntity<byte[]> generatePdf(@RequestBody List<Travel> travelList) throws Exception {
+    public ResponseEntity<byte[]> generatePdf(@AuthenticationPrincipal String userId, String travelId) throws Exception {
 
-//        TravelPlan travelPlan = new TravelPlan();
-
-        System.out.println("컨트롤러에서 들어온 travelPlan = " + travelList);
-        
-        byte[] pdfBytes = travelPdfService.generatePdf(travelList);
+        byte[] pdfBytes = travelPdfService.generatePdf("4028b8818b88c88c018b88c93d7b0000", "agh@agh.com");
 
         HttpHeaders headers = new HttpHeaders();
         //pdf로 만들기
@@ -38,18 +30,4 @@ public class PdfController {
         return ResponseEntity.ok().headers(headers).body(pdfBytes);
     }
 }
-//        Travel travel = new Travel();
-//        //임의에 travelplan을 만들어서 travel 객체에 담는 코드
-//        travel.setTravelPlans(TravelPlan.createTravelPlans(3));
-//        ByteArrayOutputStream pdfBytes = pdfService.generatePdf(travel);
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_PDF);
-//        headers.setContentDispositionFormData("attachment", "travel-plan.pdf");
-//
-//        return ResponseEntity.ok()
-//                .headers(headers)
-//                .contentLength(pdfBytes.size())
-//                .body(pdfBytes.toByteArray());
-//    }
-//}
+
