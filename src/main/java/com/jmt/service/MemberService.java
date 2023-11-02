@@ -158,8 +158,6 @@ public class MemberService {
     }
 
     // 로그인 시간 연장
-
-    // 로그인
     @Transactional
     public LoginDto loginExtension(String userId) {
         Optional<Member> member = memberRepository.findByEmail(userId);
