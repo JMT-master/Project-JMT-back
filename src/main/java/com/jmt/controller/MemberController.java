@@ -205,7 +205,15 @@ public class MemberController {
     @PostMapping("findUserId")
     public ResponseEntity<?> findUserId(@RequestBody IdFindDto idFindDto){
         String userId = service.findUserId(idFindDto);
+        System.out.println("userId = " + userId);
         return ResponseEntity.ok().body(userId);
+    }
+
+    @PostMapping("sendEmailCode")
+    public ResponseEntity<?> sendEmailCode(@RequestBody String username, String email){
+        emailService.createEmailCode();
+
+        return null;
     }
 //    @PostMapping("checkUser")
 //    public ResponseEntity<UserChkDto> checkUser(@AuthenticationPrincipal String userid, @RequestBody MemberDto dto) {

@@ -27,6 +27,20 @@ public class EmailService {
         }
     }
 
+    public void createEmailCode() {
+        StringBuilder key = new StringBuilder();
+        Random rnd = new Random();
+        String characters = "abcdefghijklmnopqrstuvwxyz0123456789"; // 숫자와 문자열을 섞을 문자열
+
+        for (int i = 0; i < 8; i++) {
+            // 랜덤한 인덱스를 생성해서 characters 문자열에서 문자를 선택하거나 숫자를 선택
+            char randomChar = characters.charAt(rnd.nextInt(characters.length()));
+            key.append(randomChar);
+        }
+
+        System.out.println("랜덤한 문자열: " + key.toString());
+    }
+
     public void sendMail(String send) {
         createKey();
         sendEmailID = send;
