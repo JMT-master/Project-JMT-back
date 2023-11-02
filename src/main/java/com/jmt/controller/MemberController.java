@@ -21,6 +21,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.function.EntityResponse;
 
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/")
@@ -95,10 +98,47 @@ public class MemberController {
         LoginDto login = null;
         try{
             login = service.login(loginDto);
+            login.setLoginTime(LocalDateTime.now());
             response.addCookie(login.getAdminChk());
             System.out.println("login = " + login);
             response.addCookie(login.getAccessToken());
+
+            System.out.println("login22222222 = " + login);
+            return ResponseEntity.ok().body(login);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+    // 로그인 정보 전달
+    @PostMapping("login/info")
+    public ResponseEntity<LocalDateTime> loginMember(@RequestBody LoginDto loginDto) {
+        List<LoginDto> loginDtos = new ArrayList<>();
+        LocalDateTime dateTime = service.loginInfo(loginDto);
+
+        if(dateTime == null) {
+            return ResponseEntity.badRequest().body(dateTime);
+        } else {
+            LoginDto login = LoginDto.builder()
+                    .loginTime(dateTime)
+                    .build();
+
+            loginDtos.add(login);
+            return ResponseEntity.ok().body(dateTime);
+        }
+    }
+
+    // 로그인 시간 연장
+    @PostMapping("login/extension")
+    public ResponseEntity<LoginDto> loginExtension(@RequestBody LoginDto loginDto, HttpServletResponse response) {
+        LoginDto login = null;
+        try{
+            login = service.login(loginDto);
+            login.setLoginTime(LocalDateTime.now());
             System.out.println("login = " + login);
+            response.addCookie(login.getAccessToken());
+
+            System.out.println("login22222222 = " + login);
             return ResponseEntity.ok().body(login);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
