@@ -200,7 +200,7 @@ public class MemberService {
         if(member != null) {
             return member.getEmail();
         }
-        return null;
+        return "없음";
     }
 
     // 비밀번호 찾기

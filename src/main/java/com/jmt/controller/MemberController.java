@@ -1,9 +1,6 @@
 package com.jmt.controller;
 
-import com.jmt.dto.LoginDto;
-import com.jmt.dto.MemberDto;
-import com.jmt.dto.ResponseDto;
-import com.jmt.dto.UserChkDto;
+import com.jmt.dto.*;
 import com.jmt.entity.Member;
 import com.jmt.service.EmailService;
 import com.jmt.service.KaKaoLoginService;
@@ -204,11 +201,15 @@ public class MemberController {
             return ResponseEntity.badRequest().body(responseDto);
         }
     }
+
+    @PostMapping("findUserId")
+    public ResponseEntity<?> findUserId(@RequestBody IdFindDto idFindDto){
+        String userId = service.findUserId(idFindDto);
+        return ResponseEntity.ok().body(userId);
+    }
 //    @PostMapping("checkUser")
 //    public ResponseEntity<UserChkDto> checkUser(@AuthenticationPrincipal String userid, @RequestBody MemberDto dto) {
 //        UserChkDto chkDto = new UserChkDto();
-//        log.debug("유저 아이디 : " + userid);
-//        log.debug("유저 dto : " + dto);
 //        Member member = service.getMember(userid);
 //        if(dto!=null) {
 //            chkDto.setIsSameUser(dto.getUserid().equals(userid));
