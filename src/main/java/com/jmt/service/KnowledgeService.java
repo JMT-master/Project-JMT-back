@@ -141,7 +141,11 @@ public class KnowledgeService {
         Member member = memberRepository.findByEmail(userid).orElseThrow(EntityNotFoundException::new);
         KnowledgeEntity knowledgeEntity = KnowledgeEntity.createKnowledgeEntity(member, knowledgeDto);
 
-        Long num = knowledgeRepository.countByNum();
+        Long num = 0L;
+        Optional<Long> l = knowledgeRepository.countByNum();
+
+        if(l.isPresent()) num = l.get();
+
         num += 1;
         knowledgeEntity.setNum(num); // 글번호 Entity에 등록
 

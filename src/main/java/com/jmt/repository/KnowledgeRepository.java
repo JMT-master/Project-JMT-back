@@ -27,6 +27,6 @@ public interface KnowledgeRepository extends JpaRepository<KnowledgeEntity, Long
     List<Long> distinctBynum();
 
     @Query("select max(num) from KnowledgeEntity")
-    Long countByNum();
+    Optional<Long> countByNum();
 
 }

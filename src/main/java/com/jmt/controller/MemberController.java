@@ -115,9 +115,17 @@ public class MemberController {
         }
     }
 
-    // 로그인 정보 전달
+    // 로그인 유저 전달
+    @GetMapping("login/info")
+    public ResponseEntity<String> loginMember(@AuthenticationPrincipal String userid) {
+        Member member = service.getMember(userid);
+
+        return ResponseEntity.ok().body(member.getEmail());
+    }
+
+    // 로그인 접속 시간
     @PostMapping("login/info")
-    public ResponseEntity<LocalDateTime> loginMember(@RequestBody LoginDto loginDto) {
+    public ResponseEntity<LocalDateTime> loginStartTime(@RequestBody LoginDto loginDto) {
         List<LoginDto> loginDtos = new ArrayList<>();
         LocalDateTime dateTime = service.loginInfo(loginDto);
 
@@ -137,16 +145,13 @@ public class MemberController {
 
     // 로그인 시간 연장
     @PostMapping("login/extension")
-    public ResponseEntity<LoginDto> loginExtension(@RequestBody LoginDto loginDto, HttpServletResponse response) {
-        LoginDto login = null;
+    public ResponseEntity<LocalDateTime> loginExtension(@RequestBody String userid, HttpServletResponse response) {
         try{
-            login = service.login(loginDto);
-            login.setLoginTime(LocalDateTime.now());
-            System.out.println("login = " + login);
+
+            LoginDto login = service.loginExtension(userid);
             response.addCookie(login.getAccessToken());
 
-            System.out.println("login22222222 = " + login);
-            return ResponseEntity.ok().body(login);
+            return ResponseEntity.ok().body(LocalDateTime.now());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -155,18 +160,7 @@ public class MemberController {
     // 로그인 만료시간 확인
     @GetMapping("login/expired")
     public ResponseEntity<ResponseDto> loginExpired(HttpServletRequest request, @AuthenticationPrincipal String userid) {
-        System.out.println("request = " + request);
         String token = tokenProvidor.parseJwt(request);
-
-        System.out.println("userid = " + userid);
-        System.out.println("들어옴?");
-        System.out.println("token = " + token);
-
-//        if(userid.equals("anonymousUser")) {
-//            return ResponseEntity.ok().body(ResponseDto.builder()
-//                    .error("success")
-//                    .build());
-//        }
         try {
             Boolean tokenExpired = tokenProvidor.isTokenExpired(token);
 
