@@ -1,6 +1,8 @@
 package com.jmt.service;
 
+import com.jmt.dto.DayFormatDto;
 import com.jmt.dto.TravelScheduleDto;
+import com.jmt.entity.DayFormatEntity;
 import com.jmt.entity.Member;
 import com.jmt.entity.TravelScheduleEntity;
 import com.jmt.repository.DayFormatRepository;
@@ -10,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -38,6 +43,16 @@ public class TravelScheduleService {
         TravelScheduleEntity travelScheduleEntity = travelScheduleRepository.findByTravelId(travelId);
 
         return TravelScheduleDto.toDto(travelScheduleEntity);
+    }
+
+    public List<TravelScheduleDto> travelScheduleSelect(String userId){
+
+        String userId1 = userId;
+        List<TravelScheduleEntity> select = travelScheduleRepository.travelScheduleSelect(userId,userId1);
+
+        List<TravelScheduleDto> result = select.stream().map(TravelScheduleDto::toDto).collect(Collectors.toList());
+
+        return result;
     }
 
 }

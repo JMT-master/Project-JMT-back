@@ -50,6 +50,9 @@ public class DayFormatEntity {
     @Column(name="day_longitude") //경도
     private String dayLongitude;
 
+    @Column(name="day_user_id")
+    private String dayUserId;
+
 
 
 

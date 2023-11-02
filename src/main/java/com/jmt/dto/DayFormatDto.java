@@ -35,7 +35,9 @@ public class DayFormatDto {
 
     private String dayLongitude;
 
-    public static DayFormatEntity toEntity(final DayFormatDto dto, TravelScheduleEntity travelId){
+    private String dayUserId;
+
+    public static DayFormatEntity toEntity(final DayFormatDto dto, TravelScheduleEntity travelId,String userid){
 
         try{
             return DayFormatEntity.builder()
@@ -49,6 +51,7 @@ public class DayFormatDto {
                     .dayRegion2(dto.getDayRegion2())
                     .dayLatitude(dto.getDayLatitude())
                     .dayLongitude(dto.getDayLongitude())
+                    .dayUserId(userid)
                     .build();
         }catch (Exception e){
             throw new RuntimeException(e.getMessage());
@@ -68,6 +71,7 @@ public class DayFormatDto {
                     .dayRegion2(entity.getDayRegion2())
                     .dayLatitude(entity.getDayLatitude())
                     .dayLongitude(entity.getDayLongitude())
+                    .dayUserId(entity.getDayUserId())
                     .build();
         }catch (Exception e){
             throw new RuntimeException(e.getMessage());

@@ -21,12 +21,11 @@ public class DayFormatService {
     private final DayFormatRepository dayFormatRepository;
 
     public List<DayFormatDto> dayFormatSelect1(String userid,String id){
-        System.out.println("userid = " + userid);
-        System.out.println("id = " + id);
+
         List<DayFormatEntity> select = dayFormatRepository.dayFormatSelect1(userid,id);
-        System.out.println("select = " + select);
+
         List<DayFormatDto> result = select.stream().map(data -> DayFormatDto.toDto(data,id)).collect(Collectors.toList());
-        System.out.println("result = " + result);
+
         return result;
     }
 
@@ -47,12 +46,12 @@ public class DayFormatService {
         return result;
     }
 
-    public int dayFormatSave(List<DayFormatDto> dtoList,String id){
+    public int dayFormatSave(List<DayFormatDto> dtoList,String id,String userid){
         int result = 1;
         try{
             TravelScheduleEntity travelId = travelScheduleRepository.findByTravelId(id);
             List<DayFormatEntity> dayFormatEntityList = dtoList.stream()
-                    .map(data ->  DayFormatDto.toEntity(data,travelId)).collect(Collectors.toList());
+                    .map(data ->  DayFormatDto.toEntity(data,travelId,userid)).collect(Collectors.toList());
             List<DayFormatEntity> saveResult = dayFormatRepository.saveAll(dayFormatEntityList);
 //            List<DayFormatDto> result = saveResult.stream().map(DayFormatDto::toDto).collect(Collectors.toList());
         }catch (Exception e){

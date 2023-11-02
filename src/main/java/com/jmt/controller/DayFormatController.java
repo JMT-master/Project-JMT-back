@@ -78,10 +78,11 @@ public class DayFormatController {
                 .build());
     }
     @PostMapping("/dayFormatSave")
-    public ResponseEntity<ResponseDto> dayFormatSave(@RequestBody List<DayFormatDto> dtoList, @RequestParam(value = "id")String id){
+    public ResponseEntity<ResponseDto> dayFormatSave(@RequestBody List<DayFormatDto> dtoList,
+             @RequestParam(value = "id")String id,@AuthenticationPrincipal String userid){
 
         if (id != null && id != "") {
-            dayFormatService.dayFormatSave(dtoList,id);
+            dayFormatService.dayFormatSave(dtoList,id,userid);
         }
         else {
             return ResponseEntity.badRequest().body(ResponseDto.builder()

@@ -21,7 +21,8 @@ public interface DayFormatRepository extends JpaRepository<DayFormatEntity,Strin
             "      b.day_region2," +
             "      b.day_Image," +
             "      b.day_latitude," +
-            "      b.day_longitude" +
+            "      b.day_longitude," +
+            "      b.day_user_id" +
             " from travel_schedule a inner join day_format b" +
             "   on a.travel_id = b.day_travelid" +
             " where a.travel_user_id = ? " +
@@ -40,7 +41,8 @@ public interface DayFormatRepository extends JpaRepository<DayFormatEntity,Strin
             "      b.day_region2," +
             "      b.day_Image," +
             "      b.day_latitude," +
-            "      b.day_longitude" +
+            "      b.day_longitude," +
+            "      b.day_user_id" +
             " from travel_schedule a inner join day_format b" +
             "   on a.travel_id = b.day_travelid" +
             " where a.travel_user_id = ? " +
@@ -59,7 +61,8 @@ public interface DayFormatRepository extends JpaRepository<DayFormatEntity,Strin
             "      b.day_region2," +
             "      b.day_Image," +
             "      b.day_latitude," +
-            "      b.day_longitude" +
+            "      b.day_longitude," +
+            "      b.day_user_id" +
             " from travel_schedule a inner join day_format b" +
             "   on a.travel_id = b.day_travelid" +
             " where a.travel_user_id = ? " +
