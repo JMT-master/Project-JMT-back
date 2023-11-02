@@ -39,24 +39,11 @@ public class NotificationController {
 
 
     @GetMapping(value = "/sub",produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter subscribe(@AuthenticationPrincipal String userid){
-        Member member = memberService.getMember(userid);
-        log.debug("이미터 유저 확인 : " + userid);
-        SseEmitter checkEmitter= emitterService.subscribe(userid);
+    public SseEmitter subscribe(@AuthenticationPrincipal String email){
+        SseEmitter checkEmitter= emitterService.subscribe(email);
         log.debug("emitter sub chekc : " + checkEmitter);
         return checkEmitter;
     }
-
-    //TOdo 45초 이전마다 메세지를 새로 보내는 메소드 만들기
-//    @Scheduled(fixedRate = 43000) // 5 seconds
-//    public void sendSSE() {
-//        try {
-//            emitterService.send(userid,dto);
-//        } catch (IOException e) {
-//            sseEmitter.complete();
-//        }
-//    }
-
     @PostMapping("/send")
     public ResponseEntity<NotificationDto> sendData(
             @AuthenticationPrincipal String userid,

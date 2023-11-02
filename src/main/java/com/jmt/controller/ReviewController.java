@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.PreUpdate;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -15,34 +17,45 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class ReviewController {
-    ReviewService reviewService;
+    private final ReviewService reviewService;
 
-    @GetMapping
-    public List<Review> readAllReview(String cid){
-        return reviewService.readAll(cid);
+    @PostMapping("/read")
+    public List<ReviewDto> readAllReview(@RequestBody ReviewDto dto) {
+        log.debug("reviewDto : " + dto.getReviewContentId());
+//        log.debug("review : " + reviewService.readAll(dto.getReviewContentId()));
+        List<Review> reviews = reviewService.readAll(dto.getReviewContentId());
+        List<ReviewDto> reviewDtos = new ArrayList<>();
+
+        reviews.forEach(review -> {
+            reviewDtos.add(ReviewDto.toDto(review));
+        });
+        return reviewDtos;
     }
 
-    @GetMapping("/{idx}")
-    public Review readReview(@PathVariable Long idx){
+    @GetMapping("/{cid}/{idx}")
+    public Review readReview(
+            @PathVariable(value = "cid") String cid,
+            @PathVariable(value = "idx") Long idx
+    ) {
         return reviewService.readReview(idx);
     }
 
     @PostMapping
-    public ResponseEntity<ReviewDto> writeReview(@RequestBody ReviewDto dto){
+    public ResponseEntity<ReviewDto> writeReview(@RequestBody ReviewDto dto) {
         Review review = reviewService.writeReview(dto);
         ReviewDto reviewDto = ReviewDto.toDto(review);
         return ResponseEntity.ok().body(reviewDto);
     }
 
     @PutMapping
-    public ResponseEntity<ReviewDto> updateReview(@RequestBody ReviewDto dto){
+    public ResponseEntity<ReviewDto> updateReview(@RequestBody ReviewDto dto) {
         Review review = reviewService.updateReview(dto);
         ReviewDto reviewDto = ReviewDto.toDto(review);
         return ResponseEntity.ok().body(reviewDto);
     }
 
     @DeleteMapping
-    public ResponseEntity<ReviewDto> deleteReveiw(@RequestBody ReviewDto dto){
+    public ResponseEntity<ReviewDto> deleteReveiw(@RequestBody ReviewDto dto) {
         Review review = reviewService.deleteReview(dto);
         ReviewDto reviewDto = ReviewDto.toDto(review);
         return ResponseEntity.ok().body(reviewDto);

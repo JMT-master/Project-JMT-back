@@ -1,6 +1,7 @@
 package com.jmt.entity;
 
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -29,8 +30,11 @@ public class Review extends BaseTimeEntity{
     private String reviewContentid;
     @Column(length = 6500)
     private String reviewContent;
-    @Column(length = 6500)
+
+
+    @Column(length = 6500, columnDefinition = "int default 0")
     private int reviewLike;
+
     @Column(length = 6500)
     private String reviewImage;
 }
