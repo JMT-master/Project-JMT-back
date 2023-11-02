@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/notice")
@@ -26,22 +25,24 @@ public class NoticeController {
     private final MemberService memberService;
 
     @GetMapping
-    public ResponseEntity<List<NoticeDto>> readAll(){
+    public ResponseEntity<List<NoticeDto>> readAll() {
         List<Notice> notices = noticeService.readAllNotice();
         List<NoticeDto> noticeDtos = new ArrayList<>();
 
-        notices.forEach((notice -> {
+        notices.forEach((notice) -> {
+            log.debug(notice.toString());
             noticeDtos.add(NoticeDto.toDto(notice));
-        }));
+        });
         return ResponseEntity.ok().body(noticeDtos);
     }
 
     @GetMapping("/{idx}")
-    public ResponseEntity<NoticeDto> read(@PathVariable Long idx){
+    public ResponseEntity<NoticeDto> read(@PathVariable Long idx) {
         log.debug("noticeReadIdx : " + idx);
         NoticeDto noticeDto = NoticeDto.toDto(noticeService.readNotice(noticeService.readNoticeIdx(idx).getNoticeId()));
         return ResponseEntity.ok().body(noticeDto);
     }
+
     @PostMapping("/admin")
     public ResponseEntity<NoticeDto> writeNotice(@AuthenticationPrincipal String userid, @RequestBody NoticeDto dto) {
         Notice entity = NoticeDto.toEntity(dto);
@@ -51,30 +52,29 @@ public class NoticeController {
         }
         entity.setMember(memberService.getMember(userid));
         NoticeDto noticeDto = NoticeDto.toDto(entity);
-        try {
-            noticeService.createNotice(entity);
-            return ResponseEntity.ok().body(noticeDto);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return ResponseEntity.badRequest().body(noticeDto);
-        }
+        noticeService.createNotice(entity);
+        return ResponseEntity.ok().body(noticeDto);
     }
 
     @PutMapping("/admin")
-    public ResponseEntity<NoticeDto> updateNotice(@RequestBody NoticeDto dto){
+    public ResponseEntity<NoticeDto> updateNotice(@RequestBody NoticeDto dto) {
         log.debug("updateNotice : " + dto);
         Notice notice = noticeService.updateNotice(dto);
         return ResponseEntity.ok().body(NoticeDto.toDto(notice));
     }
 
     @DeleteMapping("/admin")
-    public ResponseEntity<NoticeDto> deleteNotice(@RequestBody NoticeDto dto){
+    public ResponseEntity<List<NoticeDto>> deleteNotice(@RequestBody NoticeDto dto) {
         log.debug("Notice Delete idx : " + dto.getIdx());
-        Notice targetNotice =  noticeService.readNotice(noticeService.readNoticeIdx(dto.getIdx()).getNoticeId());
+        Notice targetNotice = noticeService.readNotice(noticeService.readNoticeIdx(dto.getIdx()).getNoticeId());
         log.debug("Notice Delete : " + targetNotice);
         noticeService.deleteNotice(targetNotice);
-        NoticeDto noticeDto = NoticeDto.toDto(targetNotice);
-        return ResponseEntity.ok().body(noticeDto);
+        List<Notice> noticeList = noticeService.readAllNotice();
+        List<NoticeDto> dtos = new ArrayList<>();
+        noticeList.forEach(notice -> {
+            dtos.add(NoticeDto.toDto(notice));
+        });
+        return ResponseEntity.ok().body(dtos);
 
     }
 }

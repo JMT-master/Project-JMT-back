@@ -104,11 +104,9 @@ public class KnowledgeService {
 
 
     // 지식in Detail List
-    public List<KnowledgeSendDto> detailForm(KnowledgeDto knowledgeDto, Long num) {
-        Member member = memberRepository.findByEmail(knowledgeDto.getUserid()).get();
+    public List<KnowledgeSendDto> detailForm(Long num) {
         // 작성한 글 가져오기
-        KnowledgeEntity knowledgeEntity = knowledgeRepository.findByUseridAndNum(member, num)
-                                                            .orElseThrow(EntityNotFoundException::new);
+        KnowledgeEntity knowledgeEntity = knowledgeRepository.findByNum(num);
 
         List<KnowledgeSendDto> result = new ArrayList<>();
 
