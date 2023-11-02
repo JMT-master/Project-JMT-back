@@ -102,17 +102,6 @@ public class TravelPdfService {
             document.add(new Paragraph("시간 : " + timeIndex).setFont(customFont));
             document.add(new Paragraph("---------------------------------------------"));
         }
-//        for (Travel travel : travelList){
-//            //이미지를 넣어보기 테스트중
-//            document.add(image);
-//            document.add(new Paragraph("날짜 : " + travel.getStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd : HH:mm")))
-//                    .setFont(customFont));
-//            document.add(new Paragraph("주소 : " + travel.getPlace())
-//                    .setFont(customFont));
-//            document.add(new Paragraph("장소 이름 : " + travel.getPlaceName())
-//                    .setFont(customFont));
-//            document.add(new Paragraph("------------------"));
-//        }
         document.close();
         return outputStream.toByteArray();
     }

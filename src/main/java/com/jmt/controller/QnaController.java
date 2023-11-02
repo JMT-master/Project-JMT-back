@@ -60,7 +60,7 @@ public class QnaController {
                                       @PathVariable Long qnaNum
                                       ,@AuthenticationPrincipal String userId){
         try {
-            Qna update = qnaService.update(qnaNum, qnaDto);
+            Qna update = qnaService.update(qnaNum, qnaDto, multipartFiles, userId);
             QnaDto updateDto = new QnaDto(update);
             return ResponseEntity.ok().body(updateDto);
         }catch (Exception e){

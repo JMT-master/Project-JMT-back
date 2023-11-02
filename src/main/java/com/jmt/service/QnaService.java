@@ -131,17 +131,27 @@ public class QnaService {
     }
 
     //update 문
-    public Qna update(Long qnaNum , QnaDto qnaDto){
+    public Qna update(Long qnaNum , QnaDto qnaDto, List<MultipartFile> multipartFiles, String userId){
+        Member member = memberRepository.findByEmail(userId).orElseThrow(EntityNotFoundException::new);
         Qna qnaEntity = qnaRepository.findQnaByQnaNum(qnaNum);
         validate(qnaEntity);
-        qnaEntity.setQnaCategory(qnaDto.getQnaCategory());
-        qnaEntity.setQnaTitle(qnaDto.getQnaTitle());
-        qnaEntity.setQnaContent(qnaDto.getQnaContent());
-        qnaEntity.updateModDate();
-        qnaEntity.setQnaFileKey(qnaDto.getQnaFileKey());
-        qnaRepository.save(qnaEntity);
+        List<MemberFile> memberFiles = memberFileRepository.findByFileInfo(qnaEntity.getQnaFileKey());
+        memberFileRepository.deleteAll();
+        qnaRepository.delete(qnaEntity);
+        Qna updateEntity = QnaDto.toEntity(qnaDto);
+        updateEntity.setQnaNum(qnaNum);
+        updateEntity.setMember(member);
+        updateEntity.setQnaCategory(qnaDto.getQnaCategory());
+        updateEntity.setQnaTitle(qnaDto.getQnaTitle());
+        updateEntity.setQnaContent(qnaDto.getQnaContent());
+        updateEntity.updateModDate();
+        if (multipartFiles != null){
+            String fileKey = fileService.fileUpload(multipartFiles, userId, Board.QNA, qnaNum.intValue());
+            updateEntity.setQnaFileKey(fileKey);
+        }
+        qnaRepository.save(updateEntity);
 
-        return qnaEntity;
+        return updateEntity;
     }
 
 
