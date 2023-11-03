@@ -100,6 +100,7 @@ public class QnaController {
         try {
             // qnaColNum을 사용하여 데이터베이스에서 해당 Qna를 검색
             List<QnaDetailDto> qnaDetailDtos = qnaService.readAndViewCount(id);
+            System.out.println("qnaDetailDtos = " + qnaDetailDtos);
             return ResponseEntity.ok().body(qnaDetailDtos);
         } catch (Exception e) {
             String error = e.getMessage();
@@ -147,5 +148,26 @@ public class QnaController {
         Resource resource = new InputStreamResource(Files.newInputStream(path));
 
         return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+    }
+
+    //제목 및 내용으로 검색해서 찾기
+    @GetMapping("/search")
+    public ResponseEntity<?> search(@RequestParam(value = "select") String select,
+                                    @RequestParam(value = "result") String result){
+
+        List<QnaDto> qnaDtoList = qnaService.searchDto(select, result);
+        try {
+            ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
+                    .data(qnaDtoList)
+                    .build();
+            return ResponseEntity.ok().body(responseDto);
+        }catch (Exception e){
+            String error = e.getMessage();
+            ResponseDto<String> responseDto = ResponseDto.<String>builder()
+                    .error(error)
+                    .build();
+            return ResponseEntity.ok().body(responseDto);
+        }
+
     }
 }
