@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -17,8 +18,9 @@ import java.time.LocalDateTime;
 public class TravelScheduleEntity extends BaseTimeEntity{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer travelId;
+    @GeneratedValue(generator = "system-uuid")
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    private String travelId;
 
     private String travelUserId;
 
@@ -36,10 +38,13 @@ public class TravelScheduleEntity extends BaseTimeEntity{
     @Column(name="travel_endDate")
     private LocalDateTime travelEndDate;
 
-    @Column(name="travle_startTime")
-    private LocalDateTime travelStartTime;
+    @Column(name="travel_startTime")
+    private String travelStartTime;
 
-    @Column(name="travle_endTime")
-    private LocalDateTime travleEndTime;
+    @Column(name="travel_endTime")
+    private String travleEndTime;
+
+    @Column(name="day_Image")
+    private String dayImage;
 
 }

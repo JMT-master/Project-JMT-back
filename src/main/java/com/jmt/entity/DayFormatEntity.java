@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
@@ -16,9 +17,10 @@ import javax.persistence.*;
 public class DayFormatEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "system-uuid")
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
     @Column(name="day_id")
-    private int dayId;
+    private String dayId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "day_travelid")
@@ -41,6 +43,17 @@ public class DayFormatEntity {
 
     @Column(name="day_Image")   //이미지 경로
     private String dayImage;
+
+    @Column(name="day_latitude") //위도
+    private String dayLatitude;
+
+    @Column(name="day_longitude") //경도
+    private String dayLongitude;
+
+    @Column(name="day_user_id")
+    private String dayUserId;
+
+
 
 
 }

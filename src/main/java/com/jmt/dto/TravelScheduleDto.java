@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class TravelScheduleDto {
 
-    private int travelId;
+    private String travelId;
 
     private String travelUserId;
 
@@ -28,21 +28,25 @@ public class TravelScheduleDto {
 
     private LocalDateTime travelEndDate;
 
-    private LocalDateTime startDate;
+    private String travelStartTime;
 
-    private LocalDateTime endDate;
+    private String travelEndTime;
+
+    private String dayImage;
 
 
     public static TravelScheduleEntity toEntity(final TravelScheduleDto dto){
         try{
             return TravelScheduleEntity.builder()
-                    .travelId(dto.getTravelId())
                     .travelUserId(dto.getTravelUserId())
                     .travelTitle(dto.getTravelTitle())
                     .travelYn(dto.getTravelYn())
                     .travelPnum(dto.getTravelPnum())
-                    .travelStartDate(dto.getStartDate())
-                    .travelEndDate(dto.getEndDate())
+                    .travelStartDate(dto.getTravelStartDate())
+                    .travelEndDate(dto.getTravelEndDate())
+                    .travelStartTime(dto.getTravelStartTime())
+                    .travleEndTime(dto.getTravelEndTime())
+                    .dayImage(dto.getDayImage())
                     .build();
         }catch (Exception e){
             throw new RuntimeException(e.getMessage());
@@ -59,6 +63,9 @@ public class TravelScheduleDto {
                     .travelPnum(entity.getTravelPnum())
                     .travelStartDate(entity.getTravelStartDate())
                     .travelEndDate(entity.getTravelEndDate())
+                    .travelStartTime(entity.getTravelStartTime())
+                    .travelEndTime(entity.getTravleEndTime())
+                    .dayImage(entity.getDayImage())
                     .build();
         }catch (Exception e){
             throw new RuntimeException(e.getMessage());

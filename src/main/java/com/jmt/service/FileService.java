@@ -3,6 +3,7 @@ package com.jmt.service;
 import com.jmt.constant.Board;
 import com.jmt.dto.KnowledgeDto;
 import com.jmt.entity.KnowledgeEntity;
+import com.jmt.entity.Member;
 import com.jmt.entity.MemberFile;
 import com.jmt.repository.MemberFileRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,8 @@ public class FileService {
     private final MemberFileRepository memberFileRepository;
 
     // 파일, user, KN/QNA/NOTICE, 글번호
-    public List<String> fileUpload(List<MultipartFile> multipartFiles, String userid, Board fileIdName, int count) {
+    public String fileUpload(List<MultipartFile> multipartFiles, String userid, Board fileIdName, int count) {
+        String fileInfo = "";
         String divideBoard = "";
         String fileKey = "";
         List<String> fileKeys = new ArrayList<>();
@@ -39,7 +41,14 @@ public class FileService {
         if(!folder.exists()) folder.mkdirs();
 
         if(fileIdName == Board.KN) {
-            divideBoard = "kn_" + (count + 1) + "_";
+            divideBoard = "KN_" + count  + "_";
+            fileInfo = "KN_" + count;
+        }else if (fileIdName == Board.QNA){
+            divideBoard = "QNA_" + count  + "_";
+            fileInfo = "QNA_" + count;
+        }else {
+            divideBoard = "NOTICE_" + count  + "_";
+            fileInfo = "NOTICE_" + count;
         }
 
         for(int i=0; i < multipartFiles.size(); i++) {
@@ -51,6 +60,9 @@ public class FileService {
             System.out.println("fileUploadFullUrl = " + fileUploadFullUrl);
             System.out.println("fileIdName = " + fileIdName);
             System.out.println("userid = " + userid);
+            System.out.println("multipartFiles.get(i).getName() = " + multipartFiles.get(i).getName());
+            System.out.println("multipartFiles.get(i).getOriginalFilename() = " + multipartFiles.get(i).getOriginalFilename());
+
             try {
                 FileOutputStream fos = new FileOutputStream(fileUploadFullUrl);
                 fos.write(multipartFiles.get(i).getBytes());
@@ -61,10 +73,20 @@ public class FileService {
             }
 
             fileKeys.add(fileKey);
+
+            memberFiles.add(MemberFile.builder()
+                    .fileId(fileKey)
+                    .fileName(multipartFiles.get(i).getOriginalFilename())
+                    .fileSize(multipartFiles.get(i).getSize())
+                    .fileServerPath(fileUploadFullUrl)
+                    .fileCategory(fileIdName.toString())
+                    .fileUserId(userid)
+                    .fileInfo(fileInfo)
+                    .build());
         }
 
-//        memberFileRepository.saveAll();
+        memberFileRepository.saveAll(memberFiles);
 
-        return fileKeys;
+        return fileInfo;
     }
 }

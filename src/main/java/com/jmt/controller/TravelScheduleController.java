@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/travel")
 @RequiredArgsConstructor
@@ -31,6 +33,24 @@ public class TravelScheduleController {
         TravelScheduleDto travelDto =  travelScheduleService.scheduleSelect(dto);
 
         return ResponseEntity.ok().body(travelDto);
+    }
+
+    @GetMapping("/selectTravelSchedule")
+    public ResponseEntity<ResponseDto> selectTravelSchedule(@AuthenticationPrincipal String userid){
+
+        List<TravelScheduleDto> dtoList;
+        if(userid != null && userid != ""){
+            dtoList = travelScheduleService.travelScheduleSelect(userid);
+        }
+        else{
+            return ResponseEntity.badRequest().body(ResponseDto.builder()
+                    .error("error")
+                    .build());
+        }
+        return ResponseEntity.ok().body(ResponseDto.<TravelScheduleDto>builder()
+                .error("success")
+                .data(dtoList)
+                .build());
     }
 
 }

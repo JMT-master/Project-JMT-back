@@ -1,6 +1,7 @@
 package com.jmt.controller;
 
 import com.jmt.dto.DayFormatDto;
+import com.jmt.dto.ResponseDto;
 import com.jmt.entity.DayFormatEntity;
 import com.jmt.service.DayFormatService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/travel")
@@ -17,30 +19,66 @@ public class DayFormatController {
 
     private final DayFormatService dayFormatService;
 
-    @PostMapping("/dayFormatSelect1")
-    public ResponseEntity<String> dayFormatSelect1(@AuthenticationPrincipal String userid,@RequestBody int travelId){
+    @GetMapping("/dayFormatSelect1")
+    public ResponseEntity<ResponseDto> dayFormatSelect1(@AuthenticationPrincipal String userid,@RequestParam(value = "id")String id) {
+        List<DayFormatDto> dtoList;
 
-        dayFormatService.dayFormatSelect1(userid,travelId);
+        if (id != null && id != "") {
+            dtoList = dayFormatService.dayFormatSelect1(userid, id);
+        }
+        else {
+            return ResponseEntity.badRequest().body(ResponseDto.builder()
+                    .error("error")
+                    .build());
+        }
 
-        return ResponseEntity.ok().body("save");
+        return ResponseEntity.ok().body(ResponseDto.<DayFormatDto>builder()
+                .error("success")
+                .data(dtoList)
+                .build());
     }
 
-    @PostMapping("/dayFormatSelect2")
-    public ResponseEntity<String> dayFormatSelect2(@AuthenticationPrincipal String userid,@RequestBody int travelId){
+    @GetMapping("/dayFormatSelect2")
+    public ResponseEntity<ResponseDto> dayFormatSelect2(@AuthenticationPrincipal String userid,@RequestParam(value = "id")String id){
 
-        dayFormatService.dayFormatSelect2(userid,travelId);
+        List<DayFormatDto> dtoList;
 
-        return ResponseEntity.ok().body("save");
+        if (id != null && id != "") {
+            dtoList = dayFormatService.dayFormatSelect2(userid, id);
+        }
+        else {
+            return ResponseEntity.badRequest().body(ResponseDto.builder()
+                    .error("error")
+                    .build());
+        }
+
+        return ResponseEntity.ok().body(ResponseDto.<DayFormatDto>builder()
+                .error("success")
+                .data(dtoList)
+                .build());
     }
 
-    @PostMapping("/dayFormatSelect3")
-    public ResponseEntity<String> dayFormatSelect3(@AuthenticationPrincipal String userid,@RequestBody int travelId){
+    @GetMapping("/dayFormatSelect3")
+    public ResponseEntity<ResponseDto> dayFormatSelect3(@AuthenticationPrincipal String userid,@RequestParam(value = "id")String id){
 
-        dayFormatService.dayFormatSelect3(userid,travelId);
+        List<DayFormatDto> dtoList;
 
-        return ResponseEntity.ok().body("save");
+        if (id != null && id != "") {
+            dtoList = dayFormatService.dayFormatSelect3(userid, id);
+        }
+        else {
+            return ResponseEntity.badRequest().body(ResponseDto.builder()
+                    .error("error")
+                    .build());
+        }
+
+        return ResponseEntity.ok().body(ResponseDto.<DayFormatDto>builder()
+                .error("success")
+                .data(dtoList)
+                .build());
     }
     @PostMapping("/dayFormatSave")
+<<<<<<< HEAD
     public ResponseEntity<String> dayFormatSave(@RequestBody List<DayFormatDto> dtoList, int travelId){
         System.out.println("dtoList = " + dtoList);
         if(travelId == 0){
@@ -49,14 +87,40 @@ public class DayFormatController {
             dayFormatService.dayFormatSave(dtoList,travelId);
         }
         return ResponseEntity.ok().body("save");
+=======
+    public ResponseEntity<ResponseDto> dayFormatSave(@RequestBody List<DayFormatDto> dtoList,
+             @RequestParam(value = "id")String id,@AuthenticationPrincipal String userid){
+
+        if (id != null && id != "") {
+            dayFormatService.dayFormatSave(dtoList,id,userid);
+        }
+        else {
+            return ResponseEntity.badRequest().body(ResponseDto.builder()
+                    .error("error")
+                    .build());
+        }
+
+        return ResponseEntity.ok().body(ResponseDto.<DayFormatDto>builder()
+                .error("success")
+                .build());
+>>>>>>> 4ef98d9de7d6a84da431af6ffd86d2f0f90e9a3c
     }
 
     @PostMapping("/dayFormatDelete")
-    public ResponseEntity<String> dayformatDelete(@RequestBody int travelId){
+    public ResponseEntity<ResponseDto> dayFormatDelete(@RequestBody List<DayFormatDto> dayIdList){
 
-        dayFormatService.dayFormatDelete(travelId);
+        if (dayIdList != null) {
+            dayFormatService.dayFormatDelete(dayIdList);
+        }
+        else {
+            return ResponseEntity.badRequest().body(ResponseDto.builder()
+                    .error("error")
+                    .build());
+        }
 
-        return ResponseEntity.ok().body("delete");
+        return ResponseEntity.ok().body(ResponseDto.<DayFormatDto>builder()
+                .error("success")
+                .build());
     }
 
 }
