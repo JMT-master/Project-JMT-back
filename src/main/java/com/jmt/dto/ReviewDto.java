@@ -10,7 +10,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString
 public class ReviewDto {
+    private String reviewWriter;
     private String reviewContent;
     private String reviewContentId;
     private Long reviewIdx;
@@ -30,11 +32,14 @@ public class ReviewDto {
     }
     public static ReviewDto toDto(Review entity){
         return ReviewDto.builder()
+                .reviewWriter(entity.getMember().getEmail())
                 .reviewContent(entity.getReviewContent())
                 .reviewContentId(entity.getReviewContentid())
                 .reviewIdx(entity.getReviewIdx())
                 .reviewImg(entity.getReviewImage())
                 .reviewLike(entity.getReviewLike())
+                .regDate(entity.getRegDate())
+                .modDate(entity.getModDate())
                 .build();
 
     }

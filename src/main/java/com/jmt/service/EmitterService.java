@@ -24,6 +24,10 @@ public class EmitterService {
     private final EmitterRepository emitterRepository;
     private final NotificationRepository notificationRepository;
 
+    public boolean chkEmitter(String email){
+        return emitterRepository.get(email) == null;
+    }
+
     //    -이미터-
     /*
     @param userid = 구독할 클라이언트의 아이디
@@ -33,7 +37,7 @@ public class EmitterService {
         //이미터 생성
         SseEmitter emitter = createEmitter(userid);
         //생성 후, 유저에게 이미터 생성 알림
-        List<Notification> notifications = notificationRepository.findNotificationsByMember_Email(userid);
+        List<Notification> notifications = notificationRepository.findNotificationsByMember_EmailOrderByModDateDesc(userid);
         notifications.forEach(notify -> {
             if (notify != null) {
                 log.debug("notifyChk" + notify);

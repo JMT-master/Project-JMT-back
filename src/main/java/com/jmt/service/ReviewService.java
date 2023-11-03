@@ -2,13 +2,16 @@ package com.jmt.service;
 
 import com.jmt.dto.ReviewDto;
 import com.jmt.entity.Review;
+import com.jmt.repository.MemberRepository;
 import com.jmt.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -16,10 +19,15 @@ import java.util.List;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
-    public List<Review> readAll(String cid) {
-        return reviewRepository.findAllByReviewContentidOrderByRegDateDesc(cid);
+    public List<ReviewDto> readAll(String cid) {
+        List<ReviewDto> reviewDtoList = new ArrayList<>();
+        reviewRepository.findAllByReviewContentidOrderByRegDateAsc(cid).forEach(review -> {
+            reviewDtoList.add(ReviewDto.toDto(review));
+        });
+        return reviewDtoList;
     }
 
     @Transactional
@@ -43,8 +51,14 @@ public class ReviewService {
     }
 
     @Transactional
-    public Review writeReview(ReviewDto dto){
+    public Review writeReview(String email, ReviewDto dto){
         Review review = ReviewDto.toEntity(dto);
+        long maxIdx = 0;
+        if(reviewRepository.getReviewByMaxIdx().isPresent()){
+            maxIdx = reviewRepository.getReviewByMaxIdx().get();
+        }
+        review.setReviewIdx(maxIdx+1);
+        review.setMember(memberRepository.findByEmail(email).get());
         reviewRepository.save(review);
         return review;
     }
