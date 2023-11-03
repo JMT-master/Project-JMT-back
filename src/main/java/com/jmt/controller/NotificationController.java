@@ -59,6 +59,7 @@ public class NotificationController {
         return ResponseEntity.ok().body(notificationDto);
     }
 
+    @Transactional
     @PutMapping
     public ResponseEntity<NotificationDto> regNotification(@RequestBody NotificationDto dto){
         Notification entity = NotificationDto.toEntity(dto);
@@ -76,7 +77,7 @@ public class NotificationController {
             return ResponseEntity.badRequest().body(alarmDto);
         }
     }
-
+    @Transactional
     @PutMapping("/isRead")
     public ResponseEntity<List<NotificationDto>> isReadNotify(@RequestBody NotificationDto dto, @AuthenticationPrincipal String userid) {
         log.debug("read : " + dto);
@@ -95,7 +96,7 @@ public class NotificationController {
             return ResponseEntity.badRequest().body(entity);
         }
     }
-
+    @Transactional
     @PostMapping
     public ResponseEntity<List<NotificationDto>> readAllNotification(@AuthenticationPrincipal String userid){
         List<Notification> entities = notificationService.showNotification(userid);
@@ -119,7 +120,7 @@ public class NotificationController {
             return ResponseEntity.badRequest().body(entity);
         }
     }
-
+    @Transactional
     @DeleteMapping
     public ResponseEntity<List<NotificationDto>> removeNotification(@RequestBody NotificationDto dto, @AuthenticationPrincipal String userid){
         notificationService.deleteNotification(dto.getUserid());
@@ -136,7 +137,7 @@ public class NotificationController {
             return ResponseEntity.badRequest().body(entity);
         }
     }
-
+    @Transactional
     @DeleteMapping("/all")
     public ResponseEntity<List<NotificationDto>> removeAllNotification(@AuthenticationPrincipal String userid){
         notificationService.deleteAllNotification(userid);

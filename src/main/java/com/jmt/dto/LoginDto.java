@@ -17,4 +17,5 @@ public class LoginDto {
     private String refreshToken;    // refresh Token
     private Cookie adminChk;
     private LocalDateTime loginTime; // login 시간 확인
+    private Boolean loginState;      // 로그인 상태 유지
 }
