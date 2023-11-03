@@ -12,6 +12,7 @@ public interface TravelScheduleRepository extends JpaRepository<TravelScheduleEn
 
     TravelScheduleEntity findByTravelId(String id);
 
+    //나의 일정 조회하는 쿼리
     @Query(value = "select a.travel_id," +
             "      a.travel_user_id," +
             "      a.travel_title," +

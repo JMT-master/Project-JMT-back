@@ -44,5 +44,17 @@ public class WishEntity extends BaseTimeEntity{
     @Column(name="regDate")
     private LocalDateTime regDate;
 
+    @Column(name="address")
+    private String address;
+
+    @Column(name="phoneno")
+    private String phoneno;
+
+    @Column(name="content")
+    private String content;
+
+    @Column(name="tag")
+    private String tag;
+
 
 }
