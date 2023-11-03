@@ -12,6 +12,8 @@ import lombok.ToString;
 @ToString
 public class NotificationDto {
     String id;
+    String title;
+    String userid;
     String content;
     String url;
     String yn;
@@ -19,8 +21,7 @@ public class NotificationDto {
     public static Notification toEntity(final NotificationDto dto) {
         try {
             return Notification.builder()
-                    .notificationId(dto.getId())
-                    .notificationContent(dto.getContent())
+                    .notificationContent(dto.getTitle() + "글에 " +dto.getContent() + " 답글이 작성되었습니다.")
                     .notificationUrl(dto.getUrl())
                     .notificationYn(dto.getYn())
                     .build();

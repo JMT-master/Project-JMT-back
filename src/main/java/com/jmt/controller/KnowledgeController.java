@@ -1,9 +1,6 @@
 package com.jmt.controller;
 
-import com.jmt.dto.KnowledgeAnswerDto;
-import com.jmt.dto.KnowledgeDto;
-import com.jmt.dto.KnowledgeSendDto;
-import com.jmt.dto.ResponseDto;
+import com.jmt.dto.*;
 import com.jmt.service.KnowledgeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
@@ -86,9 +83,8 @@ public class KnowledgeController {
 
     // 글 자세히 보기
     @PostMapping("knowledgeDetail")
-    public ResponseEntity<List<KnowledgeSendDto>> createKnowledgeDetail(@RequestBody KnowledgeDto knowledgeDto, @RequestParam("id") Long id) {
-        System.out.println("knowledgeDto = " + knowledgeDto);
-        List<KnowledgeSendDto> knowledgeSendDtos = knowledgeService.detailForm(knowledgeDto, id);
+    public ResponseEntity<List<KnowledgeSendDto>> createKnowledgeDetail(@RequestParam("id") Long id) {
+        List<KnowledgeSendDto> knowledgeSendDtos = knowledgeService.detailForm(id);
 
         System.out.println("id = " + id);
         System.out.println("knowledgeSendDtos = " + knowledgeSendDtos);
@@ -115,6 +111,23 @@ public class KnowledgeController {
         Resource resource = new InputStreamResource(Files.newInputStream(path));
 
         return new ResponseEntity<>(resource,headers, HttpStatus.OK);
+    }
+
+    // 글 수정
+    @PostMapping("knowledgeWrite/update")
+    public ResponseEntity<?> updateKnowledge(
+            @RequestBody KnowledgeUpdateDto knowledgeUpdateDto,
+            @AuthenticationPrincipal String userid
+    ) {
+        try {
+            knowledgeService.updateKnowledge(knowledgeUpdateDto,userid);
+            return ResponseEntity.ok().body("success");
+        } catch (Exception e) {
+            e.getMessage();
+            return ResponseEntity.ok().body("error");
+        }
+
+
     }
 
     // 지식인 삭제
@@ -170,6 +183,24 @@ public class KnowledgeController {
         List<KnowledgeAnswerDto> answer = knowledgeService.likeAddAnswer(knowledgeAnswerDto);
 
         return ResponseEntity.ok().body(answer);
+    }
+
+    // 지식인 답글 수정
+    @PostMapping("/knowledgeDetail/answer/update")
+    public ResponseEntity<ResponseDto> updateAnswer(@RequestBody KnowledgeAnswerDto knowledgeAnswerDto,
+                                                    @AuthenticationPrincipal String userid) {
+        try {
+            List<KnowledgeAnswerDto> answer = knowledgeService.updateAnswer(knowledgeAnswerDto, userid);
+
+            return ResponseEntity.ok().body(ResponseDto.<KnowledgeAnswerDto>builder()
+                            .error("success")
+                            .data(answer)
+                    .build());
+        } catch (Exception e) {
+            return ResponseEntity.ok().body(ResponseDto.<KnowledgeAnswerDto>builder()
+                    .error("error")
+                    .build());
+        }
     }
 
     // 지식인 답글 삭제

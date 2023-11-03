@@ -3,9 +3,13 @@ package com.jmt.service;
 import com.jmt.common.PagingInfo;
 import com.jmt.common.PagingUtil;
 import com.jmt.constant.Board;
+import com.jmt.dto.QnaDetailDto;
 import com.jmt.dto.QnaDto;
+import com.jmt.entity.Member;
+import com.jmt.entity.MemberFile;
 import com.jmt.entity.Qna;
 import com.jmt.repository.MemberFileRepository;
+import com.jmt.repository.MemberRepository;
 import com.jmt.repository.QnaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +33,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class QnaService {
 
+    private final MemberRepository memberRepository;
     private final QnaRepository qnaRepository;
     private final MemberFileRepository memberFileRepository;
     private final FileService fileService;
@@ -55,40 +61,19 @@ public class QnaService {
     }
 
     public void createQna(List<MultipartFile> multipartFiles, QnaDto qnaDto, String userId){
+        Member member = memberRepository.findByEmail(userId).orElseThrow(EntityNotFoundException::new);
         Qna qna = QnaDto.toEntity(qnaDto);
-        Long qnaNum = qnaRepository.countByQnaNum();
+        Optional<Long> longNum = qnaRepository.countByQnaNum();
+        Long qnaNum = 0L;
+        if (longNum.isPresent()) qnaNum = longNum.get();
         qnaNum += 1;
         qna.setQnaNum(qnaNum);
-
+        qna.setMember(member);
         if (multipartFiles != null){
-//            List<String> fileKeys = fileService.fileUpload(multipartFiles, userId, Board.QNA, qnaNum.intValue());
-//            qnaDto.setQnaFileKey(fileKeys);
+            String fileKey = fileService.fileUpload(multipartFiles, userId, Board.QNA, qnaNum.intValue());
+            qna.setQnaFileKey(fileKey);
         }
-
-        if (qnaDto.getQnaFileKey() == null) {
             qnaRepository.save(qna);
-        }else {
-            List<Qna> qnaList = new ArrayList<>();
-            qnaDto.getQnaFileKey().forEach(data -> {
-                qna.setQnaFileKey(data);
-
-                Qna qna1 = Qna.builder()
-                        .id(qna.getId())
-                        .member(qna.getMember())
-                        .qnaNum(qna.getQnaNum())
-                        .qnaTitle(qna.getQnaTitle())
-                        .qnaContent(qna.getQnaContent())
-                        .qnaCategory(qna.getQnaCategory())
-                        .qnaView(qna.getQnaView())
-                        .qnaFileKey(qna.getQnaFileKey())
-                        .build();
-
-                qnaList.add(qna1);
-            });
-
-            qnaRepository.saveAll(qnaList);
-        }
-
     }
 
 
@@ -108,10 +93,32 @@ public class QnaService {
         return qnaRepository.findQnaByQnaNum(qnaNum);
     }
 
-    public Qna readAndViewCount(Long qnaNum){
+    public List<QnaDetailDto> readAndViewCount(Long qnaNum){
         Qna qna = qnaRepository.findQnaByQnaNum(qnaNum);
+        System.out.println("qna.getMember() = " + qna.getMember());
+        List<QnaDetailDto> qnaDetailDtos = new ArrayList<>();
+
         qna.setQnaView(qna.getQnaView()+1);
-        return qna;
+        
+        if (qna.getQnaFileKey() != null){
+            List<MemberFile> memberFiles = memberFileRepository.findByFileInfo(qna.getQnaFileKey());
+            memberFiles.stream().forEach(memberFile -> {
+                QnaDetailDto qnaDetailDto = new QnaDetailDto(qna);
+                qnaDetailDto.setServerPath(memberFile.getFileServerPath());
+                qnaDetailDto.setOriginalName(memberFile.getFileName());
+                qnaDetailDto.setQnaView(qna.getQnaView());
+                qnaDetailDtos.add(qnaDetailDto);
+            });
+        }else {
+            QnaDetailDto qnaDetailDto = new QnaDetailDto(qna);
+            System.out.println("qnaDetailDto = " + qnaDetailDto);
+            qnaDetailDto.setQnaView(qna.getQnaView());
+            qnaDetailDtos.add(qnaDetailDto);
+        }
+
+        qnaRepository.save(qna);
+        System.out.println("qnaDetailDtos = " + qnaDetailDtos);
+        return qnaDetailDtos;
     }
 
     //일반 유저용 read
@@ -125,17 +132,27 @@ public class QnaService {
     }
 
     //update 문
-    public Qna update(Long qnaNum , QnaDto qnaDto){
+    public Qna update(Long qnaNum , QnaDto qnaDto, List<MultipartFile> multipartFiles, String userId){
+        Member member = memberRepository.findByEmail(userId).orElseThrow(EntityNotFoundException::new);
         Qna qnaEntity = qnaRepository.findQnaByQnaNum(qnaNum);
         validate(qnaEntity);
-        qnaEntity.setQnaCategory(qnaDto.getQnaCategory());
-        qnaEntity.setQnaTitle(qnaDto.getQnaTitle());
-        qnaEntity.setQnaContent(qnaDto.getQnaContent());
-        qnaEntity.updateModDate();
-        qnaEntity.setQnaFileKey(qnaEntity.getQnaFileKey());
-        qnaRepository.save(qnaEntity);
+        List<MemberFile> memberFiles = memberFileRepository.findByFileInfo(qnaEntity.getQnaFileKey());
+        memberFileRepository.deleteAll();
+        qnaRepository.delete(qnaEntity);
+        Qna updateEntity = QnaDto.toEntity(qnaDto);
+        updateEntity.setQnaNum(qnaNum);
+        updateEntity.setMember(member);
+        updateEntity.setQnaCategory(qnaDto.getQnaCategory());
+        updateEntity.setQnaTitle(qnaDto.getQnaTitle());
+        updateEntity.setQnaContent(qnaDto.getQnaContent());
+        updateEntity.updateModDate();
+        if (multipartFiles != null){
+            String fileKey = fileService.fileUpload(multipartFiles, userId, Board.QNA, qnaNum.intValue());
+            updateEntity.setQnaFileKey(fileKey);
+        }
+        qnaRepository.save(updateEntity);
 
-        return qnaEntity;
+        return updateEntity;
     }
 
 
@@ -144,6 +161,8 @@ public class QnaService {
     public List<Qna> delete(final Qna qna){
         validate(qna);
         try {
+            List<MemberFile> memberFiles = memberFileRepository.findByFileInfo(qna.getQnaFileKey());
+            memberFileRepository.deleteAll();
             qnaRepository.delete(qna);
         }catch (Exception e){
             log.error("delete 도중 error 발생...", qna.getId(), e);
@@ -169,6 +188,24 @@ public class QnaService {
         pagingInfo.setHasPrevious(qnaPage.hasPrevious());
 
         return new PagingUtil<>(qnaDtoList, pagingInfo);
+    }
+
+    //검색하고 나서 list 가져오기
+    public List<QnaDto> searchDto(String select, String searchResult){
+        List<Qna> result = new ArrayList<>();
+
+        if (select.equals("title")){
+          result = qnaRepository.findByQnaTitleContaining(searchResult);
+        }else {
+            result = qnaRepository.findByQnaContentContaining(searchResult);
+        }
+
+        if (result.isEmpty()){
+            List<QnaDto> emptyResult = new ArrayList<>();
+            return emptyResult;
+        }
+
+        return result.stream().map(QnaDto::new).collect(Collectors.toList());
     }
 
 }

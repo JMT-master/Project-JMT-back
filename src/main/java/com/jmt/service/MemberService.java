@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.Cookie;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -127,7 +128,8 @@ public class MemberService {
         Optional<Member> member = memberRepository.findByEmail(loginDto.getEmail());
 
         // Id가 Repository에 있으면
-        if(member.isPresent() && passwordEncoder.matches(loginDto.getPassword(), member.get().getPassword())) {
+//        if(member.isPresent() && passwordEncoder.matches(loginDto.getPassword(), member.get().getPassword())) {
+        if(member.isPresent()) {
             System.out.println("???????????????");
             Member resultMember = member.get();
 
@@ -150,16 +152,58 @@ public class MemberService {
         }
 
     }
+
+    // 로그인 정보 제공
+    @Transactional
+    public LocalDateTime loginInfo(LoginDto loginDto) {
+        Optional<Member> member = memberRepository.findByEmail(loginDto.getEmail());
+
+        if(member.isPresent()) {
+            return LocalDateTime.now();
+        } else {
+            return null;
+        }
+    }
+
+    // 로그인 시간 연장
+    @Transactional
+    public LoginDto loginExtension(String userId) {
+        Optional<Member> member = memberRepository.findByEmail(userId);
+
+        // Id가 Repository에 있으면
+        if(member.isPresent()) {
+            Member resultMember = member.get();
+
+            String accessToken = tokenProvidor.createAcessToken(resultMember.getEmail());
+            String refreshToken = tokenProvidor.createRefreshToken(resultMember.getEmail());
+
+            System.out.println("accessToken = " + accessToken);
+
+            Cookie accessCookie = tokenProvidor.createCookie("EXTENSION_TOKEN", accessToken);
+
+            return LoginDto.builder()
+                    .userid(resultMember.getEmail())
+                    .accessToken(accessCookie)
+                    .refreshToken(refreshToken)
+                    .build();
+        } else {
+            System.out.println("여기??");
+            return null;
+        }
+
+    }
     
     // 로그 아웃
 
     // 아이디 찾기
     public String findUserId(IdFindDto idFindDto) {
+        System.out.println("idFindDto = " + idFindDto);
         Member member = memberRepository.findByUsernameAndPhone(idFindDto.getUsername(), idFindDto.getPhone());
+        System.out.println("member = " + member);
         if(member != null) {
             return member.getEmail();
         }
-        return null;
+        return "없음";
     }
 
     // 비밀번호 찾기

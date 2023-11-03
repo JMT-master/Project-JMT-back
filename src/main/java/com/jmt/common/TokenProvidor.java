@@ -38,6 +38,7 @@ public class TokenProvidor {
                 .setIssuedAt(now)                                                   // 발행시간
                 .setExpiration(new Date(System.currentTimeMillis()+1*(1000*60*60))) // 만료기간 60분
                 .signWith(SignatureAlgorithm.HS512, ACCESS_SECRET_KEY)              // algorithem
+//               .setExpiration(new Date(System.currentTimeMillis()+1*(1000*30))) // test
                 .compact();
     }
     
@@ -65,9 +66,6 @@ public class TokenProvidor {
             System.out.println("token !!!!!!!!!!!!!!!! = " + token);
             Jwts.parserBuilder().setSigningKey(ACCESS_SECRET_KEY).build().
                     parseClaimsJws(token);
-
-
-
         } catch (ExpiredJwtException e) {
             e.printStackTrace();
             return false;
@@ -94,9 +92,28 @@ public class TokenProvidor {
         return true;
     }
 
+    public Boolean isTokenExpired(String token) {
+        System.out.println("토큰 만료???");
+        System.out.println("토큰만료기간 = " + Jwts.parserBuilder().setSigningKey(ACCESS_SECRET_KEY).build().parseClaimsJws(token).getBody().getExpiration());
+
+
+        if(Jwts.parserBuilder().setSigningKey(ACCESS_SECRET_KEY).build().parseClaimsJws(token).getBody().getExpiration() == null) {
+            return false;
+        }
+
+        try {
+            System.out.println("결과 : " + Jwts.parserBuilder().setSigningKey(ACCESS_SECRET_KEY).build().parseClaimsJws(token).getBody().getExpiration().before(new Date()));
+            return Jwts.parserBuilder().setSigningKey(ACCESS_SECRET_KEY).build().parseClaimsJws(token).getBody().getExpiration().before(new Date());
+
+        } catch (Exception e) {
+            e.getMessage();
+            throw new RuntimeException("토큰 기간 만료");
+        }
+    }
+
     public String getUserId(String token) {
         System.out.println("text = " + Jwts.parserBuilder().setSigningKey(ACCESS_SECRET_KEY).build().
-                parseClaimsJws(token).getBody().get("userId"));
+                parseClaimsJws(token).getBody());
         return Jwts.parserBuilder().setSigningKey(ACCESS_SECRET_KEY).build().parseClaimsJws(token).getBody().get("userId").toString();
     }
 
@@ -104,6 +121,7 @@ public class TokenProvidor {
         String authorization = request.getHeader("Authorization");
 
         if(StringUtils.hasText(authorization) && authorization.startsWith("Bearer ")) {
+            System.out.println("authorization = " + authorization);
             return authorization.substring(7);
         }
 
@@ -112,6 +130,7 @@ public class TokenProvidor {
 
     public Cookie createCookie(String name, String value) {
         Cookie cookie = new Cookie(name,value);
+        cookie.setDomain("http://localhost:3000/");
         cookie.setDomain("localhost");
 //        cookie.setHttpOnly(true); // XSS와 같은 공격을 차단하기 위해 만든 Option, 자바스크립트에서 방어
         cookie.setSecure(true); // 네트워크에서 직접적으로 가로채는 것을 막는 방법

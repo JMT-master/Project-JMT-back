@@ -30,6 +30,12 @@ public interface QnaRepository extends JpaRepository<Qna, String> {
     List<Long> distinctByQnaNum();
 
     //qnaNum count 하기
-    @Query("select count(distinct qnaNum) from Qna ")
-    Long countByQnaNum();
+    @Query("select max(qnaNum) from Qna ")
+    Optional<Long> countByQnaNum();
+
+    //qna 제목으로 가져오기
+    List<Qna> findByQnaTitleContaining(String title);
+
+    //qna 내용으로 가져오기
+    List<Qna> findByQnaContentContaining(String content);
 }

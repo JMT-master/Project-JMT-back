@@ -30,8 +30,7 @@ public class NotificationService {
 
     @Transactional
     public List<Notification> showNotification(String email){
-        log.info("NotificationTest :" + repository.findNotificationsByMember_Email(email));
-        return repository.findNotificationsByMember_Email(email);
+        return repository.findNotificationsByMember_EmailOrderByModDateDesc(email);
     }
 
     @Transactional
@@ -45,7 +44,7 @@ public class NotificationService {
     }
 
     @Transactional
-    public void deleteAllNotification(String email){ repository.deleteAll(repository.findNotificationsByMember_Email(email));}
+    public void deleteAllNotification(String email){ repository.deleteAll(repository.findNotificationsByMember_EmailOrderByModDateDesc(email));}
 
     @Transactional
     public void updateRead(String notifyId){

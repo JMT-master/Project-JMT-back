@@ -19,9 +19,9 @@ public class PdfController {
     private final TravelPdfService travelPdfService;
 
     @PostMapping("/generate-pdf")
-    public ResponseEntity<byte[]> generatePdf(@AuthenticationPrincipal String userId, String travelId) throws Exception {
+    public ResponseEntity<byte[]> generatePdf(String userId, String travelId) throws Exception {
 
-        byte[] pdfBytes = travelPdfService.generatePdf("4028b8818b88c88c018b88c93d7b0000", "agh@agh.com");
+        byte[] pdfBytes = travelPdfService.generatePdf("4028b8818b943af3018b943b4f730000", "agh1594@naver.com");
 
         HttpHeaders headers = new HttpHeaders();
         //pdf로 만들기
