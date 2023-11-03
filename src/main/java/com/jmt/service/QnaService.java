@@ -189,4 +189,22 @@ public class QnaService {
         return new PagingUtil<>(qnaDtoList, pagingInfo);
     }
 
+    //검색하고 나서 list 가져오기
+    public List<QnaDto> searchDto(String select, String searchResult){
+        List<Qna> result = new ArrayList<>();
+
+        if (select.equals("title")){
+          result = qnaRepository.findByQnaTitleContaining(searchResult);
+        }else {
+            result = qnaRepository.findByQnaContentContaining(searchResult);
+        }
+
+        if (result.isEmpty()){
+            List<QnaDto> emptyResult = new ArrayList<>();
+            return emptyResult;
+        }
+
+        return result.stream().map(QnaDto::new).collect(Collectors.toList());
+    }
+
 }

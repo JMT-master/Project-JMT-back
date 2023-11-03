@@ -148,4 +148,25 @@ public class QnaController {
 
         return new ResponseEntity<>(resource, headers, HttpStatus.OK);
     }
+
+    //제목 및 내용으로 검색해서 찾기
+    @GetMapping("/search")
+    public ResponseEntity<?> search(@RequestParam(value = "select") String select,
+                                    @RequestParam(value = "result") String result){
+
+        List<QnaDto> qnaDtoList = qnaService.searchDto(select, result);
+        try {
+            ResponseDto<QnaDto> responseDto = ResponseDto.<QnaDto>builder()
+                    .data(qnaDtoList)
+                    .build();
+            return ResponseEntity.ok().body(responseDto);
+        }catch (Exception e){
+            String error = e.getMessage();
+            ResponseDto<String> responseDto = ResponseDto.<String>builder()
+                    .error(error)
+                    .build();
+            return ResponseEntity.ok().body(responseDto);
+        }
+
+    }
 }
