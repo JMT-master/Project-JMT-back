@@ -1,5 +1,6 @@
 package com.jmt.controller;
 
+import com.jmt.common.CaptchaUtil;
 import com.jmt.common.TokenProvidor;
 import com.jmt.dto.LoginDto;
 import com.jmt.dto.MemberDto;
@@ -11,6 +12,7 @@ import com.jmt.service.KaKaoLoginService;
 import com.jmt.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import nl.captcha.Captcha;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -294,4 +296,43 @@ public class MemberController {
 //        log.debug("chk dto : " + chkDto);
 //        return ResponseEntity.ok().body(chkDto);
 //    }
+
+
+    // 231103, NTJ, 추후 확인해보기
+    // rgetCaptcaImg에서 request.getSession().setAttribute(Captcha.NAME, captcha); 하고 Post에서 못받는 문제
+    // 비밀번호 captcha 이미지 생성
+    @GetMapping("changepw/captchaImg")
+    @ResponseBody
+    public ResponseEntity<ResponseDto> captchaImg(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        System.out.println("들어옴?");
+        List<String> result = new ArrayList<>();
+        String captchaStr = new CaptchaUtil().getCaptcaImg(request, response);
+        result.add(captchaStr);
+
+        return ResponseEntity.ok().body(ResponseDto.<String>builder()
+                        .error("sucess")
+                        .data(result)
+                .build());
+    }
+
+    // 231103, NTJ, 추후 확인해보기
+    @PostMapping("changepw/validate")
+    public ResponseEntity<Boolean> checkCaptcha(@RequestParam(value = "result")String result, HttpServletRequest request) {
+        System.out.println("request.getSession().getAttribute(\"captcha\") = " + request.getSession().getAttribute("captcha"));
+        System.out.println("세션 확인 : " + request.getSession());
+        Captcha captcha = (Captcha) request.getSession().getAttribute("captcha"); // 등록한 세션에서 값 추출
+
+//        if(result != null && !result.equals("")) {
+//            if(captcha.isCorrect(result)) {
+//                request.getSession().removeAttribute(Captcha.NAME);
+//
+//                return ResponseEntity.ok().body(true);
+//            } else {
+//                return ResponseEntity.badRequest().body(false);
+//            }
+//        } else {
+//            return ResponseEntity.badRequest().body(false);
+//        }
+        return ResponseEntity.ok().body(true);
+    }
 }
