@@ -27,7 +27,7 @@ public class EmailService {
         }
     }
 
-    public void createEmailCode() {
+    public String createEmailCode() {
         StringBuilder key = new StringBuilder();
         Random rnd = new Random();
         String characters = "abcdefghijklmnopqrstuvwxyz0123456789"; // 숫자와 문자열을 섞을 문자열
@@ -39,36 +39,41 @@ public class EmailService {
         }
 
         System.out.println("랜덤한 문자열: " + key.toString());
+        return key.toString();
     }
 
-    public void sendNewPwdMail(String email){
-        createEmailCode();
+    public String sendNewPwdMail(String email){
+        String newPwd = createEmailCode();
         sendEmailID=email;
+        System.out.println("email = " + email);
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, "utf-8");
-        StringBuffer sendMsg = pwdMessage();
+        StringBuffer sendMsg = pwdMessage(newPwd);
 
         try {
             helper.setFrom("JMT@JMT.com");
             helper.setTo(email);
             helper.setSubject("JMT에서 새로운 비밀번호를 보내드립니다");
             helper.setText(sendMsg.toString(), true);
+
         } catch (MessagingException e) {
             e.printStackTrace();
             throw new RuntimeException("이메일 형식이 맞지 않습니다.");
         }
-
         javaMailSender.send(message);
+        return newPwd;
     }
 
-    public StringBuffer pwdMessage() {
+    public StringBuffer pwdMessage(String newPwd) {
         StringBuffer sendEmail = new StringBuffer();
-        String emailAddress = "http://localhost:3000/checkNewPwd" + sendEmailID;
+        String emailAddress = "http://localhost:3000/myInfo/ChangePasswd" + sendEmailID;
 
         sendEmail.append(
                         "<div>"+
                         "<h3>JMT 새 비밀번호 입니다.</h3>" +
                         "<p>아래 링크에서 비밀번호 변경을 진행하세요.</p>" +
+                        "<p>새로 발급 받은 비밀번호입니다</p>"+
+                        "<p>"+ newPwd + "</p>"+
                         "<a href = \"" + emailAddress + "\">비밀번호 변경</a>" +
                         "</div>"
         );
