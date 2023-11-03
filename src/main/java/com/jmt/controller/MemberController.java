@@ -249,8 +249,43 @@ public class MemberController {
     @PostMapping("findUserId")
     public ResponseEntity<?> findUserId(@RequestBody IdFindDto idFindDto){
         String userId = service.findUserId(idFindDto);
+        System.out.println("userId = " + userId);
         return ResponseEntity.ok().body(userId);
     }
+
+    @PostMapping("sendEmailCode")
+    public ResponseEntity<?> sendEmailCode(@RequestBody PwdFindDto pwdFindDto){
+        String newPwd = emailService.sendNewPwdMail(pwdFindDto.getEmail());
+        return ResponseEntity.ok().body(newPwd);
+    }
+
+    @PostMapping("myInfo/ChangePasswd")
+    public ResponseEntity<?> changePwd(){
+
+        return ResponseEntity.ok().body("주소는 일단 들어왔어용");
+    }
+    // 메일 인증받기 클릭 시
+//    @PostMapping("joinUser/email/validateSend")
+//    public ResponseEntity<ResponseDto> sendEmailValidate(@RequestBody MemberDto memberDto) {
+//        ResponseDto responseDto = new ResponseDto();
+//        try {
+//            emailService.sendMail(memberDto.getEmail());
+//            responseDto.setError("success");
+//            return ResponseEntity.ok().body(responseDto);
+//        } catch (Exception e) {
+//            responseDto.setError("error");
+//            return ResponseEntity.badRequest().body(responseDto);
+//        }
+//    }
+//
+//    // 메일 인증받기 인증확인 눌렀을 때
+//    @PostMapping("joinUser/email/validateCheck")
+//    public ResponseEntity<ResponseDto> validateEmail(@RequestBody MemberDto memberDto) {
+//        ResponseDto responseDto = new ResponseDto();
+//
+//        responseDto.setError("success");
+//        return ResponseEntity.ok().body(responseDto);
+//    }
 //    @PostMapping("checkUser")
 //    public ResponseEntity<UserChkDto> checkUser(@AuthenticationPrincipal String userid, @RequestBody MemberDto dto) {
 //        UserChkDto chkDto = new UserChkDto();

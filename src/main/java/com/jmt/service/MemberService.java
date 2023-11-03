@@ -194,7 +194,9 @@ public class MemberService {
 
     // 아이디 찾기
     public String findUserId(IdFindDto idFindDto) {
+        System.out.println("idFindDto = " + idFindDto);
         Member member = memberRepository.findByUsernameAndPhone(idFindDto.getUsername(), idFindDto.getPhone());
+        System.out.println("member = " + member);
         if(member != null) {
             return member.getEmail();
         }
