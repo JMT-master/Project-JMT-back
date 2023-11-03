@@ -8,6 +8,10 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface DayFormatRepository extends JpaRepository<DayFormatEntity,String> {
+
+    DayFormatEntity findByDayTravelId(String travelId);
+
+    DayFormatEntity findByDayId(String dayId);
     @Query(value = "select b.day_id," +
             "      b.day_travelid," +
             "      b.day_count," +
@@ -17,7 +21,8 @@ public interface DayFormatRepository extends JpaRepository<DayFormatEntity,Strin
             "      b.day_region2," +
             "      b.day_Image," +
             "      b.day_latitude," +
-            "      b.day_longitude" +
+            "      b.day_longitude," +
+            "      b.day_user_id" +
             " from travel_schedule a inner join day_format b" +
             "   on a.travel_id = b.day_travelid" +
             " where a.travel_user_id = ? " +
@@ -27,7 +32,6 @@ public interface DayFormatRepository extends JpaRepository<DayFormatEntity,Strin
             "order by b.day_index asc",nativeQuery = true)
     List<DayFormatEntity> dayFormatSelect1(String userid, String travelId);
 
-    DayFormatEntity findByDayTravelId(String travelId);
     @Query(value = "select b.day_id," +
             "      b.day_travelid," +
             "      b.day_count," +
@@ -37,7 +41,8 @@ public interface DayFormatRepository extends JpaRepository<DayFormatEntity,Strin
             "      b.day_region2," +
             "      b.day_Image," +
             "      b.day_latitude," +
-            "      b.day_longitude" +
+            "      b.day_longitude," +
+            "      b.day_user_id" +
             " from travel_schedule a inner join day_format b" +
             "   on a.travel_id = b.day_travelid" +
             " where a.travel_user_id = ? " +
@@ -56,7 +61,8 @@ public interface DayFormatRepository extends JpaRepository<DayFormatEntity,Strin
             "      b.day_region2," +
             "      b.day_Image," +
             "      b.day_latitude," +
-            "      b.day_longitude" +
+            "      b.day_longitude," +
+            "      b.day_user_id" +
             " from travel_schedule a inner join day_format b" +
             "   on a.travel_id = b.day_travelid" +
             " where a.travel_user_id = ? " +

@@ -38,10 +38,13 @@ public class TravelScheduleEntity extends BaseTimeEntity{
     @Column(name="travel_endDate")
     private LocalDateTime travelEndDate;
 
-    @Column(name="travle_startTime")
+    @Column(name="travel_startTime")
     private String travelStartTime;
 
-    @Column(name="travle_endTime")
+    @Column(name="travel_endTime")
     private String travleEndTime;
+
+    @Column(name="day_Image")
+    private String dayImage;
 
 }
