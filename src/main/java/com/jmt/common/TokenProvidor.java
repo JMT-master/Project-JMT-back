@@ -130,6 +130,7 @@ public class TokenProvidor {
 
     public Cookie createCookie(String name, String value) {
         Cookie cookie = new Cookie(name,value);
+        cookie.setDomain("http://localhost:3000/");
         cookie.setDomain("localhost");
 //        cookie.setHttpOnly(true); // XSS와 같은 공격을 차단하기 위해 만든 Option, 자바스크립트에서 방어
         cookie.setSecure(true); // 네트워크에서 직접적으로 가로채는 것을 막는 방법

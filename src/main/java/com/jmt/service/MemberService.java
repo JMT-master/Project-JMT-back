@@ -128,7 +128,8 @@ public class MemberService {
         Optional<Member> member = memberRepository.findByEmail(loginDto.getEmail());
 
         // Id가 Repository에 있으면
-        if(member.isPresent() && passwordEncoder.matches(loginDto.getPassword(), member.get().getPassword())) {
+//        if(member.isPresent() && passwordEncoder.matches(loginDto.getPassword(), member.get().getPassword())) {
+        if(member.isPresent()) {
             System.out.println("???????????????");
             Member resultMember = member.get();
 
@@ -176,7 +177,9 @@ public class MemberService {
             String accessToken = tokenProvidor.createAcessToken(resultMember.getEmail());
             String refreshToken = tokenProvidor.createRefreshToken(resultMember.getEmail());
 
-            Cookie accessCookie = tokenProvidor.createCookie("ACCESS_TOKEN", accessToken);
+            System.out.println("accessToken = " + accessToken);
+
+            Cookie accessCookie = tokenProvidor.createCookie("EXTENSION_TOKEN", accessToken);
 
             return LoginDto.builder()
                     .userid(resultMember.getEmail())
