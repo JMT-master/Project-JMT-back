@@ -100,6 +100,7 @@ public class QnaController {
         try {
             // qnaColNum을 사용하여 데이터베이스에서 해당 Qna를 검색
             List<QnaDetailDto> qnaDetailDtos = qnaService.readAndViewCount(id);
+            System.out.println("qnaDetailDtos = " + qnaDetailDtos);
             return ResponseEntity.ok().body(qnaDetailDtos);
         } catch (Exception e) {
             String error = e.getMessage();

@@ -111,12 +111,13 @@ public class QnaService {
             });
         }else {
             QnaDetailDto qnaDetailDto = new QnaDetailDto(qna);
+            System.out.println("qnaDetailDto = " + qnaDetailDto);
             qnaDetailDto.setQnaView(qna.getQnaView());
             qnaDetailDtos.add(qnaDetailDto);
         }
 
         qnaRepository.save(qna);
-
+        System.out.println("qnaDetailDtos = " + qnaDetailDtos);
         return qnaDetailDtos;
     }
 
