@@ -49,16 +49,36 @@ public class MemberController {
 
     // 회원가입
     @PostMapping("joinUser")
-    public ResponseEntity<MemberDto> createMember(@RequestBody MemberDto dto){
+    public ResponseEntity<ResponseDto> createMember(@RequestBody MemberDto dto){
         MemberDto memberDto = null;
-        System.out.println("memberDto = " + dto);
+        List<String> msg = new ArrayList<>();
 
         try{
             memberDto = service.create(dto);
-            return ResponseEntity.ok().body(memberDto);
-        }catch (Exception e){
-            log.error(e.getMessage());
-            return ResponseEntity.badRequest().body(memberDto);
+            return ResponseEntity.ok().body(ResponseDto.<String>builder()
+                            .error("success")
+                            .data(msg)
+                    .build());
+        }catch (RuntimeException e){
+            System.out.println("여기?????");
+            if(e.getMessage().equals("비어있는 칸이 있습니다.") ||
+                    e.getMessage().equals("비밀번호 다름") ||
+                    e.getMessage().equals("이미 등록된 사용자가 있습니다.")
+            )
+                msg.add(e.getMessage());
+            else
+                msg.add("서버 에러");
+            return ResponseEntity.badRequest().body(ResponseDto.<String>builder()
+                            .error("error")
+                            .data(msg)
+                    .build());
+        } catch (Exception e) {
+            System.out.println("서버에러");
+            msg.add("서버 에러");
+            return ResponseEntity.badRequest().body(ResponseDto.<String>builder()
+                    .error("error")
+                    .data(msg)
+                    .build());
         }
 
     }
@@ -183,13 +203,45 @@ public class MemberController {
                 .build());
     }
 
-    // 카카오 로그인
+    // 카카오 member 가입
     @GetMapping("login/auth")
-    public String getAccessToken(@RequestParam("code") String code) {
+    public ResponseEntity<LoginDto> kakaoLogin(@RequestParam("code") String code) {
         String kaKaoToken = kaKaoLoginService.getKaKaoToken(code);
-        String kaKaoTokenInfo = kaKaoLoginService.getKaKaoTokenInfo(kaKaoToken);
+        String kaKaoTokenInfo = kaKaoLoginService.getKaKaoTokenInfo(kaKaoToken); // User Email
 
-        return null;
+        System.out.println("kaKaoTokenInfo = " + kaKaoTokenInfo);
+
+        try {
+            // member table에 저장 및 토큰 변경 작업
+            MemberDto memberDto = MemberDto.builder()
+                    .email(kaKaoTokenInfo)
+                    .adminYn("N")
+                    .socialYn("Y")
+                    .socialToken(kaKaoToken)
+                    .build();
+
+            Member member = service.kakaoMember(memberDto);
+
+            // login 하여 우리 페이지에 맞는 토큰 및 쿠키 발급
+            LoginDto login = LoginDto.builder()
+                    .email(member.getEmail())
+                    .socialYn(member.getSocialYn())
+                    .build();
+
+            return ResponseEntity.ok().body(login);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+    // 카카오 로그아웃
+    @GetMapping("/logout/kakao")
+    public ResponseEntity<String> kakaoLogout(@AuthenticationPrincipal String userId) {
+
+        System.out.println("들어옴???");
+        System.out.println("userId = " + userId);
+        String result = kaKaoLoginService.sendKaKaoLogout(userId);
+        return ResponseEntity.ok().body("ok");
     }
 
     //회원 정보 수정
@@ -252,8 +304,12 @@ public class MemberController {
 
     @PostMapping("sendEmailCode")
     public ResponseEntity<?> sendEmailCode(@RequestBody PwdFindDto pwdFindDto){
-        String newPwd = emailService.sendNewPwdMail(pwdFindDto.getEmail());
-        return ResponseEntity.ok().body(newPwd);
+        try {
+            String newPwd = emailService.sendNewPwdMail(pwdFindDto.getEmail());
+            return ResponseEntity.ok().body(newPwd);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("error");
+        }
     }
 
     @PostMapping("myInfo/ChangePasswd")

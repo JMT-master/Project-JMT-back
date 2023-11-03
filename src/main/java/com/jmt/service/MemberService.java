@@ -39,26 +39,21 @@ public class MemberService {
         try {
             System.out.println("member = " + member);
             // 비어있을 때
-            if(member == null || member.getEmail() == null ||
-                    member.getUsername() == null || member.getPassword() == null || member.getPasswordChk() == null ||
-                    member.getZipcode() == null || member.getAddress() == null || member.getAddressDetail() == null ||
-                    member.getPhone() == null || member.getAdminYn() == null) {
-                System.out.println("여기1?");
-                throw new RuntimeException("invalid argument");
+            if(member.getEmail().isEmpty() ||
+                    member.getUsername().isEmpty() || member.getPassword().isEmpty() || member.getPasswordChk().isEmpty() ||
+                    member.getZipcode().isEmpty() || member.getAddress().isEmpty() ||
+                    member.getPhone().isEmpty() || member.getAdminYn().isEmpty()) {
+                throw new RuntimeException("비어있는 칸이 있습니다.");
 
             } else if(!member.getPassword().equals(member.getPasswordChk())) {
-                System.out.println("여기2?");
                 throw new RuntimeException("비밀번호 다름");
-            }else if(!check && memberRepository.existsByEmail(member.getEmail())) {
-                System.out.println("여기3?");
+            }else if(!check && memberRepository.existsByEmailAndSocialYn(member.getEmail(),member.getSocialYn())) {
                 throw new RuntimeException("이미 등록된 사용자가 있습니다.");
             }
         } catch (RuntimeException e) {
             e.printStackTrace();
-            throw new RuntimeException("invalid 여기???");
+            throw new RuntimeException(e.getMessage());
         }
-
-
     }
 
     // 이메일 중복 확인
@@ -78,17 +73,24 @@ public class MemberService {
         System.out.println("memberDto = " + memberDto);
         System.out.println("member = " + member);
 
-        validate(member,false);
-        System.out.println("다음???????");
+        try{
+            validate(member,false);
+            System.out.println("다음???????");
 
-        // password 암호화
-        String encodePwd = passwordEncoder.encode(member.getPassword());
-        String encodePwdChk = passwordEncoder.encode(member.getPasswordChk());
-        System.out.println("다음22222");
-        member.setPassword(encodePwd);
-        member.setPasswordChk(encodePwdChk);
+            // password 암호화
+            String encodePwd = passwordEncoder.encode(member.getPassword());
+            String encodePwdChk = passwordEncoder.encode(member.getPasswordChk());
+            System.out.println("다음22222");
+            member.setPassword(encodePwd);
+            member.setPasswordChk(encodePwdChk);
 
-        System.out.println("-------------------------------------");
+            System.out.println("-------------------------------------");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("e.getMessage() = " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
+
         return MemberDto.toDto(memberRepository.save(member));
     }
     
@@ -128,9 +130,10 @@ public class MemberService {
         Optional<Member> member = memberRepository.findByEmail(loginDto.getEmail());
 
         // Id가 Repository에 있으면
-//        if(member.isPresent() && passwordEncoder.matches(loginDto.getPassword(), member.get().getPassword())) {
-        if(member.isPresent()) {
-            System.out.println("???????????????");
+        if(member.isPresent() &&
+                ((member.get().getSocialYn().equals("N") &&
+                passwordEncoder.matches(loginDto.getPassword(), member.get().getPassword())) ||
+        member.get().getSocialYn().equals("Y"))) {
             Member resultMember = member.get();
 
             String accessToken = tokenProvidor.createAcessToken(resultMember.getEmail());
@@ -222,6 +225,21 @@ public class MemberService {
     
     // 소셜 로그인
     // 카카오
+    public Member kakaoMember(MemberDto memberDto) {
+        Optional<Member> member = memberRepository.findByEmailAndSocialYn(memberDto.getEmail(), memberDto.getSocialYn());
+
+        System.out.println("member = " + member.isPresent());
+        if(member.isPresent()) {
+            Member getMember = member.get();
+            getMember.setSocialToken(memberDto.getSocialToken());
+            Member updateMember = memberRepository.save(getMember);
+            return updateMember;
+        } else {
+            Member entityMember = MemberDto.toEntity(memberDto);
+            Member saveMember = memberRepository.save(entityMember);
+            return saveMember;
+        }
+    }
     
     // 구글
 

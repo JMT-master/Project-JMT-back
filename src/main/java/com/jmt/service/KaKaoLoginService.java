@@ -1,5 +1,8 @@
 package com.jmt.service;
 
+import com.jmt.entity.Member;
+import com.jmt.repository.MemberRepository;
+import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -13,9 +16,12 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 @Service
+@RequiredArgsConstructor
 public class KaKaoLoginService {
     private String restApiKey = "1921d336e78e0f12cb65133fb93aeab0";
     private String redirectUri = "http://localhost:3000/login/auth";
+
+    private final MemberRepository memberRepository;
 
     // 인가코드 이용 accessToken 추출
     public String getKaKaoToken(String code) {
@@ -72,6 +78,7 @@ public class KaKaoLoginService {
         try {
             JSONParser jsonParser = new JSONParser();
             JSONObject jsonObject = (JSONObject)jsonParser.parse(forEntity.getBody().toString());
+            System.out.println("jsonObject = " + jsonObject);
 
             JSONObject value =  (JSONObject) jsonObject.get("kakao_account");
             email = value.get("email").toString();
@@ -81,4 +88,36 @@ public class KaKaoLoginService {
 
         return email;
     }
+
+    // 카카오 로그아웃
+    public String sendKaKaoLogout(String userId) {
+        String value = "";
+        String revInfo = "https://kapi.kakao.com/v1/user/logout";
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        Member member = memberRepository.findByEmail(userId).get();
+        System.out.println("member = " + member);
+        // Set Headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + member.getSocialToken());
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        HttpEntity<MultiValueMap<String,String>> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<String> forEntity = restTemplate.postForEntity(revInfo,entity,String.class);
+
+        try {
+            JSONParser jsonParser = new JSONParser();
+            JSONObject jsonObject = (JSONObject)jsonParser.parse(forEntity.getBody().toString());
+
+            value =  jsonObject.get("id").toString();
+
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+        return value;
+    }
+
 }
