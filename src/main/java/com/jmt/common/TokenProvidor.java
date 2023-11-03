@@ -36,7 +36,6 @@ public class TokenProvidor {
                 .setIssuedAt(now)                                                   // 발행시간
                 .setExpiration(new Date(System.currentTimeMillis()+1*(1000*60*60))) // 만료기간 60분
                 .signWith(SignatureAlgorithm.HS512, ACCESS_SECRET_KEY)              // algorithem
-//               .setExpiration(new Date(System.currentTimeMillis()+1*(1000*30))) // test
                 .compact();
     }
     
