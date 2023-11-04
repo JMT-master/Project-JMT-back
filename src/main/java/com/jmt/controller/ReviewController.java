@@ -81,7 +81,16 @@ public class ReviewController {
 
     @PostMapping("/viewFile")
     public ResponseEntity<Resource> showFileImage(@RequestBody ReviewDto dto) throws IOException {
+        if (dto.getReviewImg() == null) {
+            // 이미지 경로가 null이면 빈 응답을 반환
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
         Path path = Paths.get(dto.getReviewImg());
+
+        if (!Files.exists(path) || Files.isDirectory(path)) {
+            // 이미지 파일이 존재하지 않거나 디렉토리인 경우, 빈 응답을 반환
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
 
         String contentType = Files.probeContentType(path);
 

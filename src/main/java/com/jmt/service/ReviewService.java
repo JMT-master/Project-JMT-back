@@ -10,10 +10,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -53,31 +55,40 @@ public class ReviewService {
     }
 
     @Transactional
-    public Review deleteReview(ReviewDto dto){
+    public Review deleteReview(ReviewDto dto) {
         Review review = reviewRepository.findByReviewIdx(dto.getReviewIdx());
         reviewRepository.delete(review);
         return review;
     }
 
     @Transactional
-    public Review writeReview(MultipartFile file, String email, ReviewDto dto){
+    public Review writeReview(@RequestPart(value = "file", required = false) MultipartFile file, String email, ReviewDto dto) {
         Review review = ReviewDto.toEntity(dto);
         long maxIdx = 0;
-        if(reviewRepository.getReviewByMaxIdx().isPresent()){
-            maxIdx = reviewRepository.getReviewByMaxIdx().get() +1;
+        if (reviewRepository.getReviewByMaxIdx().isPresent()) {
+            maxIdx = reviewRepository.getReviewByMaxIdx().get();
         }
-        String filePath = itemImageLocation+"/"+file.getOriginalFilename();
-        File dest = new File(filePath);
+        maxIdx += 1;
+        if (file != null) {
+            String filePath = itemImageLocation + "/" + "Review_" + maxIdx + "_" + fileService.generateRandomString();
+            File dest = new File(filePath);
+            review.setReviewImage(filePath);
+            try {
+                file.transferTo(dest); // 파일 업로드 작업 수행
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         review.setReviewIdx(maxIdx);
         review.setMember(memberRepository.findByEmail(email).get());
-        review.setReviewImage(filePath);
-        try {
-            file.transferTo(dest); // 파일 업로드 작업 수행
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
 
         reviewRepository.save(review);
+
+
         return review;
     }
+
+
+
 }
