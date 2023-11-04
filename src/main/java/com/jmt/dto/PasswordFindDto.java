@@ -4,6 +4,8 @@ import lombok.Data;
 
 @Data
 public class PasswordFindDto {
-    private String id;
-    private String email;
+    private String preId;
+    private String prePwd;
+    private String newPwd;
+    private String newPwdChk;
 }

@@ -251,13 +251,14 @@ public class MemberController {
     @PostMapping("sendEmailCode")
     public ResponseEntity<?> sendEmailCode(@RequestBody PwdFindDto pwdFindDto){
         String newPwd = emailService.sendNewPwdMail(pwdFindDto.getEmail());
-        return ResponseEntity.ok().body(newPwd);
+        MemberDto memberDto = service.changePwdByRandomPwd(newPwd, pwdFindDto.getEmail());
+        return ResponseEntity.ok().body(memberDto);
     }
 
     @PostMapping("myInfo/ChangePasswd")
-    public ResponseEntity<?> changePwd(){
-
-        return ResponseEntity.ok().body("주소는 일단 들어왔어용");
+    public ResponseEntity<?> changePwd(@RequestBody PasswordFindDto passwordFindDto){
+        MemberDto memberDto = service.updatePwdByNewPwd(passwordFindDto);
+        return ResponseEntity.ok().body(memberDto);
     }
     // 메일 인증받기 클릭 시
 //    @PostMapping("joinUser/email/validateSend")

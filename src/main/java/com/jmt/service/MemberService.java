@@ -206,6 +206,30 @@ public class MemberService {
         return "없음";
     }
 
+    //비밀번호 찾기 할 때 멤버의 비밀번호를 랜덤하게 받은 키를 바탕으로 변경한다
+    public MemberDto changePwdByRandomPwd(String pwd, String email){
+        System.out.println("pwd = " + pwd);
+        Member member = memberRepository.findByEmail(email).get();
+        System.out.println("member.getEmail() = " + member.getEmail());
+        System.out.println("member.getPassword() = " + member.getPassword());
+        member.setPassword(pwd);
+        member.setPasswordChk(pwd);
+        //save를 안해도 원래 set만해도 업데이트가 되는게 정상인데 혹시 몰라서 일단 넣었음
+        memberRepository.save(member);
+        return MemberDto.toDto(member);
+    }
+
+    //비밀번호 찾기 재확인 후 다시 받은 비밀번호로 업데이트 해주기
+    public MemberDto updatePwdByNewPwd(PasswordFindDto passwordFindDto){
+        System.out.println("passwordFindDto = " + passwordFindDto);
+        Member member = memberRepository.findByEmail(passwordFindDto.getPreId()).get();
+        member.setPassword(passwordFindDto.getNewPwd());
+        member.setPasswordChk(passwordFindDto.getNewPwdChk());
+        //save를 안해도 원래 업데이트 되는게 정상인데 혹시 몰라서 일단 넣었음
+        memberRepository.save(member);
+        return MemberDto.toDto(member);
+    }
+
     // 비밀번호 찾기
     // 이메일 인증 보낸 후 맞으면 재확인 하게끔 설정
 //    public String findPassWord(PasswordFindDto passwordFindDto) {

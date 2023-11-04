@@ -1,11 +1,11 @@
 package com.jmt.controller;
 
+import com.jmt.dto.TravelPdfDto;
 import com.jmt.service.TravelPdfService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -19,9 +19,10 @@ public class PdfController {
     private final TravelPdfService travelPdfService;
 
     @PostMapping("/generate-pdf")
-    public ResponseEntity<byte[]> generatePdf(String userId, String travelId) throws Exception {
-
-        byte[] pdfBytes = travelPdfService.generatePdf("4028b8818b943af3018b943b4f730000", "agh1594@naver.com");
+    public ResponseEntity<byte[]> generatePdf(@RequestBody TravelPdfDto travelPdfDto) throws Exception {
+        System.out.println("userId = " + travelPdfDto.getUserId());
+        System.out.println("travelId = " + travelPdfDto.getTravelId());
+        byte[] pdfBytes = travelPdfService.generatePdf(travelPdfDto.getTravelId(), travelPdfDto.getUserId());
 
         HttpHeaders headers = new HttpHeaders();
         //pdf로 만들기
