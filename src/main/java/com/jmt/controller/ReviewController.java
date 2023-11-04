@@ -1,15 +1,26 @@
 package com.jmt.controller;
 
+import com.jmt.dto.QnaDetailDto;
+import com.jmt.dto.QnaDto;
 import com.jmt.dto.ReviewDto;
 import com.jmt.entity.Review;
 import com.jmt.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.PreUpdate;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,8 +31,10 @@ import java.util.List;
 public class ReviewController {
     private final ReviewService reviewService;
 
+
     @PostMapping("/read")
     public List<ReviewDto> readAllReview(@RequestBody ReviewDto dto) {
+
 
         List<ReviewDto> reviewDtos = reviewService.readAll(dto.getReviewContentId());
         reviewDtos.forEach(review -> {
@@ -39,8 +52,13 @@ public class ReviewController {
     }
 
     @PostMapping
-    public ResponseEntity<ReviewDto> writeReview(@AuthenticationPrincipal String email, @RequestBody ReviewDto dto) {
-        Review review = reviewService.writeReview(email,dto);
+    public ResponseEntity<ReviewDto> writeReview(@RequestPart(value = "file", required = false) MultipartFile multipartFile,
+                                                 @RequestPart(value = "data") ReviewDto dto,
+                                                 @AuthenticationPrincipal String userid) {
+        log.debug("multipartFile : " + multipartFile);
+        log.debug("dto : " + dto);
+        Review review = reviewService.writeReview(multipartFile, userid, dto);
+
 
         ReviewDto reviewDto = ReviewDto.toDto(review);
         return ResponseEntity.ok().body(reviewDto);
@@ -50,7 +68,7 @@ public class ReviewController {
     public ResponseEntity<List<ReviewDto>> updateReview(@RequestBody ReviewDto dto) {
         Review review = reviewService.updateReview(dto);
         List<ReviewDto> reviewDtos = reviewService.readAll(dto.getReviewContentId());
-                ReviewDto.toDto(review);
+        ReviewDto.toDto(review);
         return ResponseEntity.ok().body(reviewDtos);
     }
 
@@ -59,5 +77,22 @@ public class ReviewController {
         Review review = reviewService.deleteReview(dto);
         ReviewDto reviewDto = ReviewDto.toDto(review);
         return ResponseEntity.ok().body(reviewDto);
+    }
+
+    @PostMapping("/viewFile")
+    public ResponseEntity<Resource> showFileImage(@RequestBody ReviewDto dto) throws IOException {
+        Path path = Paths.get(dto.getReviewImg());
+
+        String contentType = Files.probeContentType(path);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentDisposition(ContentDisposition
+                .builder("inline").filename(dto.getReviewImg(), StandardCharsets.UTF_8).build());
+
+        headers.add(HttpHeaders.CONTENT_TYPE, contentType);
+
+        Resource resource = new InputStreamResource(Files.newInputStream(path));
+
+        return new ResponseEntity<>(resource, headers, HttpStatus.OK);
     }
 }
