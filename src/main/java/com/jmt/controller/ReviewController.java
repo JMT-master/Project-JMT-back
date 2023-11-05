@@ -31,16 +31,17 @@ import java.util.List;
 public class ReviewController {
     private final ReviewService reviewService;
 
+    @PostMapping("/userChk")
+    public Boolean userChk(@AuthenticationPrincipal String email, @RequestBody ReviewDto dto){
+        log.info("chkwriter : " + dto.getReviewWriter());
+        return email.equalsIgnoreCase(dto.getReviewWriter());
+    }
 
     @PostMapping("/read")
-    public List<ReviewDto> readAllReview(@RequestBody ReviewDto dto) {
-
-
+    public ResponseEntity<List<ReviewDto>> readAllReview(
+            @RequestBody ReviewDto dto) {
         List<ReviewDto> reviewDtos = reviewService.readAll(dto.getReviewContentId());
-        reviewDtos.forEach(review -> {
-            log.debug("review : " + review);
-        });
-        return reviewDtos;
+        return ResponseEntity.ok().body(reviewDtos);
     }
 
     @GetMapping("/{cid}/{idx}")
@@ -52,28 +53,28 @@ public class ReviewController {
     }
 
     @PostMapping
-    public ResponseEntity<ReviewDto> writeReview(@RequestPart(value = "file", required = false) MultipartFile multipartFile,
-                                                 @RequestPart(value = "data") ReviewDto dto,
-                                                 @AuthenticationPrincipal String userid) {
+    public ResponseEntity<List<ReviewDto>> writeReview(@RequestPart(value = "file", required = false) MultipartFile multipartFile,
+                                                       @RequestPart(value = "data") ReviewDto dto,
+                                                       @AuthenticationPrincipal String userid) {
         log.debug("multipartFile : " + multipartFile);
         log.debug("dto : " + dto);
         Review review = reviewService.writeReview(multipartFile, userid, dto);
-
-
-        ReviewDto reviewDto = ReviewDto.toDto(review);
-        return ResponseEntity.ok().body(reviewDto);
-    }
-
-    @PutMapping
-    public ResponseEntity<List<ReviewDto>> updateReview(@RequestBody ReviewDto dto) {
-        Review review = reviewService.updateReview(dto);
         List<ReviewDto> reviewDtos = reviewService.readAll(dto.getReviewContentId());
-        ReviewDto.toDto(review);
         return ResponseEntity.ok().body(reviewDtos);
     }
 
+    @PutMapping
+    public ResponseEntity<List<ReviewDto>> updateReview(
+            @RequestBody ReviewDto dto,
+            @AuthenticationPrincipal String email) {
+        reviewService.updateReview(dto);
+        List<ReviewDto> reviewDtos = reviewService.readAll(dto.getReviewContentId());
+        return ResponseEntity.ok().body(reviewDtos);
+
+    }
+
     @DeleteMapping
-    public ResponseEntity<ReviewDto> deleteReveiw(@RequestBody ReviewDto dto) {
+    public ResponseEntity<ReviewDto> deleteReview(@RequestBody ReviewDto dto) {
         Review review = reviewService.deleteReview(dto);
         ReviewDto reviewDto = ReviewDto.toDto(review);
         return ResponseEntity.ok().body(reviewDto);

@@ -10,13 +10,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,9 +38,7 @@ public class ReviewService {
     @Transactional
     public List<ReviewDto> readAll(String cid) {
         List<ReviewDto> reviewDtoList = new ArrayList<>();
-        reviewRepository.findAllByReviewContentidOrderByRegDateAsc(cid).forEach(review -> {
-            reviewDtoList.add(ReviewDto.toDto(review));
-        });
+        reviewRepository.findAllByReviewContentidOrderByRegDateDesc(cid).forEach(review -> reviewDtoList.add(ReviewDto.toDto(review)));
         return reviewDtoList;
     }
 
@@ -51,11 +52,12 @@ public class ReviewService {
         Review review = reviewRepository.findByReviewIdx(dto.getReviewIdx());
         review.setReviewImage(dto.getReviewImg());
         review.setReviewContent(dto.getReviewContent());
+        review.setModDate(LocalDateTime.now());
         return review;
     }
 
     @Transactional
-    public Review deleteReview(ReviewDto dto) {
+    public Review deleteReview(@RequestBody ReviewDto dto) {
         Review review = reviewRepository.findByReviewIdx(dto.getReviewIdx());
         reviewRepository.delete(review);
         return review;
@@ -84,7 +86,6 @@ public class ReviewService {
 
 
         reviewRepository.save(review);
-
 
         return review;
     }

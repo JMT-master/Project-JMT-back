@@ -57,8 +57,7 @@ public class NoticeController {
     }
 
     @PutMapping("/admin")
-    public ResponseEntity<NoticeDto> updateNotice(@RequestBody NoticeDto dto) {
-        log.debug("updateNotice : " + dto);
+    public ResponseEntity<NoticeDto> updateNotice(@AuthenticationPrincipal String email, @RequestBody NoticeDto dto) {
         Notice notice = noticeService.updateNotice(dto);
         return ResponseEntity.ok().body(NoticeDto.toDto(notice));
     }

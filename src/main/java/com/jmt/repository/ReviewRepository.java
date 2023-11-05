@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface ReviewRepository extends JpaRepository<Review, String> {
     Review findByReviewIdx(Long idx);
 
-    List<Review> findAllByReviewContentidOrderByRegDateAsc(String cid);
+    List<Review> findAllByReviewContentidOrderByRegDateDesc(String cid);
 
     @Query("select max(reviewIdx) from Review")
     Optional<Long> getReviewByMaxIdx();
