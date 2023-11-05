@@ -28,9 +28,9 @@ public class MemberService {
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     @Transactional
-    public Member getMember(String email){
+    public Member getMember(String email,String socialYn){
         log.info("email : {}", email);
-        return memberRepository.findByEmail(email).get();
+        return memberRepository.findByEmailAndSocialYn(email,socialYn).get();
     }
 
     // 회원가입 인증
@@ -59,8 +59,8 @@ public class MemberService {
     // 이메일 중복 확인
     @Transactional
     public Member emailValidate(MemberDto memberDto) {
-        Member member;
-        member = memberRepository.findById(memberDto.getEmail()).orElseThrow(EntityNotFoundException::new);
+        Member member = null;
+        member = memberRepository.findByEmailAndSocialYn(memberDto.getEmail(), memberDto.getSocialYn()).orElseThrow(EntityNotFoundException::new);
 
         return member;
     }
@@ -104,7 +104,7 @@ public class MemberService {
         log.info("member in service : {}", member);
 
         // Dirty Checking(변경감지)로 인하여 update문이 따로 필요 없이 준속성에 의하여 조회 후 변경하면 자동 변경
-        Optional<Member> id = memberRepository.findByEmail(member.getEmail());
+        Optional<Member> id = memberRepository.findByEmailAndSocialYn(member.getEmail(),member.getSocialYn());
         Member result = id.orElseThrow(EntityNotFoundException::new);
 
         log.info("result : {}", result);
@@ -127,7 +127,7 @@ public class MemberService {
     // 로그인
     @Transactional
     public LoginDto login(LoginDto loginDto) {
-        Optional<Member> member = memberRepository.findByEmail(loginDto.getEmail());
+        Optional<Member> member = memberRepository.findByEmailAndSocialYn(loginDto.getEmail(),loginDto.getSocialYn());
 
         // Id가 Repository에 있으면
         if(member.isPresent() &&
@@ -141,7 +141,7 @@ public class MemberService {
 
             Cookie accessCookie = tokenProvidor.createCookie("ACCESS_TOKEN", accessToken);
 
-            Cookie adminChk = tokenProvidor.createCookie("adminChk", memberRepository.findByEmail(loginDto.getEmail()).get().getAdminYn());
+            Cookie adminChk = tokenProvidor.createCookie("adminChk", member.get().getAdminYn());
 
             return LoginDto.builder()
                     .userid(resultMember.getEmail())
@@ -150,7 +150,6 @@ public class MemberService {
                     .adminChk(adminChk)
                     .build();
         } else {
-            System.out.println("여기??");
             return null;
         }
 
@@ -159,7 +158,7 @@ public class MemberService {
     // 로그인 정보 제공
     @Transactional
     public LocalDateTime loginInfo(LoginDto loginDto) {
-        Optional<Member> member = memberRepository.findByEmail(loginDto.getEmail());
+        Optional<Member> member = memberRepository.findByEmailAndSocialYn(loginDto.getEmail(),loginDto.getSocialYn());
 
         if(member.isPresent()) {
             return LocalDateTime.now();
@@ -170,8 +169,8 @@ public class MemberService {
 
     // 로그인 시간 연장
     @Transactional
-    public LoginDto loginExtension(String userId) {
-        Optional<Member> member = memberRepository.findByEmail(userId);
+    public LoginDto loginExtension(LoginDto loginDto) {
+        Optional<Member> member = memberRepository.findByEmailAndSocialYn(loginDto.getEmail(),loginDto.getSocialYn());
 
         // Id가 Repository에 있으면
         if(member.isPresent()) {

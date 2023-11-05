@@ -96,7 +96,7 @@ public class KaKaoLoginService {
 
         RestTemplate restTemplate = new RestTemplate();
 
-        Member member = memberRepository.findByEmail(userId).get();
+        Member member = memberRepository.findByEmailAndSocialYn(userId,"Y").get();
         System.out.println("member = " + member);
         // Set Headers
         HttpHeaders headers = new HttpHeaders();

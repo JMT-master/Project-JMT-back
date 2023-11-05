@@ -72,12 +72,13 @@ public class QnaController {
         }
     }
 
+    // 추후 확인
     @DeleteMapping("/admin")
     public ResponseEntity<?> deleteQna(@AuthenticationPrincipal String userId,
                                        @RequestBody Long qnaNum){
         try {
             Qna qna = qnaService.readByQnaNum(qnaNum);
-            qna.setMember(memberService.getMember(userId));
+            qna.setMember(memberService.getMember(userId,"N"));
             List<Qna> qnaEntities = qnaService.delete(qna);
             List<QnaDto> qnaDtos = qnaEntities.stream().map(QnaDto::new)
                     .collect(Collectors.toList());

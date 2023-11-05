@@ -58,7 +58,8 @@ public class ReviewService {
             maxIdx = reviewRepository.getReviewByMaxIdx().get();
         }
         review.setReviewIdx(maxIdx+1);
-        review.setMember(memberRepository.findByEmail(email).get());
+        // 추후 확인
+        review.setMember(memberRepository.findByEmailAndSocialYn(email,"N").get());
         reviewRepository.save(review);
         return review;
     }

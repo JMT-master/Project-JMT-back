@@ -129,10 +129,8 @@ public class MemberController {
             login = service.login(loginDto);
             login.setLoginTime(LocalDateTime.now());
             response.addCookie(login.getAdminChk());
-            System.out.println("login = " + login);
             response.addCookie(login.getAccessToken());
 
-            System.out.println("login22222222 = " + login);
             return ResponseEntity.ok().body(login);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -141,10 +139,16 @@ public class MemberController {
 
     // 로그인 유저 전달
     @GetMapping("login/info")
-    public ResponseEntity<String> loginMember(@AuthenticationPrincipal String userid) {
-        Member member = service.getMember(userid);
+    public ResponseEntity<ResponseDto> loginMember(@AuthenticationPrincipal String userid, @RequestParam String socialYn) {
 
-        return ResponseEntity.ok().body(member.getEmail());
+        List<String> result = new ArrayList<>();
+        Member member = service.getMember(userid,socialYn);
+        result.add(member.getEmail());
+
+        return ResponseEntity.ok().body(ResponseDto.<String>builder()
+                        .error("success")
+                        .data(result)
+                .build());
     }
 
     // 로그인 접속 시간
@@ -152,6 +156,8 @@ public class MemberController {
     public ResponseEntity<LocalDateTime> loginStartTime(@RequestBody LoginDto loginDto) {
         List<LoginDto> loginDtos = new ArrayList<>();
         LocalDateTime dateTime = service.loginInfo(loginDto);
+        System.out.println("dateTime = " + dateTime);
+        System.out.println("들어옴???");
 
         if(dateTime == null) {
             return ResponseEntity.badRequest().body(dateTime);
@@ -167,10 +173,11 @@ public class MemberController {
 
     // 로그인 시간 연장
     @PostMapping("login/extension")
-    public ResponseEntity<LocalDateTime> loginExtension(@RequestBody String userid, HttpServletResponse response) {
+    public ResponseEntity<LocalDateTime> loginExtension(@RequestBody LoginDto loginDto, HttpServletResponse response) {
         try{
 
-            LoginDto login = service.loginExtension(userid);
+            System.out.println("userid = " + loginDto);
+            LoginDto login = service.loginExtension(loginDto);
             response.addCookie(login.getAccessToken());
 
             return ResponseEntity.ok().body(LocalDateTime.now());
@@ -244,12 +251,13 @@ public class MemberController {
         return ResponseEntity.ok().body("ok");
     }
 
+    // 추후 확인
     //회원 정보 수정
     @GetMapping("member/update")
-    public ResponseEntity<?> updateMember(@AuthenticationPrincipal String userId){
+    public ResponseEntity<?> updateMember(@AuthenticationPrincipal String userId, @RequestParam String socialYn){
         try {
             log.info("update userId : "+userId);
-            Member member = service.getMember(userId);
+            Member member = service.getMember(userId,socialYn);
             MemberDto memberDto = MemberDto.toDto(member);
             memberDto.setPassword(null);
             memberDto.setPasswordChk(null);
@@ -270,17 +278,19 @@ public class MemberController {
         log.info("memberDro : {}", memberDto);
        String email =  service.update(memberDto);
        log.info("email : "+email);
-       Member member = service.getMember(email);
+       // 추후 확인
+       Member member = service.getMember(email,memberDto.getSocialYn());
        MemberDto dto = MemberDto.toDto(member);
         return ResponseEntity.ok().body(dto);
     }
 
+    // 추후 확인
     //특정 userId의 userDto 값 가져오기
     @GetMapping("mypage")
     public ResponseEntity<?> getMember(@AuthenticationPrincipal String userId){
         try {
             log.info("update userId : "+userId);
-            Member member = service.getMember(userId);
+            Member member = service.getMember(userId,"N");
             MemberDto memberDto = MemberDto.toDto(member);
             memberDto.setPassword(null);
             memberDto.setPasswordChk(null);

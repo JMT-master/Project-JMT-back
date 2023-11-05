@@ -61,7 +61,8 @@ public class QnaService {
     }
 
     public void createQna(List<MultipartFile> multipartFiles, QnaDto qnaDto, String userId){
-        Member member = memberRepository.findByEmail(userId).orElseThrow(EntityNotFoundException::new);
+        // 추후 확인
+        Member member = memberRepository.findByEmailAndSocialYn(userId,"N").orElseThrow(EntityNotFoundException::new);
         Qna qna = QnaDto.toEntity(qnaDto);
         Optional<Long> longNum = qnaRepository.countByQnaNum();
         Long qnaNum = 0L;
@@ -133,7 +134,8 @@ public class QnaService {
 
     //update 문
     public Qna update(Long qnaNum , QnaDto qnaDto, List<MultipartFile> multipartFiles, String userId){
-        Member member = memberRepository.findByEmail(userId).orElseThrow(EntityNotFoundException::new);
+        // 추후 확인
+        Member member = memberRepository.findByEmailAndSocialYn(userId,"N").orElseThrow(EntityNotFoundException::new);
         Qna qnaEntity = qnaRepository.findQnaByQnaNum(qnaNum);
         validate(qnaEntity);
         List<MemberFile> memberFiles = memberFileRepository.findByFileInfo(qnaEntity.getQnaFileKey());
