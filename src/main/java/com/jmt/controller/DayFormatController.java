@@ -78,16 +78,6 @@ public class DayFormatController {
                 .build());
     }
     @PostMapping("/dayFormatSave")
-<<<<<<< HEAD
-    public ResponseEntity<String> dayFormatSave(@RequestBody List<DayFormatDto> dtoList, int travelId){
-        System.out.println("dtoList = " + dtoList);
-        if(travelId == 0){
-            System.out.println("Error");
-        }else{
-            dayFormatService.dayFormatSave(dtoList,travelId);
-        }
-        return ResponseEntity.ok().body("save");
-=======
     public ResponseEntity<ResponseDto> dayFormatSave(@RequestBody List<DayFormatDto> dtoList,
              @RequestParam(value = "id")String id,@AuthenticationPrincipal String userid){
 
@@ -103,7 +93,6 @@ public class DayFormatController {
         return ResponseEntity.ok().body(ResponseDto.<DayFormatDto>builder()
                 .error("success")
                 .build());
->>>>>>> 4ef98d9de7d6a84da431af6ffd86d2f0f90e9a3c
     }
 
     @PostMapping("/dayFormatDelete")
