@@ -29,12 +29,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String jwt = tokenProvidor.parseJwt(request);
 
+        System.out.println("jwt = " + jwt);
+
+
         if(jwt != null && tokenProvidor.validateAccessToken(jwt)) {
+            System.out.println("들어옴???");
             tokenUserId = tokenProvidor.getUserId(jwt);
             Authentication auth = new UsernamePasswordAuthenticationToken(tokenUserId,null, AuthorityUtils.NO_AUTHORITIES); // AuthorityUtils.NO_AUTHORITIES : 권한 비교가 없는 것
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
 
+        System.out.println(" 멈춤??? ");
         filterChain.doFilter(request,response); // 다음 Filter로 넘겨줘야하므로 사용
     }
 }

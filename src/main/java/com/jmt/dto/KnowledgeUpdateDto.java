@@ -16,5 +16,6 @@ public class KnowledgeUpdateDto {
     private String title;
     private String category;
     private String content;
+    private String socialYn;
     private List<String> files;
 }

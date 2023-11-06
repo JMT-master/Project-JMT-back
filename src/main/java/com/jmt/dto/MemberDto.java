@@ -25,6 +25,7 @@ public class MemberDto {
 
     private String adminYn;
     private String socialYn;
+    private String socialToken;
 
     public MemberDto(Member member) {
         this.userid = member.getUserid();
@@ -55,6 +56,7 @@ public class MemberDto {
                     .phone(dto.getPhone())
                     .adminYn(dto.getAdminYn())
                     .socialYn(dto.getSocialYn())
+                    .socialToken(dto.getSocialToken())
                     .build();
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
@@ -76,9 +78,11 @@ public class MemberDto {
                     .phone(entity.getPhone())
                     .adminYn(entity.getAdminYn())
                     .socialYn(entity.getSocialYn())
+                    .socialToken(entity.getSocialToken())
                     .build();
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
     }
+
 }

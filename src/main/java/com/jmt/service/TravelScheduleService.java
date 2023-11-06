@@ -45,10 +45,20 @@ public class TravelScheduleService {
         return TravelScheduleDto.toDto(travelScheduleEntity);
     }
 
-    public List<TravelScheduleDto> travelScheduleSelect(String userId){
+    //마이페이지에 나의 일정 조회쿼리
+    public List<TravelScheduleDto> selectMyTravelScehdule(String userId){
 
         String userId1 = userId;
-        List<TravelScheduleEntity> select = travelScheduleRepository.travelScheduleSelect(userId,userId1);
+        List<TravelScheduleEntity> select = travelScheduleRepository.selectMyTravelScehdule(userId,userId1);
+
+        List<TravelScheduleDto> result = select.stream().map(TravelScheduleDto::toDto).collect(Collectors.toList());
+
+        return result;
+    }
+    //테마페이지에 일정여부를 공개로 선택한 모든 일정의 조회쿼리
+    public List<TravelScheduleDto> selectTravelSchedule(String userId){
+
+        List<TravelScheduleEntity> select = travelScheduleRepository.selectTravelSchedule(userId);
 
         List<TravelScheduleDto> result = select.stream().map(TravelScheduleDto::toDto).collect(Collectors.toList());
 

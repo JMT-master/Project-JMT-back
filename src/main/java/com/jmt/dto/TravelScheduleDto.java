@@ -35,8 +35,8 @@ public class TravelScheduleDto {
     private String dayImage;
 
 
-    public static TravelScheduleEntity toEntity(final TravelScheduleDto dto){
-        try{
+    public static TravelScheduleEntity toEntity(final TravelScheduleDto dto) {
+        try {
             return TravelScheduleEntity.builder()
                     .travelUserId(dto.getTravelUserId())
                     .travelTitle(dto.getTravelTitle())
@@ -48,13 +48,13 @@ public class TravelScheduleDto {
                     .travleEndTime(dto.getTravelEndTime())
                     .dayImage(dto.getDayImage())
                     .build();
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
     }
 
-    public static TravelScheduleDto toDto(final TravelScheduleEntity entity){
-        try{
+    public static TravelScheduleDto toDto(final TravelScheduleEntity entity) {
+        try {
             return TravelScheduleDto.builder()
                     .travelId(entity.getTravelId())
                     .travelUserId(entity.getTravelUserId())
@@ -67,7 +67,7 @@ public class TravelScheduleDto {
                     .travelEndTime(entity.getTravleEndTime())
                     .dayImage(entity.getDayImage())
                     .build();
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
     }

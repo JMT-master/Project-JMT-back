@@ -35,6 +35,24 @@ public class WishController {
                 .error("success")
                 .build());
     }
+    //travel plans 여행지 의 약자가  Tps임ㅋㅋ ㅅㄱ요
+    @PostMapping("/wishTpsInsert")
+    public ResponseEntity<ResponseDto> wishTpsInsert(@RequestBody WishDto wishDto, @AuthenticationPrincipal String userid){
+        if(wishDto != null){
+            wishService.wishTpsInsert(wishDto,userid);
+        }
+        else{
+            return ResponseEntity.badRequest().body(ResponseDto.builder()
+                    .error("error")
+                    .build());
+        }
+
+        return ResponseEntity.ok().body(ResponseDto.<WishDto>builder()
+                .error("success")
+                .build());
+    }
+
+
 
     @GetMapping("/wishTdnSelect")
     public ResponseEntity<ResponseDto> wishTdnSelect(@AuthenticationPrincipal String userid){

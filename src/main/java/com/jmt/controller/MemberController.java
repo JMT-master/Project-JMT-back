@@ -1,5 +1,6 @@
 package com.jmt.controller;
 
+import com.jmt.common.CaptchaUtil;
 import com.jmt.common.TokenProvidor;
 import com.jmt.dto.LoginDto;
 import com.jmt.dto.MemberDto;
@@ -11,6 +12,7 @@ import com.jmt.service.KaKaoLoginService;
 import com.jmt.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import nl.captcha.Captcha;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -47,16 +49,36 @@ public class MemberController {
 
     // 회원가입
     @PostMapping("joinUser")
-    public ResponseEntity<MemberDto> createMember(@RequestBody MemberDto dto){
+    public ResponseEntity<ResponseDto> createMember(@RequestBody MemberDto dto){
         MemberDto memberDto = null;
-        System.out.println("memberDto = " + dto);
+        List<String> msg = new ArrayList<>();
 
         try{
             memberDto = service.create(dto);
-            return ResponseEntity.ok().body(memberDto);
-        }catch (Exception e){
-            log.error(e.getMessage());
-            return ResponseEntity.badRequest().body(memberDto);
+            return ResponseEntity.ok().body(ResponseDto.<String>builder()
+                            .error("success")
+                            .data(msg)
+                    .build());
+        }catch (RuntimeException e){
+            System.out.println("여기?????");
+            if(e.getMessage().equals("비어있는 칸이 있습니다.") ||
+                    e.getMessage().equals("비밀번호 다름") ||
+                    e.getMessage().equals("이미 등록된 사용자가 있습니다.")
+            )
+                msg.add(e.getMessage());
+            else
+                msg.add("서버 에러");
+            return ResponseEntity.badRequest().body(ResponseDto.<String>builder()
+                            .error("error")
+                            .data(msg)
+                    .build());
+        } catch (Exception e) {
+            System.out.println("서버에러");
+            msg.add("서버 에러");
+            return ResponseEntity.badRequest().body(ResponseDto.<String>builder()
+                    .error("error")
+                    .data(msg)
+                    .build());
         }
 
     }
@@ -119,10 +141,16 @@ public class MemberController {
 
     // 로그인 유저 전달
     @GetMapping("login/info")
-    public ResponseEntity<String> loginMember(@AuthenticationPrincipal String userid) {
-        Member member = service.getMember(userid);
+    public ResponseEntity<ResponseDto> loginMember(@AuthenticationPrincipal String userid, @RequestParam String socialYn) {
 
-        return ResponseEntity.ok().body(member.getEmail());
+        List<String> result = new ArrayList<>();
+        Member member = service.getMember(userid,socialYn);
+        result.add(member.getEmail());
+
+        return ResponseEntity.ok().body(ResponseDto.<String>builder()
+                        .error("success")
+                        .data(result)
+                .build());
     }
 
     // 로그인 접속 시간
@@ -130,6 +158,8 @@ public class MemberController {
     public ResponseEntity<LocalDateTime> loginStartTime(@RequestBody LoginDto loginDto) {
         List<LoginDto> loginDtos = new ArrayList<>();
         LocalDateTime dateTime = service.loginInfo(loginDto);
+        System.out.println("dateTime = " + dateTime);
+        System.out.println("들어옴???");
 
         if(dateTime == null) {
             return ResponseEntity.badRequest().body(dateTime);
@@ -145,10 +175,11 @@ public class MemberController {
 
     // 로그인 시간 연장
     @PostMapping("login/extension")
-    public ResponseEntity<LocalDateTime> loginExtension(@RequestBody String userid, HttpServletResponse response) {
+    public ResponseEntity<LocalDateTime> loginExtension(@RequestBody LoginDto loginDto, HttpServletResponse response) {
         try{
 
-            LoginDto login = service.loginExtension(userid);
+            System.out.println("userid = " + loginDto);
+            LoginDto login = service.loginExtension(loginDto);
             response.addCookie(login.getAccessToken());
 
             return ResponseEntity.ok().body(LocalDateTime.now());
@@ -181,21 +212,53 @@ public class MemberController {
                 .build());
     }
 
-    // 카카오 로그인
+    // 카카오 member 가입
     @GetMapping("login/auth")
-    public String getAccessToken(@RequestParam("code") String code) {
+    public ResponseEntity<LoginDto> kakaoLogin(@RequestParam("code") String code) {
         String kaKaoToken = kaKaoLoginService.getKaKaoToken(code);
-        String kaKaoTokenInfo = kaKaoLoginService.getKaKaoTokenInfo(kaKaoToken);
+        String kaKaoTokenInfo = kaKaoLoginService.getKaKaoTokenInfo(kaKaoToken); // User Email
 
-        return null;
+        System.out.println("kaKaoTokenInfo = " + kaKaoTokenInfo);
+
+        try {
+            // member table에 저장 및 토큰 변경 작업
+            MemberDto memberDto = MemberDto.builder()
+                    .email(kaKaoTokenInfo)
+                    .adminYn("N")
+                    .socialYn("Y")
+                    .socialToken(kaKaoToken)
+                    .build();
+
+            Member member = service.kakaoMember(memberDto);
+
+            // login 하여 우리 페이지에 맞는 토큰 및 쿠키 발급
+            LoginDto login = LoginDto.builder()
+                    .email(member.getEmail())
+                    .socialYn(member.getSocialYn())
+                    .build();
+
+            return ResponseEntity.ok().body(login);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 
-    //회원 정보 수정
+    // 카카오 로그아웃
+    @GetMapping("/logout/kakao")
+    public ResponseEntity<String> kakaoLogout(@AuthenticationPrincipal String userId) {
+
+        System.out.println("들어옴???");
+        System.out.println("userId = " + userId);
+        String result = kaKaoLoginService.sendKaKaoLogout(userId);
+        return ResponseEntity.ok().body("ok");
+    }
+
+    //회원 정보 수정 화면 호출
     @GetMapping("member/update")
-    public ResponseEntity<?> updateMember(@AuthenticationPrincipal String userId){
+    public ResponseEntity<?> updateMember(@AuthenticationPrincipal String userId, @RequestParam String socialYn){
         try {
             log.info("update userId : "+userId);
-            Member member = service.getMember(userId);
+            Member member = service.getMember(userId,socialYn);
             MemberDto memberDto = MemberDto.toDto(member);
             memberDto.setPassword(null);
             memberDto.setPasswordChk(null);
@@ -213,20 +276,28 @@ public class MemberController {
     @PostMapping("member/update")
     public ResponseEntity<?> update(@AuthenticationPrincipal String userId,
                                     @RequestBody MemberDto memberDto){
-        log.info("memberDro : {}", memberDto);
-       String email =  service.update(memberDto);
-       log.info("email : "+email);
-       Member member = service.getMember(email);
-       MemberDto dto = MemberDto.toDto(member);
-        return ResponseEntity.ok().body(dto);
+        try {
+            String email =  service.update(memberDto);
+            // 추후 확인
+            Member member = service.getMember(email,memberDto.getSocialYn());
+            MemberDto dto = MemberDto.toDto(member);
+            return ResponseEntity.ok().body(ResponseDto.builder()
+                    .error("success")
+                    .build());
+        } catch (Exception e){
+            return ResponseEntity.ok().body(ResponseDto.builder()
+                            .error(e.getMessage())
+                    .build());
+        }
     }
 
+    // 추후 확인
     //특정 userId의 userDto 값 가져오기
     @GetMapping("mypage")
     public ResponseEntity<?> getMember(@AuthenticationPrincipal String userId){
         try {
             log.info("update userId : "+userId);
-            Member member = service.getMember(userId);
+            Member member = service.getMember(userId,"N");
             MemberDto memberDto = MemberDto.toDto(member);
             memberDto.setPassword(null);
             memberDto.setPasswordChk(null);
