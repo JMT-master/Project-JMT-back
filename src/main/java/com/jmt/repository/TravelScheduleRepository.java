@@ -27,7 +27,7 @@ public interface TravelScheduleRepository extends JpaRepository<TravelScheduleEn
             "      (select b.day_image from day_format b where b.day_user_id=? order by rand() limit 1) as day_image"+
             " from travel_schedule a" +
             " where a.travel_user_id = ? ",nativeQuery = true)
-    List<TravelScheduleEntity> myTtravelScheduleSelect(String userid,String userid1);
+    List<TravelScheduleEntity> selectMyTravelScehdule(String userid,String userid1);
 
     @Query(value = "select a.travel_id," +
             "      a.travel_user_id," +
@@ -41,8 +41,8 @@ public interface TravelScheduleRepository extends JpaRepository<TravelScheduleEn
             "      a.mod_date," +
             "      a.reg_date," +
             "      (select b.day_image from day_format b where b.day_user_id=? order by rand() limit 1) as day_image"+
-            " from travel_schedule a" +
+            " from travel_schedule a "+
             "where a.travel_yn = 'Y' ",nativeQuery = true)
-    List<TravelScheduleEntity> travelScheduleSelect(String userid);
+    List<TravelScheduleEntity> selectTravelSchedule(String userid);
 
 }

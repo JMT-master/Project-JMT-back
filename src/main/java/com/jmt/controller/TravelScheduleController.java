@@ -36,12 +36,12 @@ public class TravelScheduleController {
     }
 
     //마이페이지에 나의 일정 조회쿼리
-    @GetMapping("/myTtravelScheduleSelect")
-    public ResponseEntity<ResponseDto> myTtravelScheduleSelect(@AuthenticationPrincipal String userid){
+    @GetMapping("/selectMyTravelScehdule")
+    public ResponseEntity<ResponseDto> selectMyTravelScehdule(@AuthenticationPrincipal String userid){
 
         List<TravelScheduleDto> dtoList;
         if(userid != null && userid != ""){
-            dtoList = travelScheduleService.myTtravelScheduleSelect(userid);
+            dtoList = travelScheduleService.selectMyTravelScehdule(userid);
         }
         else{
             return ResponseEntity.badRequest().body(ResponseDto.builder()
@@ -56,11 +56,11 @@ public class TravelScheduleController {
 
     //테마페이지에 일정여부를 공개로 선택한 모든 일정의 조회쿼리
     @GetMapping("/selectTravelSchedule")
-    public ResponseEntity<ResponseDto> travelScheduleSelect(@AuthenticationPrincipal String userid){
+    public ResponseEntity<ResponseDto> selectTravelSchedule(@AuthenticationPrincipal String userid){
 
         List<TravelScheduleDto> dtoList;
         if(userid != null && userid != ""){
-            dtoList = travelScheduleService.myTtravelScheduleSelect(userid);
+            dtoList = travelScheduleService.selectTravelSchedule(userid);
         }
         else{
             return ResponseEntity.badRequest().body(ResponseDto.builder()
