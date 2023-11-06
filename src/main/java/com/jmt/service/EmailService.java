@@ -66,7 +66,7 @@ public class EmailService {
 
     public StringBuffer pwdMessage(String newPwd) {
         StringBuffer sendEmail = new StringBuffer();
-        String emailAddress = "http://localhost:3000/myInfo/ChangePasswd";
+        String emailAddress = "http://localhost:3000/myInfo/ChangePasswd/:"+newPwd;
 
         sendEmail.append(
                         "<div>"+
