@@ -73,7 +73,7 @@ public class TravelPdfService {
 
         List<DayFormatDto> dayFormatDtoList1 = dayFormatService.dayFormatSelect1(userId, travelId);
 
-        document.add(new Paragraph("1일차 일정")).setFont(customFont);
+        document.add(new Paragraph("1일차 일정")).setFont(customFont).setFontSize(18);
         //시간 표시용 String 값 하나
         String timeIndex;
         for (DayFormatDto dayFormatDto : dayFormatDtoList1) {
@@ -94,7 +94,7 @@ public class TravelPdfService {
 
         List<DayFormatDto> dayFormatDtoList2 = dayFormatService.dayFormatSelect2(userId, travelId);
 
-        document.add(new Paragraph("2일차 일정")).setFont(customFont);
+        document.add(new Paragraph("2일차 일정")).setFont(customFont).setFontSize(18);
         for (DayFormatDto dayFormatDto : dayFormatDtoList2) {
             ImageData imageData = ImageDataFactory.create(dayFormatDto.getDayImage());
             Image image = new Image(imageData).scaleAbsolute(150,150);
