@@ -15,6 +15,8 @@ public class NoticeDto {
     private String category;
     private String content;
     private String title;
+    private int view;
+    private String        fileKey;
     private LocalDateTime regDate;
     private LocalDateTime modDate;
 
@@ -25,6 +27,7 @@ public class NoticeDto {
                     .noticeTitle(dto.getTitle())
                     .noticeCategory(dto.getCategory())
                     .noticeContent(dto.getContent())
+                    .noticeFileKey(dto.getFileKey())
                     .build();
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
@@ -40,6 +43,7 @@ public class NoticeDto {
                     .idx(entity.getNoticeIdx())
                     .regDate(entity.getRegDate())
                     .modDate(entity.getModDate())
+                    .fileKey(entity.getNoticeFileKey())
                     .build();
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());

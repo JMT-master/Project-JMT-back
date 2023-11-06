@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -37,10 +39,16 @@ public class ReviewController {
         return email.equalsIgnoreCase(dto.getReviewWriter());
     }
 
+//    @PostMapping("/read")
+//    public ResponseEntity<List<ReviewDto>> readAllReview(
+//            @RequestBody ReviewDto dto, Pageable pageable) {
+//        List<ReviewDto> reviewDtos = reviewService.readAll(dto.getReviewContentId());
+//        return ResponseEntity.ok().body(reviewDtos);
+//    }
     @PostMapping("/read")
-    public ResponseEntity<List<ReviewDto>> readAllReview(
-            @RequestBody ReviewDto dto) {
-        List<ReviewDto> reviewDtos = reviewService.readAll(dto.getReviewContentId());
+    public ResponseEntity<Page<ReviewDto>> readAllReview(
+            @RequestBody ReviewDto dto, Pageable pageable) {
+        Page<ReviewDto> reviewDtos = reviewService.readAllPaged(dto.getReviewContentId(), pageable);
         return ResponseEntity.ok().body(reviewDtos);
     }
 
@@ -53,22 +61,23 @@ public class ReviewController {
     }
 
     @PostMapping
-    public ResponseEntity<List<ReviewDto>> writeReview(@RequestPart(value = "file", required = false) MultipartFile multipartFile,
+    public ResponseEntity<Page<ReviewDto>> writeReview(@RequestPart(value = "file", required = false) MultipartFile multipartFile,
                                                        @RequestPart(value = "data") ReviewDto dto,
-                                                       @AuthenticationPrincipal String userid) {
+                                                       @AuthenticationPrincipal String userid, Pageable pageable) {
         log.debug("multipartFile : " + multipartFile);
         log.debug("dto : " + dto);
         Review review = reviewService.writeReview(multipartFile, userid, dto);
-        List<ReviewDto> reviewDtos = reviewService.readAll(dto.getReviewContentId());
+        Page<ReviewDto> reviewDtos = reviewService.readAllPaged(dto.getReviewContentId(),pageable);
         return ResponseEntity.ok().body(reviewDtos);
     }
 
     @PutMapping
-    public ResponseEntity<List<ReviewDto>> updateReview(
-            @RequestBody ReviewDto dto,
-            @AuthenticationPrincipal String email) {
-        reviewService.updateReview(dto);
-        List<ReviewDto> reviewDtos = reviewService.readAll(dto.getReviewContentId());
+    public ResponseEntity<Page<ReviewDto>> updateReview(
+            @RequestPart(value = "file", required = false) MultipartFile multipartFile,
+            @RequestPart(value = "data") ReviewDto dto,
+            @AuthenticationPrincipal String email, Pageable pageable) {
+        reviewService.updateReview(multipartFile,dto);
+        Page<ReviewDto> reviewDtos = reviewService.readAllPaged(dto.getReviewContentId(), pageable);
         return ResponseEntity.ok().body(reviewDtos);
 
     }

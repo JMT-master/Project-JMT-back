@@ -1,5 +1,6 @@
 package com.jmt.controller;
 
+import com.jmt.dto.KnowledgeDto;
 import com.jmt.dto.NoticeDto;
 import com.jmt.entity.Notice;
 import com.jmt.service.EmitterService;
@@ -7,9 +8,12 @@ import com.jmt.service.MemberService;
 import com.jmt.service.NoticeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,15 +28,26 @@ public class NoticeController {
     private final EmitterService emitterService;
     private final MemberService memberService;
 
-    @GetMapping
-    public ResponseEntity<List<NoticeDto>> readAll() {
-        List<Notice> notices = noticeService.readAllNotice();
-        List<NoticeDto> noticeDtos = new ArrayList<>();
+//    @GetMapping
+//    public ResponseEntity<List<NoticeDto>> readAll() {
+//        List<Notice> notices = noticeService.readAllNotice();
+//        List<NoticeDto> noticeDtos = new ArrayList<>();
+//
+//        notices.forEach((notice) -> {
+//            log.debug(notice.toString());
+//            noticeDtos.add(NoticeDto.toDto(notice));
+//        });
+//        return ResponseEntity.ok().body(noticeDtos);
+//    }
 
-        notices.forEach((notice) -> {
-            log.debug(notice.toString());
-            noticeDtos.add(NoticeDto.toDto(notice));
-        });
+    @GetMapping
+    public ResponseEntity<Page<NoticeDto>> readAllPageable(Pageable pageable) {
+        Page<NoticeDto> noticeDtos = noticeService.readAllNotice(pageable);
+
+//        notices.forEach((notice) -> {
+//            log.debug(notice.toString());
+//            noticeDtos.add(NoticeDto.toDto(notice));
+//        });
         return ResponseEntity.ok().body(noticeDtos);
     }
 
@@ -44,7 +59,10 @@ public class NoticeController {
     }
 
     @PostMapping("/admin")
-    public ResponseEntity<NoticeDto> writeNotice(@AuthenticationPrincipal String userid, @RequestBody NoticeDto dto) {
+    public ResponseEntity<NoticeDto> writeNotice(
+            @AuthenticationPrincipal String userid,
+            @RequestPart(value = "file", required = false) List<MultipartFile> multipartFiles,
+            @RequestPart(value = "data") NoticeDto dto) {
         Notice entity = NoticeDto.toEntity(dto);
         log.debug("form에서 받은 dto : " + dto);
         if (entity == null) {
@@ -52,7 +70,7 @@ public class NoticeController {
         }
         entity.setMember(memberService.getMember(userid));
         NoticeDto noticeDto = NoticeDto.toDto(entity);
-        noticeService.createNotice(entity);
+        noticeService.createNotice(multipartFiles,noticeDto, userid);
         return ResponseEntity.ok().body(noticeDto);
     }
 
@@ -63,17 +81,13 @@ public class NoticeController {
     }
 
     @DeleteMapping("/admin")
-    public ResponseEntity<List<NoticeDto>> deleteNotice(@RequestBody NoticeDto dto) {
+    public ResponseEntity<Page<NoticeDto>> deleteNotice(@RequestBody NoticeDto dto, Pageable pageable) {
         log.debug("Notice Delete idx : " + dto.getIdx());
         Notice targetNotice = noticeService.readNotice(noticeService.readNoticeIdx(dto.getIdx()).getNoticeId());
         log.debug("Notice Delete : " + targetNotice);
         noticeService.deleteNotice(targetNotice);
-        List<Notice> noticeList = noticeService.readAllNotice();
-        List<NoticeDto> dtos = new ArrayList<>();
-        noticeList.forEach(notice -> {
-            dtos.add(NoticeDto.toDto(notice));
-        });
-        return ResponseEntity.ok().body(dtos);
+        Page<NoticeDto> noticedtos = noticeService.readAllNotice(pageable);
+        return ResponseEntity.ok().body(noticedtos);
 
     }
 }

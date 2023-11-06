@@ -8,6 +8,8 @@ import com.jmt.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,8 +40,14 @@ public class ReviewService {
     @Transactional
     public List<ReviewDto> readAll(String cid) {
         List<ReviewDto> reviewDtoList = new ArrayList<>();
-        reviewRepository.findAllByReviewContentidOrderByRegDateDesc(cid).forEach(review -> reviewDtoList.add(ReviewDto.toDto(review)));
+        reviewRepository.findByReviewContentidOrderByRegDateDesc(cid).forEach(review -> reviewDtoList.add(ReviewDto.toDto(review)));
         return reviewDtoList;
+    }
+
+    @Transactional
+    public Page<ReviewDto> readAllPaged(String cid, Pageable pageable) {
+        Page<Review> reviews = reviewRepository.findAllByReviewContentidOrderByRegDateDesc(cid, pageable);
+        return reviews.map(ReviewDto::toDto);
     }
 
     @Transactional
@@ -48,11 +56,25 @@ public class ReviewService {
     }
 
     @Transactional
-    public Review updateReview(ReviewDto dto) {
+    public Review updateReview(@RequestPart(value = "file", required = false) MultipartFile file,ReviewDto dto) {
         Review review = reviewRepository.findByReviewIdx(dto.getReviewIdx());
-        review.setReviewImage(dto.getReviewImg());
+
+        if(dto.getReviewImg() != null) {
+            review.setReviewImage(dto.getReviewImg());
+        }
         review.setReviewContent(dto.getReviewContent());
         review.setModDate(LocalDateTime.now());
+        if (file != null) {
+            String filePath = itemImageLocation + "/" + "Review_" + dto.getReviewIdx() + "_" + fileService.generateRandomString();
+            File dest = new File(filePath);
+            review.setReviewImage(filePath);
+            try {
+                file.transferTo(dest); // 파일 업로드 작업 수행
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        reviewRepository.save(review);
         return review;
     }
 
@@ -89,7 +111,5 @@ public class ReviewService {
 
         return review;
     }
-
-
 
 }

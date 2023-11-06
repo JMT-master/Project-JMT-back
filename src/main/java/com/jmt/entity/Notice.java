@@ -1,6 +1,7 @@
 package com.jmt.entity;
 
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -27,6 +28,10 @@ public class Notice extends BaseTimeEntity {
     @JoinColumn(name = "notice_userid", referencedColumnName = "userid")
     private Member member;
 
+    @Column(name = "notice_view")
+    @ColumnDefault("0")
+    private int noticeView; // 조회수
+
     @Column(length = 50, nullable = false)
     private String noticeCategory;
 
@@ -36,7 +41,7 @@ public class Notice extends BaseTimeEntity {
     @Column(length = 6500, nullable = false)
     private String noticeContent;
 
-    @Column
-    private String noticeFileKey;
+    @Column(name = "notice_file_key") // kn_01_3_셔츠6.jpg
+    private String noticeFileKey; // 파일 업로드 유무??? => 파일키 추후 작업
 
 }
