@@ -1,20 +1,32 @@
 package com.jmt.controller;
 
 import com.jmt.dto.KnowledgeDto;
+import com.jmt.dto.KnowledgeSendDto;
 import com.jmt.dto.NoticeDto;
+import com.jmt.dto.NoticeSendDto;
 import com.jmt.entity.Notice;
 import com.jmt.service.EmitterService;
 import com.jmt.service.MemberService;
 import com.jmt.service.NoticeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,9 +64,10 @@ public class NoticeController {
     }
 
     @GetMapping("/{idx}")
-    public ResponseEntity<NoticeDto> read(@PathVariable Long idx) {
+    public ResponseEntity<List<NoticeSendDto>> read(@PathVariable Long idx) {
         log.debug("noticeReadIdx : " + idx);
-        NoticeDto noticeDto = NoticeDto.toDto(noticeService.readNotice(noticeService.readNoticeIdx(idx).getNoticeId()));
+        List<NoticeSendDto> noticeDto = noticeService.readNoticeIdx(idx);
+
         return ResponseEntity.ok().body(noticeDto);
     }
 
@@ -63,15 +76,11 @@ public class NoticeController {
             @AuthenticationPrincipal String userid,
             @RequestPart(value = "file", required = false) List<MultipartFile> multipartFiles,
             @RequestPart(value = "data") NoticeDto dto) {
-        Notice entity = NoticeDto.toEntity(dto);
-        log.debug("form에서 받은 dto : " + dto);
-        if (entity == null) {
+        if (dto == null) {
             throw new RuntimeException("엔티티 이즈 널");
         }
-        entity.setMember(memberService.getMember(userid));
-        NoticeDto noticeDto = NoticeDto.toDto(entity);
-        noticeService.createNotice(multipartFiles,noticeDto, userid);
-        return ResponseEntity.ok().body(noticeDto);
+        NoticeDto noticedto = noticeService.createNotice(multipartFiles,dto, userid);
+        return ResponseEntity.ok().body(noticedto);
     }
 
     @PutMapping("/admin")
@@ -81,13 +90,30 @@ public class NoticeController {
     }
 
     @DeleteMapping("/admin")
-    public ResponseEntity<Page<NoticeDto>> deleteNotice(@RequestBody NoticeDto dto, Pageable pageable) {
-        log.debug("Notice Delete idx : " + dto.getIdx());
-        Notice targetNotice = noticeService.readNotice(noticeService.readNoticeIdx(dto.getIdx()).getNoticeId());
-        log.debug("Notice Delete : " + targetNotice);
-        noticeService.deleteNotice(targetNotice);
+    public ResponseEntity<Page<NoticeDto>> deleteNotice(@RequestBody NoticeSendDto dto, Pageable pageable) {
+        noticeService.deleteNotice(dto);
         Page<NoticeDto> noticedtos = noticeService.readAllNotice(pageable);
         return ResponseEntity.ok().body(noticedtos);
 
+    }
+
+    @PostMapping("/viewFile")
+    public ResponseEntity<Resource> showFileImage(@RequestBody NoticeSendDto noticeSendDto) throws IOException {
+        System.out.println("noticeSendDto = " + noticeSendDto);
+        Path path = Paths.get(noticeSendDto.getServerPath());
+
+        String contentType = Files.probeContentType(path);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentDisposition(
+                ContentDisposition.builder("inline")
+                        .filename(noticeSendDto.getOriginalName(), StandardCharsets.UTF_8).build() // StandardCharsets.UTF_8 : UTF-8로 인코딩
+        );
+
+        headers.add(HttpHeaders.CONTENT_TYPE,contentType);
+
+        Resource resource = new InputStreamResource(Files.newInputStream(path));
+
+        return new ResponseEntity<>(resource,headers, HttpStatus.OK);
     }
 }

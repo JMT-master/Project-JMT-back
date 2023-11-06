@@ -4,12 +4,15 @@ import com.jmt.entity.Notice;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
 @Builder
+@ToString
 public class NoticeDto {
     private Long idx;
     private String category;
@@ -19,6 +22,7 @@ public class NoticeDto {
     private String        fileKey;
     private LocalDateTime regDate;
     private LocalDateTime modDate;
+    private List<String> files;
 
     public static Notice toEntity(final NoticeDto dto) {
         try {
@@ -44,6 +48,7 @@ public class NoticeDto {
                     .regDate(entity.getRegDate())
                     .modDate(entity.getModDate())
                     .fileKey(entity.getNoticeFileKey())
+                    .view(entity.getNoticeView())
                     .build();
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
