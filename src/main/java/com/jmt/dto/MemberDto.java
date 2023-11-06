@@ -84,4 +84,5 @@ public class MemberDto {
             throw new RuntimeException(e.getMessage());
         }
     }
+
 }

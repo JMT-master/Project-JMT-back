@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.Cookie;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,28 +29,46 @@ public class MemberService {
     private final TokenProvidor tokenProvidor;
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    // 멤버 정보 호출
     @Transactional
     public Member getMember(String email,String socialYn){
-        log.info("email : {}", email);
         return memberRepository.findByEmailAndSocialYn(email,socialYn).get();
     }
 
     // 회원가입 인증
     // check : false(회원가입), true(수정)
     private void validate(Member member, boolean check) {
-        try {
-            System.out.println("member = " + member);
-            // 비어있을 때
-            if(member.getEmail().isEmpty() ||
-                    member.getUsername().isEmpty() || member.getPassword().isEmpty() || member.getPasswordChk().isEmpty() ||
-                    member.getZipcode().isEmpty() || member.getAddress().isEmpty() ||
-                    member.getPhone().isEmpty() || member.getAdminYn().isEmpty()) {
-                throw new RuntimeException("비어있는 칸이 있습니다.");
+        List<String> memberList = new ArrayList<>();
+        memberList.add(member.getEmail());
 
-            } else if(!member.getPassword().equals(member.getPasswordChk())) {
-                throw new RuntimeException("비밀번호 다름");
-            }else if(!check && memberRepository.existsByEmailAndSocialYn(member.getEmail(),member.getSocialYn())) {
-                throw new RuntimeException("이미 등록된 사용자가 있습니다.");
+        try {
+            // 회원 수정
+            if(check) {
+                // 비어있을 때
+                if(member.getEmail().isEmpty() ||
+                        member.getUsername().isEmpty() ||
+                        member.getZipcode().isEmpty() || member.getAddress().isEmpty() ||
+                        member.getPhone().isEmpty() || member.getSocialYn().isEmpty() || member.getAdminYn().isEmpty()) {
+                    throw new RuntimeException("비어있는 칸이 있습니다.");
+
+                } else if(!memberRepository.findByPhoneAndEmailNotIn(member.getPhone(),memberList).isEmpty()) {
+                    throw new RuntimeException("이미 등록된 전화번호");
+                }
+            } else {
+                // 회원 가입
+                // 비어있을 때
+                if(member.getEmail().isEmpty() ||
+                        member.getUsername().isEmpty() || member.getPassword().isEmpty() || member.getPasswordChk().isEmpty() ||
+                        member.getZipcode().isEmpty() || member.getAddress().isEmpty() ||
+                        member.getPhone().isEmpty() || member.getSocialYn().isEmpty() || member.getAdminYn().isEmpty()) {
+                    throw new RuntimeException("비어있는 칸이 있습니다.");
+
+                } else if(!member.getPassword().equals(member.getPasswordChk())) {
+                    throw new RuntimeException("비밀번호 다름");
+                } else if(!check && memberRepository.existsByEmailAndSocialYn(member.getEmail(),member.getSocialYn())) {
+                    throw new RuntimeException("이미 등록된 사용자가 있습니다.");
+                }
             }
         } catch (RuntimeException e) {
             e.printStackTrace();
@@ -97,26 +117,40 @@ public class MemberService {
     // 회원 수정
     @Transactional
     public String update(MemberDto memberDto) {
+        Member result = null;
         Member member = MemberDto.toEntity(memberDto);
 
-        validate(member, true);
+        try {
+            validate(member, true);
+        } catch(Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
 
-        log.info("member in service : {}", member);
 
         // Dirty Checking(변경감지)로 인하여 update문이 따로 필요 없이 준속성에 의하여 조회 후 변경하면 자동 변경
-        Optional<Member> id = memberRepository.findByEmailAndSocialYn(member.getEmail(),member.getSocialYn());
-        Member result = id.orElseThrow(EntityNotFoundException::new);
+        Optional<Member> optionalMember = memberRepository.findByEmailAndSocialYn(member.getEmail(),member.getSocialYn());
 
-        log.info("result : {}", result);
+        if(optionalMember.isEmpty()) {
+            return null;
+        } else {
+            Member revMember = optionalMember.get();
+            result = Member.builder()
+                    .userid(revMember.getUserid())
+                    .email(revMember.getEmail())
+                    .password(revMember.getPassword())
+                    .passwordChk(revMember.getPasswordChk())
+                    .adminYn(revMember.getAdminYn())
+                    .socialYn(revMember.getSocialYn())
 
-        // password 암호화
-        String encodePwd = passwordEncoder.encode(member.getPassword());
-        String encodePwdChk = passwordEncoder.encode(member.getPasswordChk());
+                    .username(member.getUsername())
+                    .zipcode(member.getZipcode())
+                    .address(member.getAddress())
+                    .addressDetail(member.getAddressDetail())
+                    .phone(member.getPhone())
+                    .build();
+        }
 
-        member.setPassword(encodePwd);
-        member.setPasswordChk(encodePwdChk);
-
-        result.changeMember(member);
+        memberRepository.save(result);
 
         return member.getEmail();
     }

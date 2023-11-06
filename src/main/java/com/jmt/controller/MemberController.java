@@ -251,8 +251,7 @@ public class MemberController {
         return ResponseEntity.ok().body("ok");
     }
 
-    // 추후 확인
-    //회원 정보 수정
+    //회원 정보 수정 화면 호출
     @GetMapping("member/update")
     public ResponseEntity<?> updateMember(@AuthenticationPrincipal String userId, @RequestParam String socialYn){
         try {
@@ -275,13 +274,19 @@ public class MemberController {
     @PostMapping("member/update")
     public ResponseEntity<?> update(@AuthenticationPrincipal String userId,
                                     @RequestBody MemberDto memberDto){
-        log.info("memberDro : {}", memberDto);
-       String email =  service.update(memberDto);
-       log.info("email : "+email);
-       // 추후 확인
-       Member member = service.getMember(email,memberDto.getSocialYn());
-       MemberDto dto = MemberDto.toDto(member);
-        return ResponseEntity.ok().body(dto);
+        try {
+            String email =  service.update(memberDto);
+            // 추후 확인
+            Member member = service.getMember(email,memberDto.getSocialYn());
+            MemberDto dto = MemberDto.toDto(member);
+            return ResponseEntity.ok().body(ResponseDto.builder()
+                    .error("success")
+                    .build());
+        } catch (Exception e){
+            return ResponseEntity.ok().body(ResponseDto.builder()
+                            .error(e.getMessage())
+                    .build());
+        }
     }
 
     // 추후 확인
