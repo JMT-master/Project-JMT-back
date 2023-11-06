@@ -59,15 +59,4 @@ public class Member {
 
     @Column(length = 500)
     private String socialToken;
-
-    public void changeMember(Member member) {
-        username = member.getUsername();
-        password = member.getPassword();
-        passwordChk = member.getPasswordChk();
-        zipcode = member.getZipcode();
-        address = member.getAddress();
-        addressDetail = member.getAddressDetail();
-        phone = member.getPhone();
-        adminYn = member.getAdminYn();
-    }
 }
