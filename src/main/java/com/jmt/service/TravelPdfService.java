@@ -33,6 +33,7 @@ public class TravelPdfService {
 
     private final TravelScheduleService travelScheduleService;
     private final DayFormatService dayFormatService;
+    private final FontService fontService;
 
     public byte[] generatePdf(String travelId,
                                String userId) throws Exception {
@@ -46,8 +47,9 @@ public class TravelPdfService {
         Document document = new Document(pdf);
 
         // Google 폰트 로딩
-        Path regularFontFilePath = Path.of("D:\\final-project\\final\\src\\main\\resources\\static\\Nanum_Gothic\\NanumGothic-Regular.ttf"); // 다운로드한 폰트 파일의 경로를 지정하세요
-        byte[] fontBytes = Files.readAllBytes(regularFontFilePath);
+//        Path regularFontFilePath = Path.of("D:\\final-project\\final\\src\\main\\resources\\static\\Nanum_Gothic\\NanumGothic-Regular.ttf"); // 다운로드한 폰트 파일의 경로를 지정하세요
+        byte[] fontBytes = fontService.loadFontFile();
+
         // 문서에 폰트 설정
         FontProgram fontProgram = FontProgramFactory.createFont(fontBytes);
         PdfFont customFont = PdfFontFactory.createFont(fontProgram, PdfEncodings.IDENTITY_H, PdfFontFactory.EmbeddingStrategy.PREFER_EMBEDDED);
@@ -61,12 +63,16 @@ public class TravelPdfService {
         //travelSchdule 부터 일단 가져오기
         TravelScheduleDto travelScheduleDto = travelScheduleService.selectByTravelId(travelId);
         System.out.println("travelScheduleDto = " + travelScheduleDto);
+
         document.add(new Paragraph("여행 일정 제목 : "+travelScheduleDto.getTravelTitle())
                 .setFont(customFont).setFontSize(25));
+
         document.add(new Paragraph("여행 시작일 : "+travelScheduleDto.getTravelStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                 +" ~~ 여행 종료일 : "+travelScheduleDto.getTravelEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                 .setFont(customFont));
+
         List<DayFormatDto> dayFormatDtoList1 = dayFormatService.dayFormatSelect1(userId, travelId);
+
         document.add(new Paragraph("1일차 일정")).setFont(customFont);
         //시간 표시용 String 값 하나
         String timeIndex;
@@ -85,7 +91,9 @@ public class TravelPdfService {
             document.add(new Paragraph("시간 : " + timeIndex).setFont(customFont));
             document.add(new Paragraph("---------------------------------------------"));
             }
+
         List<DayFormatDto> dayFormatDtoList2 = dayFormatService.dayFormatSelect2(userId, travelId);
+
         document.add(new Paragraph("2일차 일정")).setFont(customFont);
         for (DayFormatDto dayFormatDto : dayFormatDtoList2) {
             ImageData imageData = ImageDataFactory.create(dayFormatDto.getDayImage());

@@ -39,9 +39,9 @@ public class TravelScheduleService {
 
     //pdf 만들기 위한 travelId로 가져오기
     public TravelScheduleDto selectByTravelId(String travelId){
-
+        System.out.println("travelId = " + travelId);
         TravelScheduleEntity travelScheduleEntity = travelScheduleRepository.findByTravelId(travelId);
-
+        System.out.println("travelScheduleEntity = " + travelScheduleEntity);
         return TravelScheduleDto.toDto(travelScheduleEntity);
     }
 

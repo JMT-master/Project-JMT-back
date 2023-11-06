@@ -129,8 +129,10 @@ public class MemberController {
             login = service.login(loginDto);
             login.setLoginTime(LocalDateTime.now());
             response.addCookie(login.getAdminChk());
+            System.out.println("login = " + login);
             response.addCookie(login.getAccessToken());
 
+            System.out.println("login22222222 = " + login);
             return ResponseEntity.ok().body(login);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -319,18 +321,15 @@ public class MemberController {
 
     @PostMapping("sendEmailCode")
     public ResponseEntity<?> sendEmailCode(@RequestBody PwdFindDto pwdFindDto){
-        try {
-            String newPwd = emailService.sendNewPwdMail(pwdFindDto.getEmail());
-            return ResponseEntity.ok().body(newPwd);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("error");
-        }
+        String newPwd = emailService.sendNewPwdMail(pwdFindDto.getEmail());
+        MemberDto memberDto = service.changePwdByRandomPwd(newPwd, pwdFindDto.getEmail());
+        return ResponseEntity.ok().body(memberDto);
     }
 
     @PostMapping("myInfo/ChangePasswd")
-    public ResponseEntity<?> changePwd(){
-
-        return ResponseEntity.ok().body("주소는 일단 들어왔어용");
+    public ResponseEntity<?> changePwd(@RequestBody PasswordFindDto passwordFindDto){
+        MemberDto memberDto = service.updatePwdByNewPwd(passwordFindDto);
+        return ResponseEntity.ok().body(memberDto);
     }
     // 메일 인증받기 클릭 시
 //    @PostMapping("joinUser/email/validateSend")
@@ -367,43 +366,4 @@ public class MemberController {
 //        log.debug("chk dto : " + chkDto);
 //        return ResponseEntity.ok().body(chkDto);
 //    }
-
-
-    // 231103, NTJ, 추후 확인해보기
-    // rgetCaptcaImg에서 request.getSession().setAttribute(Captcha.NAME, captcha); 하고 Post에서 못받는 문제
-    // 비밀번호 captcha 이미지 생성
-    @GetMapping("changepw/captchaImg")
-    @ResponseBody
-    public ResponseEntity<ResponseDto> captchaImg(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        System.out.println("들어옴?");
-        List<String> result = new ArrayList<>();
-        String captchaStr = new CaptchaUtil().getCaptcaImg(request, response);
-        result.add(captchaStr);
-
-        return ResponseEntity.ok().body(ResponseDto.<String>builder()
-                        .error("sucess")
-                        .data(result)
-                .build());
-    }
-
-    // 231103, NTJ, 추후 확인해보기
-    @PostMapping("changepw/validate")
-    public ResponseEntity<Boolean> checkCaptcha(@RequestParam(value = "result")String result, HttpServletRequest request) {
-        System.out.println("request.getSession().getAttribute(\"captcha\") = " + request.getSession().getAttribute("captcha"));
-        System.out.println("세션 확인 : " + request.getSession());
-        Captcha captcha = (Captcha) request.getSession().getAttribute("captcha"); // 등록한 세션에서 값 추출
-
-//        if(result != null && !result.equals("")) {
-//            if(captcha.isCorrect(result)) {
-//                request.getSession().removeAttribute(Captcha.NAME);
-//
-//                return ResponseEntity.ok().body(true);
-//            } else {
-//                return ResponseEntity.badRequest().body(false);
-//            }
-//        } else {
-//            return ResponseEntity.badRequest().body(false);
-//        }
-        return ResponseEntity.ok().body(true);
-    }
 }
