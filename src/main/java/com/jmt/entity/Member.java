@@ -25,29 +25,30 @@ public class Member {
 //    @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private Long userid; // email
 
+    @Column(nullable = false)
     private String email; // email
 
-    @Column(length = 50, nullable = false)
+    @Column(length = 50)
     private String username; // 이름
 
     // password encoder로 인하여 length 변경
-    @Column(length = 500, nullable = false)
+    @Column(length = 500)
     private String password;
 
     // password encoder로 인하여 length 변경
-    @Column(length = 500, nullable = false)
+    @Column(length = 500)
     private String passwordChk;
 
-    @Column(length = 10, nullable = false)
+    @Column(length = 10)
     private String zipcode;
 
-    @Column(length = 150, nullable = false)
+    @Column(length = 150)
     private String address;
 
     @Column(length = 150)
     private String addressDetail;
 
-    @Column(length = 20, unique = true, nullable = false)
+    @Column(length = 20, unique = true)
     private String phone;
 
     @Column(length = 1 )
@@ -55,6 +56,9 @@ public class Member {
 
     @Column(length = 1 )
     private String socialYn;
+
+    @Column(length = 500)
+    private String socialToken;
 
     public void changeMember(Member member) {
         username = member.getUsername();

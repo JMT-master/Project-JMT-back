@@ -24,6 +24,7 @@ public class KnowledgeDto {
     private String        fileKey;
     private LocalDateTime regDate;
     private LocalDateTime modDate;
+    private String        socialYn;
 
     public static KnowledgeDto toDto(KnowledgeEntity knowledgeEntity) {
         return KnowledgeDto.builder()

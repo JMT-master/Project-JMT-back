@@ -50,7 +50,8 @@ public class NoticeController {
         if (entity == null) {
             throw new RuntimeException("엔티티 이즈 널");
         }
-        entity.setMember(memberService.getMember(userid));
+        // 추후 확인
+        entity.setMember(memberService.getMember(userid,"N"));
         NoticeDto noticeDto = NoticeDto.toDto(entity);
         noticeService.createNotice(entity);
         return ResponseEntity.ok().body(noticeDto);

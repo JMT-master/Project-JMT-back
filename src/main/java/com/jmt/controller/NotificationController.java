@@ -43,6 +43,7 @@ public class NotificationController {
         return checkEmitter;
     }
 
+    // 추후 확인
     @PostMapping("/send")
     public ResponseEntity<NotificationDto> sendData(
             @AuthenticationPrincipal String email,
@@ -51,7 +52,7 @@ public class NotificationController {
         Notification notification = NotificationDto.toEntity(dto);
         if (!dto.getUserid().equals(email)) {
             log.debug("senddto" + dto);
-            Member member = memberService.getMember(dto.getUserid());
+            Member member = memberService.getMember(dto.getUserid(),"N");
             notification.setMember(member);
 
             notificationService.addNotification(notification);

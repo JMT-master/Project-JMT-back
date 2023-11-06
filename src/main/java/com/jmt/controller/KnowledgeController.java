@@ -76,6 +76,7 @@ public class KnowledgeController {
             @RequestPart(value = "file", required = false) List<MultipartFile> multipartFiles,
             @RequestPart(value = "data")KnowledgeDto knowledgeDto
             ) {
+        System.out.println("knowledgeDto = " + knowledgeDto);
         knowledgeService.create(multipartFiles,knowledgeDto,userid);
 
         return ResponseEntity.ok().body("success");

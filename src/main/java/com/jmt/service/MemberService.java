@@ -28,9 +28,9 @@ public class MemberService {
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     @Transactional
-    public Member getMember(String email){
+    public Member getMember(String email,String socialYn){
         log.info("email : {}", email);
-        return memberRepository.findByEmail(email).get();
+        return memberRepository.findByEmailAndSocialYn(email,socialYn).get();
     }
 
     // 회원가입 인증
@@ -39,33 +39,28 @@ public class MemberService {
         try {
             System.out.println("member = " + member);
             // 비어있을 때
-            if(member == null || member.getEmail() == null ||
-                    member.getUsername() == null || member.getPassword() == null || member.getPasswordChk() == null ||
-                    member.getZipcode() == null || member.getAddress() == null || member.getAddressDetail() == null ||
-                    member.getPhone() == null || member.getAdminYn() == null) {
-                System.out.println("여기1?");
-                throw new RuntimeException("invalid argument");
+            if(member.getEmail().isEmpty() ||
+                    member.getUsername().isEmpty() || member.getPassword().isEmpty() || member.getPasswordChk().isEmpty() ||
+                    member.getZipcode().isEmpty() || member.getAddress().isEmpty() ||
+                    member.getPhone().isEmpty() || member.getAdminYn().isEmpty()) {
+                throw new RuntimeException("비어있는 칸이 있습니다.");
 
             } else if(!member.getPassword().equals(member.getPasswordChk())) {
-                System.out.println("여기2?");
                 throw new RuntimeException("비밀번호 다름");
-            }else if(!check && memberRepository.existsByEmail(member.getEmail())) {
-                System.out.println("여기3?");
+            }else if(!check && memberRepository.existsByEmailAndSocialYn(member.getEmail(),member.getSocialYn())) {
                 throw new RuntimeException("이미 등록된 사용자가 있습니다.");
             }
         } catch (RuntimeException e) {
             e.printStackTrace();
-            throw new RuntimeException("invalid 여기???");
+            throw new RuntimeException(e.getMessage());
         }
-
-
     }
 
     // 이메일 중복 확인
     @Transactional
     public Member emailValidate(MemberDto memberDto) {
-        Member member;
-        member = memberRepository.findById(memberDto.getEmail()).orElseThrow(EntityNotFoundException::new);
+        Member member = null;
+        member = memberRepository.findByEmailAndSocialYn(memberDto.getEmail(), memberDto.getSocialYn()).orElseThrow(EntityNotFoundException::new);
 
         return member;
     }
@@ -78,17 +73,24 @@ public class MemberService {
         System.out.println("memberDto = " + memberDto);
         System.out.println("member = " + member);
 
-        validate(member,false);
-        System.out.println("다음???????");
+        try{
+            validate(member,false);
+            System.out.println("다음???????");
 
-        // password 암호화
-        String encodePwd = passwordEncoder.encode(member.getPassword());
-        String encodePwdChk = passwordEncoder.encode(member.getPasswordChk());
-        System.out.println("다음22222");
-        member.setPassword(encodePwd);
-        member.setPasswordChk(encodePwdChk);
+            // password 암호화
+            String encodePwd = passwordEncoder.encode(member.getPassword());
+            String encodePwdChk = passwordEncoder.encode(member.getPasswordChk());
+            System.out.println("다음22222");
+            member.setPassword(encodePwd);
+            member.setPasswordChk(encodePwdChk);
 
-        System.out.println("-------------------------------------");
+            System.out.println("-------------------------------------");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("e.getMessage() = " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
+
         return MemberDto.toDto(memberRepository.save(member));
     }
     
@@ -102,7 +104,7 @@ public class MemberService {
         log.info("member in service : {}", member);
 
         // Dirty Checking(변경감지)로 인하여 update문이 따로 필요 없이 준속성에 의하여 조회 후 변경하면 자동 변경
-        Optional<Member> id = memberRepository.findByEmail(member.getEmail());
+        Optional<Member> id = memberRepository.findByEmailAndSocialYn(member.getEmail(),member.getSocialYn());
         Member result = id.orElseThrow(EntityNotFoundException::new);
 
         log.info("result : {}", result);
@@ -125,12 +127,13 @@ public class MemberService {
     // 로그인
     @Transactional
     public LoginDto login(LoginDto loginDto) {
-        Optional<Member> member = memberRepository.findByEmail(loginDto.getEmail());
+        Optional<Member> member = memberRepository.findByEmailAndSocialYn(loginDto.getEmail(),loginDto.getSocialYn());
 
         // Id가 Repository에 있으면
-//        if(member.isPresent() && passwordEncoder.matches(loginDto.getPassword(), member.get().getPassword())) {
-        if(member.isPresent()) {
-            System.out.println("???????????????");
+        if(member.isPresent() &&
+                ((member.get().getSocialYn().equals("N") &&
+                passwordEncoder.matches(loginDto.getPassword(), member.get().getPassword())) ||
+        member.get().getSocialYn().equals("Y"))) {
             Member resultMember = member.get();
 
             String accessToken = tokenProvidor.createAcessToken(resultMember.getEmail());
@@ -138,7 +141,7 @@ public class MemberService {
 
             Cookie accessCookie = tokenProvidor.createCookie("ACCESS_TOKEN", accessToken);
 
-            Cookie adminChk = tokenProvidor.createCookie("adminChk", memberRepository.findByEmail(loginDto.getEmail()).get().getAdminYn());
+            Cookie adminChk = tokenProvidor.createCookie("adminChk", member.get().getAdminYn());
 
             return LoginDto.builder()
                     .userid(resultMember.getEmail())
@@ -147,7 +150,6 @@ public class MemberService {
                     .adminChk(adminChk)
                     .build();
         } else {
-            System.out.println("여기??");
             return null;
         }
 
@@ -156,7 +158,7 @@ public class MemberService {
     // 로그인 정보 제공
     @Transactional
     public LocalDateTime loginInfo(LoginDto loginDto) {
-        Optional<Member> member = memberRepository.findByEmail(loginDto.getEmail());
+        Optional<Member> member = memberRepository.findByEmailAndSocialYn(loginDto.getEmail(),loginDto.getSocialYn());
 
         if(member.isPresent()) {
             return LocalDateTime.now();
@@ -167,8 +169,8 @@ public class MemberService {
 
     // 로그인 시간 연장
     @Transactional
-    public LoginDto loginExtension(String userId) {
-        Optional<Member> member = memberRepository.findByEmail(userId);
+    public LoginDto loginExtension(LoginDto loginDto) {
+        Optional<Member> member = memberRepository.findByEmailAndSocialYn(loginDto.getEmail(),loginDto.getSocialYn());
 
         // Id가 Repository에 있으면
         if(member.isPresent()) {
@@ -222,6 +224,21 @@ public class MemberService {
     
     // 소셜 로그인
     // 카카오
+    public Member kakaoMember(MemberDto memberDto) {
+        Optional<Member> member = memberRepository.findByEmailAndSocialYn(memberDto.getEmail(), memberDto.getSocialYn());
+
+        System.out.println("member = " + member.isPresent());
+        if(member.isPresent()) {
+            Member getMember = member.get();
+            getMember.setSocialToken(memberDto.getSocialToken());
+            Member updateMember = memberRepository.save(getMember);
+            return updateMember;
+        } else {
+            Member entityMember = MemberDto.toEntity(memberDto);
+            Member saveMember = memberRepository.save(entityMember);
+            return saveMember;
+        }
+    }
     
     // 구글
 

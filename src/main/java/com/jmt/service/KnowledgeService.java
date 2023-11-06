@@ -136,7 +136,7 @@ public class KnowledgeService {
 
     // 지식인 글 작성
     public void create(List<MultipartFile> multipartFiles, KnowledgeDto knowledgeDto, String userid) {
-        Member member = memberRepository.findByEmail(userid).orElseThrow(EntityNotFoundException::new);
+        Member member = memberRepository.findByEmailAndSocialYn(userid,knowledgeDto.getSocialYn()).orElseThrow(EntityNotFoundException::new);
         KnowledgeEntity knowledgeEntity = KnowledgeEntity.createKnowledgeEntity(member, knowledgeDto);
 
         Optional<Long> l = knowledgeRepository.countByNum();
@@ -156,7 +156,7 @@ public class KnowledgeService {
 
     // 지식인 글 수정
     public void updateKnowledge(KnowledgeUpdateDto knowledgeUpdateDto, String userid) {
-        Member member = memberRepository.findByEmail(userid).orElseThrow(EntityNotFoundException::new);
+        Member member = memberRepository.findByEmailAndSocialYn(userid,knowledgeUpdateDto.getSocialYn()).orElseThrow(EntityNotFoundException::new);
         KnowledgeEntity knowledgeEntity = knowledgeRepository.findByUseridAndNum(member, knowledgeUpdateDto.getNum())
                 .orElseThrow(EntityNotFoundException::new);
 
@@ -177,7 +177,7 @@ public class KnowledgeService {
 
     // 지식인 글 삭제
     public void deleteKnowledge(KnowledgeSendDto knowledgeSendDto, String userid) {
-        Member member = memberRepository.findByEmail(userid).orElseThrow(EntityNotFoundException::new);
+        Member member = memberRepository.findByEmailAndSocialYn(userid,knowledgeSendDto.getSocialYn()).orElseThrow(EntityNotFoundException::new);
         KnowledgeEntity knowledgeEntity = knowledgeRepository.findByUseridAndNum(member, knowledgeSendDto.getNum())
                                                             .orElseThrow(EntityNotFoundException::new);
 
