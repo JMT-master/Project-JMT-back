@@ -108,7 +108,7 @@ public class MemberController {
             return ResponseEntity.ok().body(responseDto);
         } catch (Exception e) {
             responseDto.setError("error");
-            return ResponseEntity.badRequest().body(responseDto);
+            return ResponseEntity.ok().body(responseDto);
         }
     }
 
