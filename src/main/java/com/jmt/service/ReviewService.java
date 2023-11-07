@@ -1,15 +1,27 @@
 package com.jmt.service;
 
+import com.jmt.constant.Board;
 import com.jmt.dto.ReviewDto;
 import com.jmt.entity.Review;
 import com.jmt.repository.MemberRepository;
 import com.jmt.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,17 +29,25 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 public class ReviewService {
+    @Value("${itemImgLocation}")
+    private String itemImageLocation;
 
     private final ReviewRepository reviewRepository;
     private final MemberRepository memberRepository;
+    private final FileService fileService;
+
 
     @Transactional
     public List<ReviewDto> readAll(String cid) {
         List<ReviewDto> reviewDtoList = new ArrayList<>();
-        reviewRepository.findAllByReviewContentidOrderByRegDateAsc(cid).forEach(review -> {
-            reviewDtoList.add(ReviewDto.toDto(review));
-        });
+        reviewRepository.findByReviewContentidOrderByRegDateDesc(cid).forEach(review -> reviewDtoList.add(ReviewDto.toDto(review)));
         return reviewDtoList;
+    }
+
+    @Transactional
+    public Page<ReviewDto> readAllPaged(String cid, Pageable pageable) {
+        Page<Review> reviews = reviewRepository.findAllByReviewContentidOrderByRegDateDesc(cid, pageable);
+        return reviews.map(ReviewDto::toDto);
     }
 
     @Transactional
@@ -36,31 +56,60 @@ public class ReviewService {
     }
 
     @Transactional
-    public Review updateReview(ReviewDto dto) {
+    public Review updateReview(@RequestPart(value = "file", required = false) MultipartFile file,ReviewDto dto) {
         Review review = reviewRepository.findByReviewIdx(dto.getReviewIdx());
-        review.setReviewImage(dto.getReviewImg());
+
+        if(dto.getReviewImg() != null) {
+            review.setReviewImage(dto.getReviewImg());
+        }
         review.setReviewContent(dto.getReviewContent());
+        review.setModDate(LocalDateTime.now());
+        if (file != null) {
+            String filePath = itemImageLocation + "/" + "Review_" + dto.getReviewIdx() + "_" + fileService.generateRandomString();
+            File dest = new File(filePath);
+            review.setReviewImage(filePath);
+            try {
+                file.transferTo(dest); // 파일 업로드 작업 수행
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        reviewRepository.save(review);
         return review;
     }
 
     @Transactional
-    public Review deleteReview(ReviewDto dto){
+    public Review deleteReview(@RequestBody ReviewDto dto) {
         Review review = reviewRepository.findByReviewIdx(dto.getReviewIdx());
         reviewRepository.delete(review);
         return review;
     }
 
     @Transactional
-    public Review writeReview(String email, ReviewDto dto){
+    public Review writeReview(@RequestPart(value = "file", required = false) MultipartFile file, String email, ReviewDto dto) {
         Review review = ReviewDto.toEntity(dto);
         long maxIdx = 0;
-        if(reviewRepository.getReviewByMaxIdx().isPresent()){
+        if (reviewRepository.getReviewByMaxIdx().isPresent()) {
             maxIdx = reviewRepository.getReviewByMaxIdx().get();
         }
-        review.setReviewIdx(maxIdx+1);
-        // 추후 확인
-        review.setMember(memberRepository.findByEmailAndSocialYn(email,"N").get());
+        maxIdx += 1;
+        if (file != null) {
+            String filePath = itemImageLocation + "/" + "Review_" + maxIdx + "_" + fileService.generateRandomString();
+            File dest = new File(filePath);
+            review.setReviewImage(filePath);
+            try {
+                file.transferTo(dest); // 파일 업로드 작업 수행
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        review.setReviewIdx(maxIdx);
+        review.setMember(memberRepository.findByEmail(email).get());
+
+
         reviewRepository.save(review);
+
         return review;
     }
+
 }

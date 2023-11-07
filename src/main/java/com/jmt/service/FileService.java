@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,5 +89,19 @@ public class FileService {
         memberFileRepository.saveAll(memberFiles);
 
         return fileInfo;
+    }
+
+    public String generateRandomString() {
+        final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        final int STRING_LENGTH = 20;
+        final SecureRandom secureRandom = new SecureRandom();
+
+        StringBuilder sb = new StringBuilder(STRING_LENGTH);
+        for (int i = 0; i < STRING_LENGTH; i++) {
+            int randomIndex = secureRandom.nextInt(CHARACTERS.length());
+            char randomChar = CHARACTERS.charAt(randomIndex);
+            sb.append(randomChar);
+        }
+        return sb.toString();
     }
 }

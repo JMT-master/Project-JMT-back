@@ -1,6 +1,8 @@
 package com.jmt.repository;
 
 import com.jmt.entity.Review;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -11,8 +13,10 @@ import java.util.Optional;
 public interface ReviewRepository extends JpaRepository<Review, String> {
     Review findByReviewIdx(Long idx);
 
-    List<Review> findAllByReviewContentidOrderByRegDateAsc(String cid);
+    List<Review> findByReviewContentidOrderByRegDateDesc(String cid);
 
     @Query("select max(reviewIdx) from Review")
     Optional<Long> getReviewByMaxIdx();
+
+    Page<Review> findAllByReviewContentidOrderByRegDateDesc(String cid, Pageable pageable);
 }
