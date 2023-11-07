@@ -331,6 +331,24 @@ public class MemberController {
         MemberDto memberDto = service.updatePwdByNewPwd(passwordFindDto);
         return ResponseEntity.ok().body(memberDto);
     }
+
+    @PostMapping("mypage/validate")
+    public ResponseEntity validateMember(@AuthenticationPrincipal String userid, @RequestBody LoginDto loginDto) {
+        String result = "";
+        List<String> data = new ArrayList<>();
+        try{
+            result = service.validateMember(userid, loginDto);
+        } catch (Exception e) {
+            data.add(e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+
+        if(result.equals("fail")) {
+            return ResponseEntity.badRequest().build();
+        } else {
+            return ResponseEntity.ok().build();
+        }
+    }
     // 메일 인증받기 클릭 시
 //    @PostMapping("joinUser/email/validateSend")
 //    public ResponseEntity<ResponseDto> sendEmailValidate(@RequestBody MemberDto memberDto) {
