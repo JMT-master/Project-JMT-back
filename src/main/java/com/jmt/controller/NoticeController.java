@@ -1,9 +1,8 @@
 package com.jmt.controller;
 
-import com.jmt.dto.KnowledgeDto;
-import com.jmt.dto.KnowledgeSendDto;
 import com.jmt.dto.NoticeDto;
 import com.jmt.dto.NoticeSendDto;
+import com.jmt.dto.ResponseDto;
 import com.jmt.entity.Notice;
 import com.jmt.service.EmitterService;
 import com.jmt.service.MemberService;
@@ -27,7 +26,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -63,6 +61,16 @@ public class NoticeController {
         return ResponseEntity.ok().body(noticeDtos);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<Page<NoticeDto>> searchReadKnowledge(@RequestParam(value = "select") String select,
+                                                           @RequestParam(value = "result") String result,
+                                                           Pageable pageable) {
+        Page<NoticeDto> search = noticeService.search(select, result, pageable);
+
+        return ResponseEntity.ok().body(search);
+    }
+
+
     @GetMapping("/{idx}")
     public ResponseEntity<List<NoticeSendDto>> read(@PathVariable Long idx) {
         log.debug("noticeReadIdx : " + idx);
@@ -79,12 +87,14 @@ public class NoticeController {
         if (dto == null) {
             throw new RuntimeException("엔티티 이즈 널");
         }
-        NoticeDto noticedto = noticeService.createNotice(multipartFiles,dto, userid);
+        NoticeDto noticedto = noticeService.createNotice(multipartFiles, dto, userid);
         return ResponseEntity.ok().body(noticedto);
     }
 
     @PutMapping("/admin")
-    public ResponseEntity<NoticeDto> updateNotice(@AuthenticationPrincipal String email, @RequestBody NoticeDto dto) {
+    public ResponseEntity<NoticeDto> updateNotice(
+            @AuthenticationPrincipal String email,
+            @RequestBody NoticeDto dto) {
         Notice notice = noticeService.updateNotice(dto);
         return ResponseEntity.ok().body(NoticeDto.toDto(notice));
     }
@@ -110,10 +120,10 @@ public class NoticeController {
                         .filename(noticeSendDto.getOriginalName(), StandardCharsets.UTF_8).build() // StandardCharsets.UTF_8 : UTF-8로 인코딩
         );
 
-        headers.add(HttpHeaders.CONTENT_TYPE,contentType);
+        headers.add(HttpHeaders.CONTENT_TYPE, contentType);
 
         Resource resource = new InputStreamResource(Files.newInputStream(path));
 
-        return new ResponseEntity<>(resource,headers, HttpStatus.OK);
+        return new ResponseEntity<>(resource, headers, HttpStatus.OK);
     }
 }

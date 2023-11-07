@@ -66,7 +66,7 @@ public class ReviewController {
                                                        @AuthenticationPrincipal String userid, Pageable pageable) {
         log.debug("multipartFile : " + multipartFile);
         log.debug("dto : " + dto);
-        Review review = reviewService.writeReview(multipartFile, userid, dto);
+        reviewService.writeReview(multipartFile, userid, dto);
         Page<ReviewDto> reviewDtos = reviewService.readAllPaged(dto.getReviewContentId(),pageable);
         return ResponseEntity.ok().body(reviewDtos);
     }

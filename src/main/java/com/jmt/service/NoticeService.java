@@ -22,6 +22,7 @@ import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -84,8 +85,18 @@ public class NoticeService {
     }
 
     @Transactional
-    public Notice readNotice(String noticeId){
-        return repository.findById(noticeId).get();
+    public Page<NoticeDto> search(String select, String result, Pageable pageable){
+        Page<Notice> searchResult = null;
+        switch (select){
+            case "title" : {
+                searchResult = repository.findByNoticeTitleContaining(result, pageable);
+                break;
+            }
+            case "content" : {
+                searchResult = repository.findByNoticeContentContaining(result, pageable);
+            }
+        }
+        return Objects.requireNonNull(searchResult).map(NoticeDto::toDto);
     }
 
     @Transactional
@@ -112,7 +123,6 @@ public class NoticeService {
         notice.setNoticeTitle(dto.getTitle());
         notice.setNoticeContent(dto.getContent());
         notice.setRegDate(LocalDateTime.now());
-        repository.save(notice);
         return notice;
     }
 

@@ -18,6 +18,8 @@ public interface NoticeRepository extends JpaRepository<Notice, String> {
 
     public Page<Notice> findAllByOrderByNoticeIdxDesc(Pageable pageable);
 
+    public Page<Notice> findByNoticeTitleContaining(String result, Pageable pageable);
+    public Page<Notice> findByNoticeContentContaining(String result, Pageable pageable);
     @Query("select max(noticeIdx) from Notice")
     Optional<Long> getNoticeByMaxIdx();
 }
