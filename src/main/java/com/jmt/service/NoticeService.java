@@ -123,6 +123,7 @@ public class NoticeService {
         notice.setNoticeTitle(dto.getTitle());
         notice.setNoticeContent(dto.getContent());
         notice.setRegDate(LocalDateTime.now());
+        repository.save(notice);
         return notice;
     }
 
