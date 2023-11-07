@@ -126,4 +126,14 @@ public class NoticeController {
 
         return new ResponseEntity<>(resource, headers, HttpStatus.OK);
     }
+
+    @GetMapping("/main")
+    public ResponseEntity<?> mainNoticeSet(){
+        List<NoticeDto> noticeDtos = noticeService.mainNoticeList();
+        System.out.println("noticeDtos = " + noticeDtos);
+        ResponseDto<NoticeDto> responseDto = ResponseDto.<NoticeDto>builder()
+                .data(noticeDtos)
+                .build();
+        return ResponseEntity.ok().body(responseDto);
+    }
 }

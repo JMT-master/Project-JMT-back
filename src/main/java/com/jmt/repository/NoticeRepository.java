@@ -22,4 +22,7 @@ public interface NoticeRepository extends JpaRepository<Notice, String> {
     public Page<Notice> findByNoticeContentContaining(String result, Pageable pageable);
     @Query("select max(noticeIdx) from Notice")
     Optional<Long> getNoticeByMaxIdx();
+
+    //최신 날짜 순으로 2개 가져오기
+    List<Notice> findTop2ByOrderByRegDateDesc();
 }
