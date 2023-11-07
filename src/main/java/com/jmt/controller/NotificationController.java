@@ -35,6 +35,9 @@ public class NotificationController {
 
     @GetMapping(value = "/sub", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter subscribe(@AuthenticationPrincipal String email) {
+        if(email.equalsIgnoreCase("anonymousUser")){
+            throw new RuntimeException("로그인되지 않음");
+        }
         SseEmitter checkEmitter = emitterService.subscribe(email);
         if(emitterService.chkEmitter(email)){
             throw new RuntimeException("이미 존재하는 이미터");
@@ -129,7 +132,7 @@ public class NotificationController {
     @Transactional
     @DeleteMapping
     public ResponseEntity<List<NotificationDto>> removeNotification(@RequestBody NotificationDto dto, @AuthenticationPrincipal String userid) {
-        notificationService.deleteNotification(dto.getUserid());
+        notificationService.deleteNotification(dto.getId());
         List<Notification> entities = notificationService.showNotification(userid);
 
         List<NotificationDto> entity = new ArrayList<>();
