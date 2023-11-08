@@ -1,7 +1,6 @@
 package com.jmt.controller;
 
 import com.jmt.dto.ChatRoomDto;
-import com.jmt.dto.QnaDto;
 import com.jmt.dto.ResponseDto;
 import com.jmt.entity.ChatRoom;
 import com.jmt.service.ChatService;
@@ -26,18 +25,14 @@ public class ChatRoomController {
 
         try {
             List<ChatRoom> chatRooms = chatService.readRoom();
-                log.info("chat rooms : " + chatRooms);
             List<ChatRoomDto> roomDtos = chatRooms.stream().map(ChatRoomDto::new)
                     .collect(Collectors.toList());
-            log.info("chat dtos" + roomDtos);
             ResponseDto<ChatRoomDto> responseDto = ResponseDto.<ChatRoomDto>builder()
                     .data(roomDtos)
                     .build();
-            log.info("response dto : "+responseDto);
             return ResponseEntity.ok().body(responseDto);
         }catch (Exception e){
             String error = e.getMessage();
-            System.out.println("error = " + error);
             ResponseDto<ChatRoomDto> responseDto = ResponseDto.<ChatRoomDto>builder()
                     .error(error)
                     .build();

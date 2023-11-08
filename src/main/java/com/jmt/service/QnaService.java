@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -44,7 +43,6 @@ public class QnaService {
 
     private void validate(final Qna qna) {
         if (qna == null) {
-            log.warn("Entity is null");
             throw new RuntimeException("Entity is null");
         }
     }
@@ -52,9 +50,7 @@ public class QnaService {
     //create부터
     public List<Qna> create(Qna qna){
         validate(qna);
-        System.out.println("qna.getQnaTitle() = " + qna.getQnaTitle());
         qnaRepository.save(qna);
-        System.out.println("qnaRepository.save(qna) = " + qnaRepository.save(qna));
         //user는 관리자이다. 따라서 관리자 아이디로 create하고 난 뒤 전체 qna 글을 가져온다.
         //사실상 id가 다르다면 create 조차 불가능
         return qnaRepository.findByMember_Userid(qna.getMember().getUserid());
@@ -81,7 +77,6 @@ public class QnaService {
     //관리자용 read
     public List<Qna> readByUserId(Long userId){
         return qnaRepository.findByMember_Userid(userId);
-//        return null;
     }
 
     //qna 상세 페이지 들어가는 용 read
@@ -96,7 +91,6 @@ public class QnaService {
 
     public List<QnaDetailDto> readAndViewCount(Long qnaNum){
         Qna qna = qnaRepository.findQnaByQnaNum(qnaNum);
-        System.out.println("qna.getMember() = " + qna.getMember());
         List<QnaDetailDto> qnaDetailDtos = new ArrayList<>();
 
         qna.setQnaView(qna.getQnaView()+1);
@@ -112,13 +106,11 @@ public class QnaService {
             });
         }else {
             QnaDetailDto qnaDetailDto = new QnaDetailDto(qna);
-            System.out.println("qnaDetailDto = " + qnaDetailDto);
             qnaDetailDto.setQnaView(qna.getQnaView());
             qnaDetailDtos.add(qnaDetailDto);
         }
 
         qnaRepository.save(qna);
-        System.out.println("qnaDetailDtos = " + qnaDetailDtos);
         return qnaDetailDtos;
     }
 
@@ -167,7 +159,6 @@ public class QnaService {
             memberFileRepository.deleteAll();
             qnaRepository.delete(qna);
         }catch (Exception e){
-            log.error("delete 도중 error 발생...", qna.getId(), e);
             throw new RuntimeException("delete 도중 error 발생함..." + qna.getId());
         }
         return readByUserId(qna.getMember().getUserid());
