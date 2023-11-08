@@ -60,10 +60,18 @@ public class WishService {
 
     public List<WishDto> wishTpsSelect(String userId){
 
+        List<WishDto> result = null;
+
         List<WishEntity> select = wishReopsitory.wishTpsSelect(userId);
 
-        select.get(0).getWishTravelId().getTravelId();
-        List<WishDto> result = select.stream().map(data -> WishDto.toDto(data, null)).collect(Collectors.toList());
+
+
+        for(int i=0; i<select.size(); i++){
+            String travleId = select.get(i).getWishTravelId().getTravelId();
+            result = select.stream().map(data -> WishDto.toDto(data, travleId)).collect(Collectors.toList());
+        }
+
+
 
         return result;
 
