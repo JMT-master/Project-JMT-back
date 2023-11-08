@@ -75,7 +75,7 @@ public class NoticeController {
     public ResponseEntity<List<NoticeSendDto>> read(@PathVariable Long idx) {
         log.debug("noticeReadIdx : " + idx);
         List<NoticeSendDto> noticeDto = noticeService.readNoticeIdx(idx);
-
+        log.debug("noticeRead : " + noticeDto);
         return ResponseEntity.ok().body(noticeDto);
     }
 

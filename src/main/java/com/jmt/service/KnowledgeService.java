@@ -167,6 +167,9 @@ public class KnowledgeService {
                     .collect(Collectors.toList());
 
             memberFileRepository.deleteAll(deleteFiles);
+            if(memberFileRepository.findByFileInfo(knowledgeEntity.getFileKey()).isEmpty()){
+                knowledgeEntity.setFileKey(null);
+            }
         }
 
         knowledgeEntity.setCategory(knowledgeUpdateDto.getCategory());

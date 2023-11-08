@@ -62,11 +62,12 @@ public class NoticeService {
     @Transactional
     public List<NoticeSendDto> readNoticeIdx(Long idx){
         Notice notice = repository.findByNoticeIdx(idx);
-
+        log.debug("readNotice : " + notice);
         List<NoticeSendDto> noticeSendDtos = new ArrayList<>();
 
         notice.setNoticeView(notice.getNoticeView()+1);
         if(notice.getNoticeFileKey() != null){
+            log.debug("111");
             List<MemberFile> memberFiles = memberFileRepository.findByFileInfo(notice.getNoticeFileKey());
             memberFiles.forEach(memberFile -> {
                 NoticeSendDto dto = NoticeSendDto.toDto(notice);
@@ -76,10 +77,12 @@ public class NoticeService {
                 noticeSendDtos.add(dto);
             });
         }else{
+            log.debug("222");
             NoticeSendDto dto = NoticeSendDto.toDto(notice);
             dto.setView(notice.getNoticeView());
             noticeSendDtos.add(dto);
         }
+        log.debug("noticeseverce : " + noticeSendDtos);
         repository.save(notice);
         return noticeSendDtos;
     }
@@ -117,12 +120,16 @@ public class NoticeService {
                     .collect(Collectors.toList());
 
             memberFileRepository.deleteAll(deleteFiles);
+            if(memberFileRepository.findByFileInfo(notice.getNoticeFileKey()).isEmpty()){
+                notice.setNoticeFileKey(null);
+            }
         }
 
         notice.setNoticeCategory(dto.getCategory());
         notice.setNoticeTitle(dto.getTitle());
         notice.setNoticeContent(dto.getContent());
         notice.setRegDate(LocalDateTime.now());
+        repository.save(notice);
         return notice;
     }
 
