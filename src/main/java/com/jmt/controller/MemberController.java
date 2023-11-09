@@ -145,12 +145,19 @@ public class MemberController {
 
         List<String> result = new ArrayList<>();
         Member member = service.getMember(userid,socialYn);
-        result.add(member.getEmail());
+        if(member == null) {
+            return ResponseEntity.ok().body(ResponseDto.<String>builder()
+                    .error("error")
+                    .data(result)
+                    .build());
+        } else {
+            result.add(member.getEmail());
 
-        return ResponseEntity.ok().body(ResponseDto.<String>builder()
-                        .error("success")
-                        .data(result)
-                .build());
+            return ResponseEntity.ok().body(ResponseDto.<String>builder()
+                    .error("success")
+                    .data(result)
+                    .build());
+        }
     }
 
     // 로그인 접속 시간
@@ -237,6 +244,7 @@ public class MemberController {
                     .socialYn(member.getSocialYn())
                     .build();
 
+            System.out.println("결과값");
             return ResponseEntity.ok().body(login);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -320,10 +328,20 @@ public class MemberController {
     }
 
     @PostMapping("sendEmailCode")
-    public ResponseEntity<?> sendEmailCode(@RequestBody PwdFindDto pwdFindDto){
+    public ResponseEntity<ResponseDto> sendEmailCode(@RequestBody PwdFindDto pwdFindDto){
+        try{
+            service.checkMember(pwdFindDto, "N");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(ResponseDto.builder()
+                            .error(e.getMessage())
+                    .build());
+        }
+
         String newPwd = emailService.sendNewPwdMail(pwdFindDto.getEmail());
         MemberDto memberDto = service.changePwdByRandomPwd(newPwd, pwdFindDto.getEmail());
-        return ResponseEntity.ok().body(memberDto);
+        return ResponseEntity.ok().body(ResponseDto.builder()
+                .error("success")
+                .build());
     }
 
     @PostMapping("myInfo/ChangePasswd")

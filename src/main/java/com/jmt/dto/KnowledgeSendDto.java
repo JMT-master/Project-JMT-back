@@ -24,6 +24,7 @@ public class KnowledgeSendDto {
     private String originalName;
     private LocalDateTime regDate;
     private LocalDateTime modDate;
+    private boolean userChk;
     private String socialYn;
 
     public static KnowledgeSendDto toDto(KnowledgeEntity knowledgeEntity) {

@@ -108,9 +108,23 @@ public class KnowledgeService {
 
 
     // 지식in Detail List
-    public List<KnowledgeSendDto> detailForm(Long num) {
+    public List<KnowledgeSendDto> detailForm(Long num, String socialYn, String userid) {
+        boolean userChk;
+        // 유저 확인
+        Optional<Member> member = memberRepository.findByEmailAndSocialYn(userid, socialYn);
+
         // 작성한 글 가져오기
         KnowledgeEntity knowledgeEntity = knowledgeRepository.findByNum(num);
+
+        System.out.println("member.isPresent() = " + member.get().getEmail());
+        System.out.println("knowledgeEntity.getUserid().getEmail() = " + knowledgeEntity.getUserid().getEmail());
+        System.out.println("결과 : " + knowledgeEntity.getUserid().getEmail().equals(member.get().getEmail()));
+
+        if(member.isPresent() && knowledgeEntity.getUserid().getEmail().equals(member.get().getEmail())) {
+            userChk = true;
+        }
+        else
+            userChk = false;
 
         List<KnowledgeSendDto> result = new ArrayList<>();
 
@@ -120,16 +134,18 @@ public class KnowledgeService {
         // 파일이 있을 경우
         if(knowledgeEntity.getFileKey() != null) {
             List<MemberFile> memberFiles = memberFileRepository.findByFileInfo(knowledgeEntity.getFileKey());
-            memberFiles.stream().forEach(memberFile -> {
+            memberFiles.forEach(memberFile -> {
                 KnowledgeSendDto dto = KnowledgeSendDto.toDto(knowledgeEntity);
                 dto.setServerPath(memberFile.getFileServerPath());
                 dto.setOriginalName(memberFile.getFileName());
                 dto.setView(knowledgeEntity.getView());
+                dto.setUserChk(userChk);
                 result.add(dto);
             });
         } else {
             KnowledgeSendDto dto = KnowledgeSendDto.toDto(knowledgeEntity);
             dto.setView(knowledgeEntity.getView());
+            dto.setUserChk(userChk);
             result.add(dto);
         }
 
@@ -227,15 +243,27 @@ public class KnowledgeService {
     // ========================== 답글 ==========================
     // =========================================================
     // 지식인 답글 리스트
-    public List<KnowledgeAnswerDto> readAnswer(Long num) {
+    public List<KnowledgeAnswerDto> readAnswer(Long num, String socialYn, String userId) {
+        List<KnowledgeAnswerDto> result = new ArrayList<>();
+        Optional<Member> member = memberRepository.findByEmailAndSocialYn(userId, socialYn);
         List<KnowledgeAnswerEntity> resultEntity = knowledgeAnswerRepository.findByKnNumOrderByRegDateDesc(num);
 
+        resultEntity.forEach(data -> {
+            boolean userChk = false;
+            KnowledgeAnswerDto dto = KnowledgeAnswerDto.toDto(data);
+            userChk = member.isPresent() && member.get().getEmail().equals(data.getAnswerWriter());
 
-        return resultEntity.stream().map(KnowledgeAnswerDto::toDto).collect(Collectors.toList());
+            dto.setUserChk(userChk);
+            result.add(dto);
+        });
+
+        return result;
     }
 
     // 지식인 답글 작성
     public List<KnowledgeAnswerDto> createAnswer(KnowledgeAnswerDto knowledgeAnswerDto, String userid) {
+        List<KnowledgeAnswerDto> result = new ArrayList<>();
+        Optional<Member> member = memberRepository.findByEmailAndSocialYn(userid, knowledgeAnswerDto.getSocialYn());
         KnowledgeAnswerEntity entity = KnowledgeAnswerDto.toEntity(knowledgeAnswerDto);
         entity.setAnswerWriter(userid);
 
@@ -252,7 +280,17 @@ public class KnowledgeService {
         KnowledgeAnswerEntity save = knowledgeAnswerRepository.save(entity);
         List<KnowledgeAnswerEntity> byKnNum = knowledgeAnswerRepository.findByKnNumOrderByRegDateDesc(save.getKnNum());
 
-        return byKnNum.stream().map(KnowledgeAnswerDto::toDto).collect(Collectors.toList());
+        byKnNum.forEach(data -> {
+            boolean userChk = false;
+            KnowledgeAnswerDto dto = KnowledgeAnswerDto.toDto(data);
+            userChk = member.isPresent() && member.get().getEmail().equals(data.getAnswerWriter());
+
+            dto.setUserChk(userChk);
+            result.add(dto);
+        });
+
+
+        return result;
 
     }
 
