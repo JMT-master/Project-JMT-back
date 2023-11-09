@@ -21,6 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -131,6 +135,14 @@ public class QnaService {
         Qna qnaEntity = qnaRepository.findQnaByQnaNum(qnaNum);
         validate(qnaEntity);
         List<MemberFile> memberFiles = memberFileRepository.findByFileInfo(qnaEntity.getQnaFileKey());
+        memberFiles.forEach(memberFile -> {
+            Path filePath = Paths.get(memberFile.getFileServerPath());
+            try {
+                Files.deleteIfExists(filePath);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
         memberFileRepository.deleteAll();
         qnaRepository.delete(qnaEntity);
         Qna updateEntity = QnaDto.toEntity(qnaDto);
@@ -156,6 +168,14 @@ public class QnaService {
         validate(qna);
         try {
             List<MemberFile> memberFiles = memberFileRepository.findByFileInfo(qna.getQnaFileKey());
+            memberFiles.forEach(memberFile -> {
+                Path filePath = Paths.get(memberFile.getFileServerPath());
+                try {
+                    Files.deleteIfExists(filePath);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
             memberFileRepository.deleteAll();
             qnaRepository.delete(qna);
         }catch (Exception e){
