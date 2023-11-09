@@ -1,13 +1,8 @@
 package com.jmt.dto;
 
-import com.jmt.entity.ChatMessage;
 import com.jmt.entity.ChatRoom;
-import com.jmt.service.ChatService;
 import lombok.*;
-import org.springframework.web.socket.WebSocketSession;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 @Getter

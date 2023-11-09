@@ -62,4 +62,26 @@ public class ChatRoomController {
             return ResponseEntity.badRequest().body(responseDto);
         }
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> delete(@RequestBody ChatRoomDto chatRoomDto){
+
+        try {
+            List<ChatRoom> chatRooms = chatService.deleteRoom(chatRoomDto);
+            List<ChatRoomDto> roomDtos = chatRooms.stream().map(ChatRoomDto::new)
+                    .collect(Collectors.toList());
+            ResponseDto<ChatRoomDto> responseDto = ResponseDto.<ChatRoomDto>builder()
+                    .data(roomDtos)
+                    .build();
+            return ResponseEntity.ok().body(responseDto);
+        }catch (Exception e){
+            String error = e.getMessage();
+            System.out.println("error = " + error);
+            ResponseDto<ChatRoomDto> responseDto = ResponseDto.<ChatRoomDto>builder()
+                    .error(error)
+                    .build();
+            return ResponseEntity.badRequest().body(responseDto);
+        }
+
+    }
 }

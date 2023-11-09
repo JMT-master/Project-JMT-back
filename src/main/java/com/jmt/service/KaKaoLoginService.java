@@ -81,7 +81,12 @@ public class KaKaoLoginService {
             System.out.println("jsonObject = " + jsonObject);
 
             JSONObject value =  (JSONObject) jsonObject.get("kakao_account");
-            email = value.get("email").toString();
+            if (value.get("email") != null && value.get("email").toString() != null && !value.get("email").toString().isEmpty()) {
+                email = value.get("email").toString();
+            } else {
+                // 널이거나 빈 문자열일 때 지정한 스트링 할당
+                email = "jmt@jmt.com"; // 원하는 기본값으로 변경하세요
+            }
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
@@ -92,7 +97,7 @@ public class KaKaoLoginService {
     // 카카오 로그아웃
     public String sendKaKaoLogout(String userId) {
         String value = "";
-        String revInfo = "https://kapi.kakao.com/v1/user/logout";
+        String revInfo = "https://kapi.kakao.com/v1/user/unlink";
 
         RestTemplate restTemplate = new RestTemplate();
 

@@ -25,7 +25,7 @@ public class PdfController {
         HttpHeaders headers = new HttpHeaders();
         //pdf로 만들기
         headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=travel_schedule.pdf");
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+travelPdfDto.getTravelTitle()+".pdf");
         return ResponseEntity.ok().headers(headers).body(pdfBytes);
     }
 }

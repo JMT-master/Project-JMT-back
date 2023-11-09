@@ -1,7 +1,7 @@
 package com.jmt.service;
 
+import com.jmt.dto.ChatRoomDto;
 import com.jmt.entity.ChatRoom;
-import com.jmt.repository.ChatMessageRepository;
 import com.jmt.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +18,6 @@ public class ChatService {
 
     private final ChatRoomRepository chatRoomRepository;
 
-    private final ChatMessageRepository chatMessageRepository;
-
     //시작할 때 처음으로 읽어올 read
 
     public List<ChatRoom> readRoom(){
@@ -32,5 +30,10 @@ public class ChatService {
         return chatRoomRepository.findAll();
     }
 
-
+    //채팅방 삭제하기
+    public List<ChatRoom> deleteRoom(ChatRoomDto chatRoomDto){
+        ChatRoom chatRoom = chatRoomRepository.findByRoomId(chatRoomDto.getRoomId());
+        chatRoomRepository.delete(chatRoom);
+        return chatRoomRepository.findAll();
+    }
 }

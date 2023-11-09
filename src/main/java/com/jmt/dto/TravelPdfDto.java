@@ -14,4 +14,6 @@ public class TravelPdfDto {
     private String userId;
 
     private String travelId;
+
+    private String travelTitle;
 }
