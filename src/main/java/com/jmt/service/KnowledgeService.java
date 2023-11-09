@@ -160,7 +160,7 @@ public class KnowledgeService {
         KnowledgeEntity knowledgeEntity = knowledgeRepository.findByUseridAndNum(member, knowledgeUpdateDto.getNum())
                 .orElseThrow(EntityNotFoundException::new);
 
-        if(!knowledgeEntity.getFileKey().isEmpty()) {
+        if(knowledgeEntity.getFileKey() != null) {
             List<MemberFile> memberFiles = memberFileRepository.findByFileInfo(knowledgeEntity.getFileKey());
 
             List<MemberFile> deleteFiles = memberFiles.stream().filter(data -> !knowledgeUpdateDto.getFiles().contains(data.getFileName()))
@@ -176,6 +176,7 @@ public class KnowledgeService {
         knowledgeEntity.setTitle(knowledgeUpdateDto.getTitle());
         knowledgeEntity.setContent(knowledgeUpdateDto.getContent());
         knowledgeEntity.setModDate(LocalDateTime.now());
+        knowledgeRepository.save(knowledgeEntity);
     }
 
     // 지식인 글 삭제

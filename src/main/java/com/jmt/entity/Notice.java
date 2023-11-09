@@ -41,7 +41,7 @@ public class Notice extends BaseTimeEntity {
     @Column(length = 6500, nullable = false)
     private String noticeContent;
 
-    @Column(name = "notice_file_key", nullable = true) // kn_01_3_셔츠6.jpg
+    @Column(name = "notice_file_key") // kn_01_3_셔츠6.jpg
     private String noticeFileKey; // 파일 업로드 유무??? => 파일키 추후 작업
 
 }

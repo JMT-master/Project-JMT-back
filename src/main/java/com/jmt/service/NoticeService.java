@@ -111,8 +111,11 @@ public class NoticeService {
     @Transactional
     public Notice updateNotice(NoticeDto dto){
         Notice notice = repository.findByNoticeIdx(dto.getIdx());
-
-        if(!notice.getNoticeFileKey().isEmpty()) {
+        log.debug("update notcie : " + notice);
+        log.debug("update dto : " + dto);
+        log.debug("update null : " + notice.getNoticeFileKey());
+        if(notice.getNoticeFileKey() != null) {
+            log.debug("null filekey");
             List<MemberFile> memberFiles = memberFileRepository.findByFileInfo(notice.getNoticeFileKey());
 
             List<MemberFile> deleteFiles = memberFiles.stream().filter(data -> !dto.getFiles().contains(data.getFileName()))
@@ -128,6 +131,7 @@ public class NoticeService {
         notice.setNoticeTitle(dto.getTitle());
         notice.setNoticeContent(dto.getContent());
         notice.setRegDate(LocalDateTime.now());
+        log.debug("update notcie2 : " + notice);
         repository.save(notice);
         return notice;
     }
