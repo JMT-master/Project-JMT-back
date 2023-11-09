@@ -22,7 +22,7 @@ public class DayFormatEntity {
     @Column(name="day_id")
     private String dayId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
     @JoinColumn(name = "day_travelid")
     private TravelScheduleEntity dayTravelId;
 

@@ -3,13 +3,24 @@ package com.jmt.repository;
 import com.jmt.entity.DayFormatEntity;
 import com.jmt.entity.TravelScheduleEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 public interface DayFormatRepository extends JpaRepository<DayFormatEntity,String> {
 
-    DayFormatEntity findByDayTravelId(String travelId);
+    List<DayFormatEntity> findByDayTravelId(TravelScheduleEntity travelId);
+
+    DayFormatEntity deleteByDayTravelId(TravelScheduleEntity dayTravelId);
+
+    @Modifying
+    @Transactional
+    @Query(value = "delete from DayFormatEntity d where d.dayTravelId = :dayTravelId")
+    void dayFormDelete(@Param("dayTravelId") String dayTravelId);
+
 
     DayFormatEntity findByDayId(String dayId);
     @Query(value = "select b.day_id," +
