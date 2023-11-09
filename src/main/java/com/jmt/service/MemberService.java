@@ -90,24 +90,16 @@ public class MemberService {
     public MemberDto create(MemberDto memberDto) {
         Member member = MemberDto.toEntity(memberDto);
 
-        System.out.println("memberDto = " + memberDto);
-        System.out.println("member = " + member);
-
         try{
             validate(member,false);
-            System.out.println("다음???????");
 
             // password 암호화
             String encodePwd = passwordEncoder.encode(member.getPassword());
             String encodePwdChk = passwordEncoder.encode(member.getPasswordChk());
-            System.out.println("다음22222");
             member.setPassword(encodePwd);
             member.setPasswordChk(encodePwdChk);
-
-            System.out.println("-------------------------------------");
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("e.getMessage() = " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
 
@@ -264,6 +256,30 @@ public class MemberService {
         //save를 안해도 원래 업데이트 되는게 정상인데 혹시 몰라서 일단 넣었음
         memberRepository.save(member);
         return MemberDto.toDto(member);
+    }
+
+    // 회원 인증
+    public String validateMember(String userid, LoginDto loginDto) {
+        try {
+            System.out.println("validate 들어옴?");
+            System.out.println("userid = " + userid);
+            if(userid.equals("anonymous")) {
+                throw new RuntimeException("로그인이 필요합니다.");
+            }
+
+            Member member = memberRepository.findByEmailAndSocialYn(userid, loginDto.getSocialYn())
+                    .orElseThrow(EntityNotFoundException::new);
+
+            if(passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
+                return "success";
+            } else {
+                return "fail";
+            }
+        } catch (EntityNotFoundException e) {
+            throw new RuntimeException("정보가 맞지 않습니다.");
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     // 비밀번호 찾기

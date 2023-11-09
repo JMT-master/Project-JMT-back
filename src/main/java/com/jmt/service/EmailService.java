@@ -93,12 +93,13 @@ public class EmailService {
             helper.setTo(send);
             helper.setSubject("JMT 회원가입 인증입니다!");
             helper.setText(sendMsg.toString(), true);
+            javaMailSender.send(message);
         } catch (MessagingException e) {
             e.printStackTrace();
             throw new RuntimeException("이메일 형식이 맞지 않습니다.");
         }
 
-        javaMailSender.send(message);
+
     }
 
     public StringBuffer htmlMessage() {
