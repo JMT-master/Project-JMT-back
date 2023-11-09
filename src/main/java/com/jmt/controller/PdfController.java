@@ -20,8 +20,6 @@ public class PdfController {
 
     @PostMapping("/generate-pdf")
     public ResponseEntity<byte[]> generatePdf(@RequestBody TravelPdfDto travelPdfDto) throws Exception {
-        System.out.println("userId = " + travelPdfDto.getUserId());
-        System.out.println("travelId = " + travelPdfDto.getTravelId());
         byte[] pdfBytes = travelPdfService.generatePdf(travelPdfDto.getTravelId(), travelPdfDto.getUserId());
 
         HttpHeaders headers = new HttpHeaders();

@@ -1,10 +1,7 @@
 package com.jmt.dto;
 
 import com.jmt.entity.Notice;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,6 +10,8 @@ import java.util.List;
 @Setter
 @Builder
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class NoticeDto {
     private Long idx;
     private String category;

@@ -1,7 +1,6 @@
 package com.jmt.service;
 
 import com.jmt.constant.Board;
-import com.jmt.dto.KnowledgeDto;
 import com.jmt.dto.NoticeDto;
 import com.jmt.dto.NoticeSendDto;
 import com.jmt.entity.Member;
@@ -137,5 +136,17 @@ public class NoticeService {
         repository.delete(notice);
     }
 
+    @Transactional
+    public List<NoticeDto> mainNoticeList(){
 
+        List<Notice> noticeList = repository.findTop2ByOrderByRegDateDesc();
+
+        if (noticeList.isEmpty()){
+            List<NoticeDto> emptyDtos = new ArrayList<>();
+            return emptyDtos;
+        }
+        return noticeList.stream()
+                .map(NoticeDto::toDto)
+                .collect(Collectors.toList());
+    }
 }
