@@ -10,7 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +50,9 @@ public class ReviewController {
     @PostMapping("/read")
     public ResponseEntity<Page<ReviewDto>> readAllReview(
             @RequestBody ReviewDto dto, Pageable pageable) {
+        log.debug("read pagable : " + pageable);
+        Sort sort = pageable.getSort().and(Sort.by(Sort.Order.desc("regDate")));
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
         Page<ReviewDto> reviewDtos = reviewService.readAllPaged(dto.getReviewContentId(), pageable);
         return ResponseEntity.ok().body(reviewDtos);
     }
@@ -64,8 +69,9 @@ public class ReviewController {
     public ResponseEntity<Page<ReviewDto>> writeReview(@RequestPart(value = "file", required = false) MultipartFile multipartFile,
                                                        @RequestPart(value = "data") ReviewDto dto,
                                                        @AuthenticationPrincipal String userid, Pageable pageable) {
-        log.debug("multipartFile : " + multipartFile);
-        log.debug("dto : " + dto);
+        log.debug("write pagable : " + pageable);
+        Sort sort = pageable.getSort().and(Sort.by(Sort.Order.desc("reviewIdx")));
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
         reviewService.writeReview(multipartFile, userid, dto);
         Page<ReviewDto> reviewDtos = reviewService.readAllPaged(dto.getReviewContentId(),pageable);
         return ResponseEntity.ok().body(reviewDtos);
@@ -83,7 +89,7 @@ public class ReviewController {
     }
 
     @DeleteMapping
-    public ResponseEntity<ReviewDto> deleteReview(@RequestBody ReviewDto dto) {
+    public ResponseEntity<ReviewDto> deleteReview(@RequestBody ReviewDto dto, Pageable pageable) {
         Review review = reviewService.deleteReview(dto);
         ReviewDto reviewDto = ReviewDto.toDto(review);
         return ResponseEntity.ok().body(reviewDto);
