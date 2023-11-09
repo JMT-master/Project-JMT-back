@@ -13,6 +13,20 @@ public interface WishReopsitory extends JpaRepository<WishEntity,String> {
 
     WishEntity findByWishUserId(String userId);
 
+    WishEntity findByWishApiId(String wishApiId);
+
+
+    @Query(value = "select wish_api_id" +
+            "         from wish_list" +
+            "        where wish_api_id = ?" +
+            "          and wish_gubun = 'tdn' ",nativeQuery = true)
+    String wishApiId(String wishApiId);
+
+    @Query(value = "select wish_travel_id" +
+            "         from wish_list" +
+            "        where wish_travel_id = ?" +
+            "          and wish_gubun = 'tps' ",nativeQuery = true)
+    String wishTravelId(String wishTravelId);
     //찜한 여행지 조회 쿼리
     @Query(value = "select wish_id," +
             "              mod_date," +

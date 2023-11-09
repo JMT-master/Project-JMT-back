@@ -20,11 +20,18 @@ public class WishService {
     private final WishReopsitory wishReopsitory;
 
     public int wishTdnInsert(WishDto dto,String userId){
-            int result = 1;
+        int result = 1;
+
         try{
-            dto.setWishUserId(userId);
-            //여행지에서 찜 등록할 땐 travelId(여행일정pk)가 없어도 상관없기에 null로 넘김
-            wishReopsitory.save(WishDto.toEntity(dto,null));
+            String wishApiId = wishReopsitory.wishApiId(dto.getWishApiId());
+            System.out.println("wishApiId-----------"+wishApiId);
+            if(wishApiId == null || wishApiId == ""){
+                dto.setWishUserId(userId);
+                //여행지에서 찜 등록할 땐 travelId(여행일정pk)가 없어도 상관없기에 null로 넘김
+                wishReopsitory.save(WishDto.toEntity(dto,null));
+            }else{
+                System.out.println("wishApiId가 이미 있음");
+            }
         }catch (Exception e){
             result = 0;
             e.printStackTrace();
@@ -35,10 +42,14 @@ public class WishService {
     public int wishTpsInsert(WishDto dto,String userId){
         int result = 1;
         TravelScheduleEntity travelId = travelScheduleRepository.findByTravelId(dto.getWishTravelId());
+        String wishTravelId = wishReopsitory.wishTravelId(dto.getWishTravelId());
         try{
-            dto.setWishUserId(userId);
-            //여행지에서 찜 등록할 땐 travelId(여행일정pk)가 없어도 상관없기에 null로 넘김
-            wishReopsitory.save(WishDto.toEntity(dto,travelId));
+            if(wishTravelId == null || wishTravelId == ""){
+                dto.setWishUserId(userId);
+                wishReopsitory.save(WishDto.toEntity(dto,travelId));
+            }else{
+                System.out.println("wishTravelId가 이미 있음");
+            }
         }catch (Exception e){
             result = 0;
             e.printStackTrace();
@@ -64,14 +75,10 @@ public class WishService {
 
         List<WishEntity> select = wishReopsitory.wishTpsSelect(userId);
 
-
-
         for(int i=0; i<select.size(); i++){
             String travleId = select.get(i).getWishTravelId().getTravelId();
             result = select.stream().map(data -> WishDto.toDto(data, travleId)).collect(Collectors.toList());
         }
-
-
 
         return result;
 
