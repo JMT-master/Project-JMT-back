@@ -18,6 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -121,10 +126,20 @@ public class NoticeService {
             List<MemberFile> deleteFiles = memberFiles.stream().filter(data -> !dto.getFiles().contains(data.getFileName()))
                     .collect(Collectors.toList());
 
+            deleteFiles.forEach(deleteFile -> {
+                Path filePath = Paths.get(deleteFile.getFileServerPath());
+                try {
+                    Files.deleteIfExists(filePath);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
             memberFileRepository.deleteAll(deleteFiles);
             if(memberFileRepository.findByFileInfo(notice.getNoticeFileKey()).isEmpty()){
                 notice.setNoticeFileKey(null);
             }
+
         }
 
         notice.setNoticeCategory(dto.getCategory());
@@ -141,6 +156,15 @@ public class NoticeService {
         Notice notice = repository.findByNoticeIdx(noticeSendDto.getIdx());
         if(notice != null){
             List<MemberFile> memberFiles = memberFileRepository.findByFileInfo(notice.getNoticeFileKey());
+            memberFiles.forEach(memberFile -> {
+                Path filePath = Paths.get(memberFile.getFileServerPath());
+                try {
+                    Files.deleteIfExists(filePath);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
             memberFileRepository.deleteAll(memberFiles);
         }
         repository.delete(notice);

@@ -20,6 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -166,6 +170,15 @@ public class KnowledgeService {
             List<MemberFile> deleteFiles = memberFiles.stream().filter(data -> !knowledgeUpdateDto.getFiles().contains(data.getFileName()))
                     .collect(Collectors.toList());
 
+            deleteFiles.forEach(deleteFile -> {
+                Path filePath = Paths.get(deleteFile.getFileServerPath());
+                try {
+                    Files.deleteIfExists(filePath);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
             memberFileRepository.deleteAll(deleteFiles);
             if(memberFileRepository.findByFileInfo(knowledgeEntity.getFileKey()).isEmpty()){
                 knowledgeEntity.setFileKey(null);
@@ -195,6 +208,14 @@ public class KnowledgeService {
         // 첨부 파일 확인
         if(knowledgeEntity.getFileKey() != null) {
             List<MemberFile> memberFiles = memberFileRepository.findByFileInfo(knowledgeEntity.getFileKey());
+            memberFiles.forEach(memberFile -> {
+                Path filePath = Paths.get(memberFile.getFileServerPath());
+                try {
+                    Files.deleteIfExists(filePath);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
             memberFileRepository.deleteAll(memberFiles);
         }
 
