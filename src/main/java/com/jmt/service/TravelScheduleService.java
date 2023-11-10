@@ -2,12 +2,15 @@ package com.jmt.service;
 
 import com.jmt.dto.DayFormatDto;
 import com.jmt.dto.TravelScheduleDto;
+import com.jmt.dto.WishDto;
 import com.jmt.entity.DayFormatEntity;
 import com.jmt.entity.Member;
 import com.jmt.entity.TravelScheduleEntity;
+import com.jmt.entity.WishEntity;
 import com.jmt.repository.DayFormatRepository;
 import com.jmt.repository.MemberRepository;
 import com.jmt.repository.TravelScheduleRepository;
+import com.jmt.repository.WishReopsitory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +25,10 @@ import java.util.stream.Collectors;
 public class TravelScheduleService {
 
     private final TravelScheduleRepository travelScheduleRepository;
+
+    private final WishReopsitory wishReopsitory;
+
+    private final DayFormatRepository dayFormatRepository;
     public TravelScheduleDto scheduleSave(TravelScheduleDto dto){
 
         TravelScheduleEntity save = travelScheduleRepository.save(TravelScheduleDto.toEntity(dto));
@@ -63,6 +70,29 @@ public class TravelScheduleService {
         List<TravelScheduleDto> result = select.stream().map(TravelScheduleDto::toDto).collect(Collectors.toList());
 
         return result;
+    }
+
+    //마이페이지에 나의일정삭제
+    public int myTpsDelete(TravelScheduleDto dto){
+        int result = 1;
+        try{
+            TravelScheduleEntity travelId = travelScheduleRepository.findByTravelId(dto.getTravelId());
+            WishEntity wishTravelId = wishReopsitory.findByWishTravelId(travelId);
+            List<DayFormatEntity> dayTravelId = dayFormatRepository.findByDayTravelId(travelId);
+
+            if(wishTravelId != null){
+                wishReopsitory.delete(wishTravelId);
+            }
+            dayFormatRepository.deleteAll(dayTravelId);
+            travelScheduleRepository.delete(travelId);
+
+
+        }catch (Exception e){
+            result = 0;
+            e.printStackTrace();
+        }
+        return result;
+
     }
 
 }

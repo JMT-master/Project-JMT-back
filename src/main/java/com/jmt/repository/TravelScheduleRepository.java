@@ -3,14 +3,29 @@ package com.jmt.repository;
 import com.jmt.entity.DayFormatEntity;
 import com.jmt.entity.TravelScheduleEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 public interface TravelScheduleRepository extends JpaRepository<TravelScheduleEntity, Integer> {
 
     TravelScheduleEntity findByTravelId(String id);
+
+
+    //참조 순서대로 찜한일정 삭제 -> 일정 폼 삭제 -> 일정 데이터 삭제
+
+
+
+
+    @Modifying
+    @Transactional
+    @Query(value = "delete from TravelScheduleEntity t where t.travelId = :travelId")
+    void myTpsDelete(@Param("travelId") String travelId);
+
 
     //나의 일정 조회하는 쿼리
     @Query(value = "select a.travel_id," +

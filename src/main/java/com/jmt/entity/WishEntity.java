@@ -25,7 +25,7 @@ public class WishEntity extends BaseTimeEntity{
 
     private String wishUserId;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
     @JoinColumn(name ="wish_travelId")
     private TravelScheduleEntity wishTravelId;
 

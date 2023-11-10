@@ -57,7 +57,27 @@ public class WishService {
         return result;
     }
 
+    public int wishTdnDelete(WishDto dto){
 
+        int result = 1;
+        try{
+            WishEntity wishId = wishReopsitory.findByWishId(dto.getWishId());
+            wishReopsitory.delete(wishId);
+        }catch (Exception e){
+            result = 0;
+            e.printStackTrace();
+        }
+        return result;
+
+    }
+
+    public void wishTpsDelete(WishDto dto){
+        try {
+            wishReopsitory.wishDrop(dto.getWishId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public List<WishDto> wishTdnSelect(String userId){
 

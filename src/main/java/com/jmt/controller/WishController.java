@@ -53,6 +53,35 @@ public class WishController {
     }
 
 
+    @PostMapping("/wishTdnDelete")
+    public ResponseEntity<ResponseDto> wishTdnDelete(@RequestBody WishDto dto){
+        if(dto != null){
+            wishService.wishTdnDelete(dto);
+        }else{
+            return ResponseEntity.badRequest().body(ResponseDto.builder()
+                    .error("error")
+                    .build());
+        }
+        return ResponseEntity.ok().body(ResponseDto.<WishDto>builder()
+                .error("success")
+                .build());
+    }
+
+
+    @PostMapping("/wishTpsDelete")
+    public ResponseEntity<ResponseDto> wishTpsDelete(@RequestBody WishDto dto){
+        if(dto != null){
+            wishService.wishTpsDelete(dto);
+        }else{
+            return ResponseEntity.badRequest().body(ResponseDto.builder()
+                    .error("error")
+                    .build());
+        }
+        return ResponseEntity.ok().body(ResponseDto.<WishDto>builder()
+                .error("success")
+                .build());
+    }
+
 
     @GetMapping("/wishTdnSelect")
     public ResponseEntity<ResponseDto> wishTdnSelect(@AuthenticationPrincipal String userid){

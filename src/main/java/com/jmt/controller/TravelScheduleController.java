@@ -27,6 +27,22 @@ public class TravelScheduleController {
         return ResponseEntity.ok().body(travelId);
     }
 
+    @PostMapping("/myTpsDelete")
+    public ResponseEntity<ResponseDto> scheduleSave(@RequestBody TravelScheduleDto dto){
+
+        if(dto != null){
+            travelScheduleService.myTpsDelete(dto);
+        }else{
+            return ResponseEntity.badRequest().body(ResponseDto.builder()
+                    .error("error")
+                    .build());
+        }
+
+        return ResponseEntity.ok().body(ResponseDto.builder()
+                .error("success")
+                .build());
+    }
+
     @GetMapping("/selectSchedule")
     public ResponseEntity<TravelScheduleDto> scheduleSelect(TravelScheduleDto dto){
 

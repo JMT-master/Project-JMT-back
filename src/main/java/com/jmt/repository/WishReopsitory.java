@@ -3,8 +3,11 @@ package com.jmt.repository;
 import com.jmt.entity.TravelScheduleEntity;
 import com.jmt.entity.WishEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -15,6 +18,20 @@ public interface WishReopsitory extends JpaRepository<WishEntity,String> {
 
     WishEntity findByWishApiId(String wishApiId);
 
+    WishEntity findByWishId(String wishId);
+
+    WishEntity findByWishTravelId(TravelScheduleEntity wishTravelId);
+
+    WishEntity deleteByWishTravelId(TravelScheduleEntity wishTravelId);
+    @Modifying
+    @Transactional
+    @Query(value = "delete from WishEntity w where w.wishId = :wishId")
+    void wishDrop(@Param("wishId") String wishId);
+
+    @Modifying
+    @Transactional
+    @Query(value = "delete from WishEntity w where w.wishTravelId = :wishTravelId")
+    void wishTpsDelete(@Param("wishTravelId") String wishTravelId);
 
     @Query(value = "select wish_api_id" +
             "         from wish_list" +
