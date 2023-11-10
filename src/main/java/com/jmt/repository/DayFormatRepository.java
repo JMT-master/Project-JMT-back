@@ -30,12 +30,11 @@ public interface DayFormatRepository extends JpaRepository<DayFormatEntity,Strin
             "      b.day_user_id" +
             " from travel_schedule a inner join day_format b" +
             "   on a.travel_id = b.day_travelid" +
-            " where a.travel_user_id = ? " +
-            "  and b.day_travelid = ?" +
+            " where b.day_travelid = ?" +
             "  and b.day_count = 1" +
             "  and b.day_index is not null "+
             "order by b.day_index asc",nativeQuery = true)
-    List<DayFormatEntity> dayFormatSelect1(String userid, String travelId);
+    List<DayFormatEntity> dayFormatSelect1(String travelId);
 
     @Query(value = "select b.day_id," +
             "      b.day_travelid," +
@@ -50,12 +49,11 @@ public interface DayFormatRepository extends JpaRepository<DayFormatEntity,Strin
             "      b.day_user_id" +
             " from travel_schedule a inner join day_format b" +
             "   on a.travel_id = b.day_travelid" +
-            " where a.travel_user_id = ? " +
-            "  and b.day_travelid = ?" +
+            " where b.day_travelid = ?" +
             "  and b.day_count = 2" +
             "  and b.day_index is not null "+
             "ORDER BY b.day_index ASC",nativeQuery = true)
-    List<DayFormatEntity> dayFormatSelect2(String userid, String travelId);
+    List<DayFormatEntity> dayFormatSelect2(String travelId);
 
     @Query(value = "select b.day_id," +
             "      b.day_travelid," +

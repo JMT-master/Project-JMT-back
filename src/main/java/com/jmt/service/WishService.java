@@ -42,7 +42,7 @@ public class WishService {
     public int wishTpsInsert(WishDto dto,String userId){
         int result = 1;
         TravelScheduleEntity travelId = travelScheduleRepository.findByTravelId(dto.getWishTravelId());
-        String wishTravelId = wishReopsitory.wishTravelId(dto.getWishTravelId());
+        String wishTravelId = wishReopsitory.wishTravelId(dto.getWishTravelId(),userId);
         try{
             if(wishTravelId == null || wishTravelId == ""){
                 dto.setWishUserId(userId);

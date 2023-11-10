@@ -49,8 +49,7 @@ public interface TravelScheduleRepository extends JpaRepository<TravelScheduleEn
             "      a.reg_date," +
             "      (select b.day_image " +
             "         from day_format b" +
-            "         where b.day_user_id= ? " +
-            "           and a.travel_id = b.day_travelid" +
+            "        where a.travel_id = b.day_travelid" +
             "      order by day_count, day_index limit 1) as day_image"+
             " from travel_schedule a" +
             " where a.travel_yn = 'Y' ",nativeQuery = true)

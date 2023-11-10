@@ -35,9 +35,10 @@ public interface WishReopsitory extends JpaRepository<WishEntity,String> {
 
     @Query(value = "select wish_travel_id" +
             "         from wish_list" +
-            "        where wish_travel_id = ?" +
+            "        where wish_travel_id = ?"+
+            "          and wish_user_id = ? "+
             "          and wish_gubun = 'tps' ",nativeQuery = true)
-    String wishTravelId(String wishTravelId);
+    String wishTravelId(String wishTravelId, String userId);
     //찜한 여행지 조회 쿼리
     @Query(value = "select wish_id," +
             "              mod_date," +
