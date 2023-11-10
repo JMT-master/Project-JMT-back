@@ -22,7 +22,6 @@ public interface WishReopsitory extends JpaRepository<WishEntity,String> {
 
     WishEntity findByWishTravelId(TravelScheduleEntity wishTravelId);
 
-    WishEntity deleteByWishTravelId(TravelScheduleEntity wishTravelId);
     @Modifying
     @Transactional
     @Query(value = "delete from WishEntity w where w.wishId = :wishId")
