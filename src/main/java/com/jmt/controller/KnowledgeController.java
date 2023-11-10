@@ -84,8 +84,10 @@ public class KnowledgeController {
 
     // 글 자세히 보기
     @PostMapping("knowledgeDetail")
-    public ResponseEntity<List<KnowledgeSendDto>> createKnowledgeDetail(@RequestParam("id") Long id) {
-        List<KnowledgeSendDto> knowledgeSendDtos = knowledgeService.detailForm(id);
+    public ResponseEntity<List<KnowledgeSendDto>> createKnowledgeDetail(@RequestParam("id") Long id, @RequestParam("socialYn") String socialYn, @AuthenticationPrincipal String userid) {
+        System.out.println("socialYn = " + socialYn);
+        System.out.println("userid = " + userid);
+        List<KnowledgeSendDto> knowledgeSendDtos = knowledgeService.detailForm(id,socialYn, userid);
 
         System.out.println("id = " + id);
         System.out.println("knowledgeSendDtos = " + knowledgeSendDtos);
@@ -135,6 +137,7 @@ public class KnowledgeController {
     @PostMapping("knowledgeDetail/delete")
     public ResponseEntity<ResponseDto> deleteKnowledgeDetail(@RequestBody KnowledgeSendDto knowledgeSendDto, @AuthenticationPrincipal String userid) {
         try {
+            System.out.println("들어옴!!!");
             knowledgeService.deleteKnowledge(knowledgeSendDto,userid);
             return ResponseEntity.ok().body(ResponseDto.builder()
                             .error("success")
@@ -152,8 +155,10 @@ public class KnowledgeController {
     // =========================================================
     // 지식인 답글 리스트
     @GetMapping("/knowledgeDetail/answer")
-    public ResponseEntity<List<KnowledgeAnswerDto>> readAnswer(@RequestParam(name = "num") Long num) {
-        List<KnowledgeAnswerDto> answers = knowledgeService.readAnswer(num);
+    public ResponseEntity<List<KnowledgeAnswerDto>> readAnswer(@RequestParam(name = "num") Long num,
+                                                               @RequestParam(name = "socialYn") String socialYn,
+                                                               @AuthenticationPrincipal String userId) {
+        List<KnowledgeAnswerDto> answers = knowledgeService.readAnswer(num, socialYn, userId);
 
         return ResponseEntity.ok().body(answers);
     }

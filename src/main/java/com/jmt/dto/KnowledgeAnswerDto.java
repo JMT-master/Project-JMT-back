@@ -20,6 +20,8 @@ public class KnowledgeAnswerDto {
     private int answerLike;        // 좋아요 수
     private LocalDateTime regDate; // 생성날짜
     private LocalDateTime modDate; // 수정날짜
+    private String socialYn;       // socialYn
+    private boolean userChk;       // 작성자와 로그인한 사람 비교
 
     public static KnowledgeAnswerDto toDto(KnowledgeAnswerEntity answerEntity) {
         return KnowledgeAnswerDto.builder()

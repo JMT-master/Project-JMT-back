@@ -1,10 +1,7 @@
 package com.jmt.service;
 
 import com.jmt.common.TokenProvidor;
-import com.jmt.dto.IdFindDto;
-import com.jmt.dto.LoginDto;
-import com.jmt.dto.MemberDto;
-import com.jmt.dto.PasswordFindDto;
+import com.jmt.dto.*;
 import com.jmt.entity.Member;
 import com.jmt.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +30,24 @@ public class MemberService {
     // 멤버 정보 호출
     @Transactional
     public Member getMember(String email,String socialYn){
-        return memberRepository.findByEmailAndSocialYn(email,socialYn).get();
+        Optional<Member> member = memberRepository.findByEmailAndSocialYn(email, socialYn);
+        return member.orElse(null);
+    }
+
+    public Member checkMember(PwdFindDto pwdFindDto, String socialYn) {
+        try {
+            Member member = memberRepository.findByEmailAndSocialYn(pwdFindDto.getEmail(), socialYn).orElseThrow(EntityNotFoundException::new);
+
+            if(member.getUsername().equals(pwdFindDto.getUsername())) {
+                return member;
+            } else {
+                throw new RuntimeException("이름과 아이디가 같지 않습니다.");
+            }
+        } catch (EntityNotFoundException e) {
+            throw new RuntimeException("멤버가 존재하지 않습니다");
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     // 회원가입 인증
