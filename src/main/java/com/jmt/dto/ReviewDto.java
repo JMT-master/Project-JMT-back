@@ -20,6 +20,7 @@ public class ReviewDto {
     private int reviewLike;
     private LocalDateTime regDate;
     private LocalDateTime modDate;
+    private String socialYn;
 
     public static Review toEntity(ReviewDto dto){
         return Review.builder()

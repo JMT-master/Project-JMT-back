@@ -11,6 +11,7 @@ import com.jmt.service.EmailService;
 import com.jmt.service.KaKaoLoginService;
 import com.jmt.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import nl.captcha.Captcha;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,7 +130,6 @@ public class MemberController {
         try{
             login = service.login(loginDto);
             login.setLoginTime(LocalDateTime.now());
-            response.addCookie(login.getAdminChk());
             System.out.println("login = " + login);
             response.addCookie(login.getAccessToken());
 
@@ -368,6 +368,16 @@ public class MemberController {
         } else {
             return ResponseEntity.ok().build();
         }
+    }
+
+    @PostMapping("adminchk")
+    public Boolean adminchk(@AuthenticationPrincipal String userid, @RequestBody LoginDto loginDto){
+        log.debug("userid Chk : " + userid);
+        if(!userid.equalsIgnoreCase("anonymousUser")) {
+            Member member = service.getMember(userid, loginDto.getSocialYn());
+            return member.getAdminYn().equalsIgnoreCase("y");
+        }
+        return false;
     }
     // 메일 인증받기 클릭 시
 //    @PostMapping("joinUser/email/validateSend")

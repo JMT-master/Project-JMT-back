@@ -42,7 +42,7 @@ public class NoticeService {
 
     @Transactional
     public NoticeDto createNotice(List<MultipartFile> multipartFiles, NoticeDto noticeDto, String email) {
-        Member member = memberRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
+        Member member = memberRepository.findByEmailAndSocialYn(email, noticeDto.getSocialYn()).orElseThrow(EntityNotFoundException::new);
         Notice notice = NoticeDto.toEntity(noticeDto);
         notice.setMember(member);
         Long num = 0L;

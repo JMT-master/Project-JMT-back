@@ -115,7 +115,7 @@ public class ReviewService {
             }
         }
         review.setReviewIdx(maxIdx);
-        review.setMember(memberRepository.findByEmail(email).get());
+        review.setMember(memberRepository.findByEmailAndSocialYn(email, dto.getSocialYn()).get());
 
 
         reviewRepository.save(review);

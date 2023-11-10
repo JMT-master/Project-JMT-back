@@ -17,6 +17,7 @@ public class NoticeDto {
     private String category;
     private String content;
     private String title;
+    private String socialYn;
     private int view;
     private String        fileKey;
     private LocalDateTime regDate;
