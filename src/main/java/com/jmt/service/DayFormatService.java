@@ -22,7 +22,7 @@ public class DayFormatService {
 
     public List<DayFormatDto> dayFormatSelect1(String userid,String id){
 
-        List<DayFormatEntity> select = dayFormatRepository.dayFormatSelect1(userid,id);
+        List<DayFormatEntity> select = dayFormatRepository.dayFormatSelect1(id);
 
         List<DayFormatDto> result = select.stream().map(data -> DayFormatDto.toDto(data,id)).collect(Collectors.toList());
 
@@ -31,7 +31,7 @@ public class DayFormatService {
 
     public List<DayFormatDto> dayFormatSelect2(String userid,String id){
 
-        List<DayFormatEntity> select = dayFormatRepository.dayFormatSelect2(userid,id);
+        List<DayFormatEntity> select = dayFormatRepository.dayFormatSelect2(id);
 
         List<DayFormatDto> result = select.stream().map(data -> DayFormatDto.toDto(data,id)).collect(Collectors.toList());
         return result;
