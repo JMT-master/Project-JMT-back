@@ -18,6 +18,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -81,6 +84,14 @@ public class ReviewService {
     @Transactional
     public Review deleteReview(@RequestBody ReviewDto dto) {
         Review review = reviewRepository.findByReviewIdx(dto.getReviewIdx());
+        if(review.getReviewImage() != null) {
+            Path filePath = Paths.get(review.getReviewImage());
+            try {
+                Files.deleteIfExists(filePath);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         reviewRepository.delete(review);
         return review;
     }
