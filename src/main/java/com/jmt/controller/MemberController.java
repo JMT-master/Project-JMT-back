@@ -287,6 +287,7 @@ public class MemberController {
     public ResponseEntity<?> update(@AuthenticationPrincipal String userId,
                                     @RequestBody MemberDto memberDto){
         try {
+
             String email =  service.update(memberDto);
             // 추후 확인
             Member member = service.getMember(email,memberDto.getSocialYn());
@@ -332,18 +333,19 @@ public class MemberController {
     @PostMapping("sendEmailCode")
     public ResponseEntity<ResponseDto> sendEmailCode(@RequestBody PwdFindDto pwdFindDto){
         try{
-            service.checkMember(pwdFindDto, "N");
+        Member member = service.checkMember(pwdFindDto, "N");
+            System.out.println("member = " + member);
+        String newPwd = emailService.sendNewPwdMail(member.getEmail());
+        MemberDto memberDto = service.changePwdByRandomPwd(newPwd, member.getEmail(), member.getSocialYn());
+            return ResponseEntity.ok().body(ResponseDto.builder()
+                    .error("success")
+                    .build());
+
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(ResponseDto.builder()
                             .error(e.getMessage())
                     .build());
         }
-
-        String newPwd = emailService.sendNewPwdMail(pwdFindDto.getEmail());
-        MemberDto memberDto = service.changePwdByRandomPwd(newPwd, pwdFindDto.getEmail());
-        return ResponseEntity.ok().body(ResponseDto.builder()
-                .error("success")
-                .build());
     }
 
     @PostMapping("myInfo/ChangePasswd")

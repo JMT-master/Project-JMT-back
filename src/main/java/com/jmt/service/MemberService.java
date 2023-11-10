@@ -134,7 +134,7 @@ public class MemberService {
 
 
         // Dirty Checking(변경감지)로 인하여 update문이 따로 필요 없이 준속성에 의하여 조회 후 변경하면 자동 변경
-        Optional<Member> optionalMember = memberRepository.findByEmailAndSocialYn(member.getEmail(),member.getSocialYn());
+        Optional<Member> optionalMember = memberRepository.findByEmailAndSocialYn(member.getEmail(), member.getSocialYn());
 
         if(optionalMember.isEmpty()) {
             return null;
@@ -240,7 +240,7 @@ public class MemberService {
     // 아이디 찾기
     public String findUserId(IdFindDto idFindDto) {
         System.out.println("idFindDto = " + idFindDto);
-        Member member = memberRepository.findByUsernameAndPhone(idFindDto.getUsername(), idFindDto.getPhone());
+        Member member = memberRepository.findByUsernameAndPhoneAndSocialYn(idFindDto.getUsername(), idFindDto.getPhone(), "N");
         System.out.println("member = " + member);
         if(member != null) {
             return member.getEmail();
@@ -249,9 +249,9 @@ public class MemberService {
     }
 
     //비밀번호 찾기 할 때 멤버의 비밀번호를 랜덤하게 받은 키를 바탕으로 변경한다
-    public MemberDto changePwdByRandomPwd(String pwd, String email){
+    public MemberDto changePwdByRandomPwd(String pwd, String email, String social){
         System.out.println("pwd = " + pwd);
-        Member member = memberRepository.findByEmail(email).get();
+        Member member = memberRepository.findByEmailAndSocialYn(email, social).get();
         System.out.println("member.getEmail() = " + member.getEmail());
         System.out.println("member.getPassword() = " + member.getPassword());
         member.setPassword(pwd);
@@ -264,7 +264,7 @@ public class MemberService {
     //비밀번호 찾기 재확인 후 다시 받은 비밀번호로 업데이트 해주기
     public MemberDto updatePwdByNewPwd(PasswordFindDto passwordFindDto){
         System.out.println("passwordFindDto = " + passwordFindDto);
-        Member member = memberRepository.findByEmail(passwordFindDto.getPreId()).get();
+        Member member = memberRepository.findByEmailAndSocialYn(passwordFindDto.getPreId(), passwordFindDto.getSocial()).get();
         member.setPassword(passwordEncoder.encode(passwordFindDto.getNewPwd()));
         member.setPasswordChk(passwordEncoder.encode(passwordFindDto.getNewPwdChk()));
         //save를 안해도 원래 업데이트 되는게 정상인데 혹시 몰라서 일단 넣었음

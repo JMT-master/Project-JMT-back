@@ -8,4 +8,5 @@ public class PasswordFindDto {
     private String prePwd;
     private String newPwd;
     private String newPwdChk;
+    private String social;
 }
