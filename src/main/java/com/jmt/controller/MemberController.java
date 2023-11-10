@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.function.EntityResponse;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
@@ -250,6 +251,7 @@ public class MemberController {
         System.out.println("들어옴???");
         System.out.println("userId = " + userId);
         String result = kaKaoLoginService.sendKaKaoLogout(userId);
+
         return ResponseEntity.ok().body("ok");
     }
 

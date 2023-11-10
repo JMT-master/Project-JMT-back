@@ -98,6 +98,7 @@ public class KaKaoLoginService {
     public String sendKaKaoLogout(String userId) {
         String value = "";
         String revInfo = "https://kapi.kakao.com/v1/user/unlink";
+//        String revInfo = "https://kauth.kakao.com/oauth/logout?client_id=" + restApiKey + "&logout_redirect_uri=http://localhost:3000/";
 
         RestTemplate restTemplate = new RestTemplate();
 
