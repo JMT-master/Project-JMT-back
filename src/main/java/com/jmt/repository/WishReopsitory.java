@@ -28,11 +28,6 @@ public interface WishReopsitory extends JpaRepository<WishEntity,String> {
     @Query(value = "delete from WishEntity w where w.wishId = :wishId")
     void wishDrop(@Param("wishId") String wishId);
 
-    @Modifying
-    @Transactional
-    @Query(value = "delete from WishEntity w where w.wishTravelId = :wishTravelId")
-    void wishTpsDelete(@Param("wishTravelId") String wishTravelId);
-
     @Query(value = "select wish_api_id" +
             "         from wish_list" +
             "        where wish_api_id = ?" +

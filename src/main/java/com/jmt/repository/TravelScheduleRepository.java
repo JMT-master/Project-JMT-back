@@ -15,18 +15,6 @@ public interface TravelScheduleRepository extends JpaRepository<TravelScheduleEn
 
     TravelScheduleEntity findByTravelId(String id);
 
-
-    //참조 순서대로 찜한일정 삭제 -> 일정 폼 삭제 -> 일정 데이터 삭제
-
-
-
-
-    @Modifying
-    @Transactional
-    @Query(value = "delete from TravelScheduleEntity t where t.travelId = :travelId")
-    void myTpsDelete(@Param("travelId") String travelId);
-
-
     //나의 일정 조회하는 쿼리
     @Query(value = "select a.travel_id," +
             "      a.travel_user_id," +
