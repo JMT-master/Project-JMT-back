@@ -16,12 +16,6 @@ public interface DayFormatRepository extends JpaRepository<DayFormatEntity,Strin
 
     DayFormatEntity deleteByDayTravelId(TravelScheduleEntity dayTravelId);
 
-    @Modifying
-    @Transactional
-    @Query(value = "delete from DayFormatEntity d where d.dayTravelId = :dayTravelId")
-    void dayFormDelete(@Param("dayTravelId") String dayTravelId);
-
-
     DayFormatEntity findByDayId(String dayId);
     @Query(value = "select b.day_id," +
             "      b.day_travelid," +
