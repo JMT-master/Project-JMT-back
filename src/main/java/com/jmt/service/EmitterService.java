@@ -24,7 +24,7 @@ public class EmitterService {
     private final EmitterRepository emitterRepository;
     private final NotificationRepository notificationRepository;
 
-    public boolean chkEmitter(String email){
+    public boolean chkEmitter(String email) {
         return emitterRepository.get(email) == null;
     }
 
@@ -37,15 +37,15 @@ public class EmitterService {
         //이미터 생성
         SseEmitter emitter = createEmitter(userid);
         //생성 후, 유저에게 이미터 생성 알림
-        List<Notification> notifications = notificationRepository.findNotificationsByMember_EmailOrderByModDateDesc(userid);
-        notifications.forEach(notify -> {
-            if (notify != null) {
-                log.debug("notifyChk" + notify);
-                sendToClient(userid, "sub", "등록됨");
-            } else {
-                log.debug("notifyChk" + notify);
-            }
-        });
+//        List<Notification> notifications = notificationRepository.findNotificationsByMember_EmailOrderByModDateDesc(userid);
+//        notifications.forEach(notify -> {
+//            if (notify != null) {
+//                log.debug("notifyChk" + notify);
+        sendToClient(userid, "sub", "등록됨");
+//            } else {
+//                log.debug("notifyChk" + notify);
+//            }
+//        });
         return emitter;
     }
 
